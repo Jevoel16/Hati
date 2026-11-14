@@ -19,6 +19,10 @@ main {
   display: grid;
   gap: var(--s4);
 }
+/* A grid stretches its children; buttons keep their own width instead. */
+.stack > .button {
+  justify-self: start;
+}
 .stack--lg {
   gap: var(--s7);
 }
