@@ -1,0 +1,285 @@
+/* App components. Sections are separated by space; lines only divide rows inside a list. */
+.shell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding-block: var(--s3);
+}
+.shell-header nav {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+main {
+  padding-block: var(--s5) var(--s8);
+}
+
+.stack {
+  display: grid;
+  gap: var(--s4);
+}
+.stack--lg {
+  gap: var(--s7);
+}
+.stack--sm {
+  gap: var(--s2);
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+}
+.row--between {
+  justify-content: space-between;
+}
+
+/* Forms */
+.field {
+  display: grid;
+  gap: var(--s1);
+}
+.field label,
+.legend {
+  font-weight: 600;
+  font-size: var(--t-sm);
+}
+.field input,
+.field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--s3);
+  border: 1px solid var(--muted);
+  border-radius: var(--r1);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+}
+.field input[aria-invalid='true'] {
+  border-color: var(--danger);
+  border-width: 2px;
+}
+.field-error,
+.form-error {
+  color: var(--danger);
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+.form-error {
+  padding: var(--s3);
+  border: 1px solid var(--danger);
+  border-radius: var(--r1);
+}
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  min-height: 44px;
+}
+.choice input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+.choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s5);
+}
+.split-row {
+  display: grid;
+  grid-template-columns: 1fr 8rem;
+  align-items: center;
+  gap: var(--s3);
+}
+.split-row input {
+  text-align: right;
+}
+
+/* Lists */
+.list > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s1) var(--s4);
+  padding-block: var(--s3);
+  border-top: 1px solid var(--line);
+}
+.list > li:first-child {
+  border-top: 0;
+}
+.list-main {
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+.list-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.list a.list-title {
+  color: var(--ink);
+}
+.amount {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.owed {
+  color: var(--accent);
+}
+.owes {
+  color: var(--owes);
+}
+
+/* The one focal point of the group page. */
+.balance-hero {
+  display: grid;
+  gap: var(--s2);
+}
+.balance-hero .figure {
+  font-family: var(--font-display);
+  font-size: var(--t-hero);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.live-status {
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--s1);
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+}
+.tabs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s3);
+  border-bottom: 3px solid transparent;
+  color: var(--muted);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.tabs a[aria-current='page'] {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.panel {
+  padding: var(--s4);
+  border-radius: var(--r2);
+  background: var(--surface);
+}
+.code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 0.08em;
+}
+
+/* Bars in the spending summary; the number beside each bar carries the value. */
+.bar-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface);
+  flex: 1 0 100%;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--accent);
+}
+
+/* Dialogs use the native element: focus is trapped inside and returns on close. */
+dialog {
+  width: min(100% - 2 * var(--s4), 30rem);
+  max-height: calc(100dvh - 2 * var(--s4));
+  padding: var(--s5);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  background: var(--bg);
+  color: var(--ink);
+}
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.55);
+}
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--s3);
+}
+
+/* Loading placeholders keep the height of what they replace, so nothing jumps. */
+.skeleton {
+  display: block;
+  height: 1.5rem;
+  border-radius: var(--r1);
+  background: var(--surface);
+  animation: pulse 1.2s ease-in-out infinite alternate;
+}
+.skeleton--hero {
+  height: 4.5rem;
+  max-width: 20rem;
+}
+.skeleton--row {
+  height: 3.25rem;
+}
+@keyframes pulse {
+  to {
+    opacity: 0.5;
+  }
+}
+
+.state {
+  display: grid;
+  justify-items: start;
+  gap: var(--s3);
+  padding-block: var(--s5);
+}
+
+.auth {
+  max-width: 24rem;
+  margin-inline: auto;
+  padding-block: var(--s7);
+}
+.auth .button {
+  width: 100%;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  color: var(--muted);
+  font-size: var(--t-sm);
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--line);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--s5);
+  translate: -50% 0;
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r1);
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 500;
+}

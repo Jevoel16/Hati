@@ -1,0 +1,117 @@
+/* Landing page only. Tokens and buttons come from base.css. */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--s3);
+}
+
+main {
+  display: grid;
+  gap: var(--s8);
+  padding-block: var(--s7) var(--s8);
+}
+
+.intro {
+  display: grid;
+  gap: var(--s4);
+  justify-items: start;
+}
+.intro h1 {
+  font-size: var(--t-hero);
+  line-height: 1;
+}
+.lede {
+  max-width: 34rem;
+  font-size: var(--t-lg);
+  color: var(--muted);
+}
+
+section {
+  display: grid;
+  gap: var(--s4);
+}
+
+/* The sample is the real balances layout with the demo group's numbers. */
+.sample {
+  margin: 0;
+  display: grid;
+  gap: var(--s2);
+}
+.sample-screen {
+  display: grid;
+  gap: var(--s3);
+  padding: var(--s5);
+  border-radius: var(--r2);
+  background: var(--surface);
+}
+.sample-group {
+  font-weight: 600;
+}
+.sample-figure {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3.25rem);
+  line-height: 1;
+  color: var(--accent);
+}
+.sample-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s1) var(--s4);
+  padding-block: var(--s3);
+  border-top: 1px solid var(--line);
+  font-weight: 600;
+}
+.sample-pay,
+figcaption {
+  color: var(--muted);
+  font-size: var(--t-sm);
+}
+.owed {
+  color: var(--accent);
+}
+.owes {
+  color: var(--owes);
+}
+
+.steps {
+  display: grid;
+  gap: var(--s3);
+  counter-reset: step;
+}
+.steps li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  counter-increment: step;
+}
+.steps li::before {
+  content: counter(step);
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  line-height: 1;
+  color: var(--accent);
+}
+
+.points {
+  display: grid;
+  gap: var(--s2);
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.faq {
+  display: grid;
+  gap: var(--s1);
+}
+.faq dt {
+  margin-top: var(--s3);
+  font-weight: 600;
+}
+
+.site-footer {
+  padding-block: var(--s5);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: var(--t-sm);
+}

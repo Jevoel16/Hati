@@ -1,0 +1,210 @@
+/* Design tokens and element defaults, shared by the landing page and the app. */
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --surface: #f2f5f3;
+  --ink: #16201c;
+  --muted: #4f5c56;
+  --line: #cfd7d3;
+  --accent: #0b6e5f;
+  --on-accent: #ffffff;
+  --accent-soft: #e3f1ee;
+  --owes: #9a3412;
+  --danger: #b3261e;
+
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 72px;
+
+  --r1: 6px;
+  --r2: 12px;
+
+  --t-sm: 0.875rem;
+  --t-md: 1rem;
+  --t-lg: 1.25rem;
+  --t-xl: 1.75rem;
+  --t-2xl: 2.5rem;
+  --t-hero: clamp(2.75rem, 10vw, 4.5rem);
+
+  --page: 46rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1412;
+    --surface: #17201d;
+    --ink: #e7eeeb;
+    --muted: #a7b4ae;
+    --line: #2e3b36;
+    --accent: #63d2ba;
+    --on-accent: #04211b;
+    --accent-soft: #12302a;
+    --owes: #ffb38a;
+    --danger: #ffb4ab;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--t-md);
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+h1 {
+  font-size: var(--t-2xl);
+}
+h2 {
+  font-size: var(--t-xl);
+}
+h3 {
+  font-size: var(--t-lg);
+}
+
+p,
+li,
+dd {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+ul,
+ol,
+dl {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.15em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--s4);
+  top: -100px;
+  z-index: 10;
+  padding: var(--s3) var(--s4);
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--r1);
+}
+.skip-link:focus {
+  top: var(--s2);
+}
+
+.page {
+  width: 100%;
+  max-width: var(--page);
+  margin-inline: auto;
+  padding-inline: var(--s4);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* Buttons: one filled primary per view, everything else is outlined or plain. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+  min-height: 44px;
+  padding: 0 var(--s4);
+  border: 1px solid var(--accent);
+  border-radius: var(--r1);
+  background: var(--accent);
+  color: var(--on-accent);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 120ms;
+}
+.button:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+.button--quiet {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink);
+  font-weight: 500;
+}
+.button--danger {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+  font-weight: 500;
+}
+.button--link {
+  min-height: 44px;
+  padding: 0 var(--s2);
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
