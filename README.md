@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="#about">About</a> · <a href="#features">Features</a> · <a href="#tech-stack">Tech Stack</a> · <a href="#getting-started">Getting Started</a> · <a href="#configuration">Configuration</a> · <a href="#usage">Usage</a> · <a href="#more">More</a> · <a href="#contributing">Contributing</a> · <a href="#license">License</a> · <a href="#author">Author</a>
+  <a href="#about">About</a> · <a href="#screenshots">Screenshots</a> · <a href="#features">Features</a> · <a href="#tech-stack">Tech Stack</a> · <a href="#getting-started">Getting Started</a> · <a href="#configuration">Configuration</a> · <a href="#usage">Usage</a> · <a href="#more">More</a> · <a href="#contributing">Contributing</a> · <a href="#license">License</a> · <a href="#author">Author</a>
 </p>
 
 ---
@@ -17,6 +17,20 @@
 ## About
 
 Hati (Filipino for "to split") is for housemates, project groups and friends who share costs and are tired of tracking them in a group chat. Everyone in a group records what they paid, Hati works out who owes whom to the centavo, and every member sees the balances change the moment an expense is added. It keeps records only and never moves money. Built as the ITE183 final project; the reasoning behind its main choices is in [docs/decisions.md](docs/decisions.md).
+
+## Screenshots
+
+<details>
+<summary><b>Screenshots</b></summary>
+
+<table>
+  <tr>
+    <td width="50%" align="center"><b>Group balances</b><br><a href="docs/images/balances.png"><img src="docs/images/balances.png" width="100%" alt="Group page showing You are owed 7,319.85 pesos, the Add expense button and each member's balance"></a></td>
+    <td width="50%" align="center"><b>Your groups</b><br><a href="docs/images/groups.png"><img src="docs/images/groups.png" width="100%" alt="Groups list with one group and forms to start or join a group"></a></td>
+  </tr>
+</table>
+
+</details>
 
 ## Features
 
