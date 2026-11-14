@@ -30,7 +30,10 @@ export function Dialog({
       onCancel={(event) => {
         if (!dismissable) event.preventDefault();
       }}
-      onClose={onClose}
+      // React StrictMode re-runs the effect in development; ignore the close it causes.
+      onClose={() => {
+        if (!ref.current?.open) onClose?.();
+      }}
     >
       <div className="stack">
         <h2 id={titleId}>{title}</h2>

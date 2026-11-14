@@ -72,6 +72,10 @@ export function BalancesTab() {
   const me = useUser();
   const payments = usePagedList<Settlement>(`/groups/${group.id}/settlements`, refreshKey);
   const canRecord = (ids: string[]) => group.role === 'admin' || ids.includes(me.id);
+  // People who left stay listed only while they still owe or are owed something.
+  const isShown = (b: { userId: string; netCentavos: number }) =>
+    b.netCentavos !== 0 ||
+    group.members.some((m) => m.userId === b.userId && m.status === 'active');
 
   return (
     <div className="stack stack--lg">
@@ -80,7 +84,7 @@ export function BalancesTab() {
           <>
             <Section title="Everyone’s balance">
               <ul className="list">
-                {data.balances.map((b) => (
+                {data.balances.filter(isShown).map((b) => (
                   <li key={b.userId}>
                     <span className="list-title">{nameOf(b.userId)}</span>
                     <span className={`amount ${balanceClass(b.netCentavos)}`}>
@@ -104,7 +108,7 @@ export function BalancesTab() {
                     <li key={`${p.fromUser}-${p.toUser}`}>
                       <span className="list-main">
                         {nameOf(p.fromUser)} {p.fromUser === me.id ? 'pay' : 'pays'}{' '}
-                        {nameOf(p.toUser).replace('You', 'you')}{' '}
+                        {nameOf(p.toUser, true)}{' '}
                         <span className="amount">{formatPeso(p.amountCentavos)}</span>
                       </span>
                       {canRecord([p.fromUser, p.toUser]) && (
@@ -139,7 +143,7 @@ export function BalancesTab() {
                     <li key={s.id}>
                       <div className="list-main">
                         <p>
-                          {nameOf(s.fromUser)} paid {nameOf(s.toUser).replace('You', 'you')}
+                          {nameOf(s.fromUser)} paid {nameOf(s.toUser, true)}
                         </p>
                         <p className="muted">{formatDay(s.settledOn)}</p>
                       </div>

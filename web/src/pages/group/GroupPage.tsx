@@ -16,7 +16,8 @@ export type GroupContext = {
   // Bumped on every change (ours or a live one); tabs pass it to their own loaders.
   refreshKey: number;
   refresh: () => void;
-  nameOf: (userId: string) => string;
+  // "You" at the start of a sentence, "you" inside one.
+  nameOf: (userId: string, inSentence?: boolean) => string;
   editExpense: (expense: Expense) => void;
   recordPayment: (prefill?: Payment) => void;
 };
@@ -71,9 +72,11 @@ export default function GroupPage() {
           balances,
           refreshKey,
           refresh,
-          nameOf: (userId) =>
+          nameOf: (userId, inSentence = false) =>
             userId === me.id
-              ? 'You'
+              ? inSentence
+                ? 'you'
+                : 'You'
               : (data.members.find((m) => m.userId === userId)?.name ?? 'Someone'),
           editExpense: (expense) => setDialog({ kind: 'expense', expense }),
           recordPayment: (prefill) => setDialog({ kind: 'payment', prefill }),
