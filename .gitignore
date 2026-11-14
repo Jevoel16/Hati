@@ -1,0 +1,12 @@
+node_modules/
+public/
+.data/
+.vercel/
+*.log
+
+.env
+.env.*
+!.env.example
+
+.claude/
+CLAUDE.md

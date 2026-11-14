@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hati: Phase 1 Project Proposal</title>
+<style>
+  @page { size: A4; margin: 22mm 20mm; }
+  :root { --ink: #1b1f24; --muted: #4a5360; --line: #c9d0d8; --accent: #0b6e5f; --fill: #f1f5f4; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.5; margin: 0; }
+  h1, h2, h3 { text-wrap: balance; line-height: 1.2; margin: 0; }
+  p, li { text-wrap: pretty; }
+  p { margin: 0 0 8pt; }
+  ul { margin: 0 0 8pt; padding-left: 16pt; }
+  li { margin-bottom: 3pt; }
+  .cover { height: 250mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+  .cover .course { font-size: 11pt; color: var(--muted); }
+  .cover h1 { font-size: 40pt; color: var(--accent); margin-bottom: 6pt; }
+  .cover .sub { font-size: 16pt; margin-bottom: 18pt; }
+  .cover .doc { font-size: 12pt; color: var(--muted); }
+  .cover dl { display: grid; grid-template-columns: 32mm 1fr; gap: 4pt 0; margin: 0; font-size: 11pt; }
+  .cover dt { color: var(--muted); }
+  .cover dd { margin: 0; }
+  section { page-break-before: always; }
+  section:first-of-type { page-break-before: auto; }
+  h2 { font-size: 17pt; color: var(--accent); padding-bottom: 5pt; border-bottom: 1.5pt solid var(--accent); margin-bottom: 12pt; }
+  h3 { font-size: 11.5pt; margin: 14pt 0 5pt; page-break-after: avoid; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 10pt; font-size: 9.5pt; page-break-inside: avoid; }
+  th, td { border: 0.75pt solid var(--line); padding: 5pt 6pt; text-align: left; vertical-align: top; }
+  th { background: var(--fill); font-weight: 600; }
+  .blank { background: #fff6d6; padding: 0 3pt; }
+  code { font-family: Consolas, monospace; font-size: 9.5pt; }
+  figure { margin: 10pt 0; page-break-inside: avoid; }
+  figcaption { font-size: 9pt; color: var(--muted); margin-top: 4pt; }
+  svg text { font-family: "Segoe UI", Arial, sans-serif; }
+  .keep { page-break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="course">ITE183 · Web Systems and Technologies</div>
+  <div>
+    <h1>Hati</h1>
+    <div class="sub">A shared expense splitter with live balances</div>
+    <div class="doc">Phase 1 Project Proposal</div>
+  </div>
+  <dl>
+    <dt>Group</dt><dd><span class="blank">[Group Name]</span></dd>
+    <dt>Members</dt><dd>4</dd>
+    <dt>Submitted</dt><dd>November 10, 2026</dd>
+  </dl>
+</div>
+
+<section>
+  <h2>Section A: Team Details &amp; Roles</h2>
+  <table>
+    <thead>
+      <tr><th style="width:24%">Name</th><th style="width:14%">ID Number</th><th style="width:22%">Role</th><th>Responsibilities</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="blank">[Member 1 Name]</span></td><td><span class="blank">[ID Number]</span></td>
+        <td>Project Lead / Full-Stack Integrator</td>
+        <td>Scope and schedule, repository and code review, Docker setup, CI/CD pipeline, deployment, connecting front end and back end.</td>
+      </tr>
+      <tr>
+        <td><span class="blank">[Member 2 Name]</span></td><td><span class="blank">[ID Number]</span></td>
+        <td>Front-End Developer</td>
+        <td>React pages and components, responsive layout, forms and client-side validation, accessibility, live updates in the interface.</td>
+      </tr>
+      <tr>
+        <td><span class="blank">[Member 3 Name]</span></td><td><span class="blank">[ID Number]</span></td>
+        <td>Back-End Developer</td>
+        <td>Express REST API, middleware, JWT authentication and authorization, WebSocket server, balance and settlement logic.</td>
+      </tr>
+      <tr>
+        <td><span class="blank">[Member 4 Name]</span></td><td><span class="blank">[ID Number]</span></td>
+        <td>Database &amp; QA Engineer</td>
+        <td>PostgreSQL schema and migrations, data validation and constraints, automated and manual testing, project documentation.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Group size</h3>
+  <p>The group has four members, which is within the standard size of three to five. No group-size justification is required.</p>
+  <h3>How the team works</h3>
+  <ul>
+    <li>Every member contributes code; roles name who owns and reviews each area, not who is limited to it.</li>
+    <li>Work is tracked in one shared GitHub repository, with each change reviewed by another member before it is merged.</li>
+    <li>The group meets weekly to check progress against the phase deadlines.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Section B: Project Concept &amp; Motivation</h2>
+
+  <h3>Working title</h3>
+  <p><b>Hati</b> (Filipino for "to split"): a shared expense splitter with live balances.</p>
+
+  <h3>Core functionality</h3>
+  <ul>
+    <li><b>Accounts.</b> Users sign up, verify their email and log in securely.</li>
+    <li><b>Groups.</b> A user creates a group (for example a boarding house, a project team or a trip) and invites others with a code or link. Each group has an admin and members.</li>
+    <li><b>Expenses.</b> Any member records an expense with the payer, amount, category, date and how it is split: equally, by exact amounts or by percentage.</li>
+    <li><b>Balances.</b> The system computes each member's net balance and reduces the group's debts to the fewest payments needed to settle.</li>
+    <li><b>Settlements.</b> Members record a payment made to another member, and the balances adjust.</li>
+    <li><b>Live monitoring.</b> Balances and an activity feed update in real time for everyone viewing the group, with no page refresh, through WebSockets.</li>
+    <li><b>Summaries.</b> Each group has a spending summary by category and by month.</li>
+  </ul>
+  <p>Hati keeps records only. It does not process or hold real money.</p>
+
+  <h3>Problem statement</h3>
+  <p>Students who share costs, such as housemates paying rent, utilities and groceries, project groups buying materials, or friends splitting a trip, usually track them in group chats, notes or memory. Entries get buried, arithmetic is done by hand and each person keeps a different version of the total. The result is forgotten debts, wrong amounts and uncomfortable disputes among people who live or work together. There is no single, current record that everyone in the group can see and trust.</p>
+
+  <h3>Why this project?</h3>
+  <ul>
+    <li><b>It solves a problem the team and its classmates have.</b> The intended users are easy to reach for feedback and testing.</li>
+    <li><b>It is a live data monitoring system built entirely in software.</b> Every member of a group watches the same balances change as expenses are added, with no hardware or sensors required.</li>
+    <li><b>It exercises the full course.</b> The system needs a RESTful API, server middleware, JWT authentication, a WebSocket server, a relational database with strict data integrity, containerized deployment and a CI/CD pipeline.</li>
+    <li><b>The scope fits four people and one semester.</b> The core (groups, expenses, balances, live updates) is small enough to finish and test properly, and summaries can grow if time allows.</li>
+    <li><b>Correctness matters.</b> Money calculations must be exact, which gives the team real practice in validation, database constraints and automated testing.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Section C: Technical &amp; Non-Technical Specifications</h2>
+
+  <h3>Technical specifications</h3>
+  <table>
+    <thead><tr><th style="width:20%">Layer</th><th style="width:28%">Choice</th><th>Details</th></tr></thead>
+    <tbody>
+      <tr><td>Front-End</td><td>React (built with Vite)</td><td>Single-page application with React Router; plain CSS with shared design tokens; the browser's native WebSocket API for live updates.</td></tr>
+      <tr><td>Back-End</td><td>Node.js with Express</td><td>RESTful API; middleware for input validation, rate limiting and error handling; JWT authentication stored in httpOnly cookies; passwords hashed with bcrypt; a WebSocket server (<code>ws</code>) that broadcasts balance and activity events to each group.</td></tr>
+      <tr><td>Database</td><td>PostgreSQL (relational)</td><td>Normalized schema with foreign keys and check constraints; amounts stored as whole centavos to avoid rounding errors; parameterized queries only.</td></tr>
+      <tr><td>Deployment</td><td>Docker, GitHub Actions, cloud hosting</td><td>Separate containers for the web client, API and database, run together with Docker Compose in development; GitHub Actions runs lint, tests and build on every push; front end on Vercel, API on Render, managed PostgreSQL (Render or Neon); HTTPS on all services.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="keep">
+  <h3>Database schema</h3>
+  <table>
+    <thead><tr><th style="width:22%">Table</th><th>Purpose and key columns</th></tr></thead>
+    <tbody>
+      <tr><td><code>users</code></td><td>Accounts: <code>id</code>, <code>name</code>, <code>email</code> (unique), <code>password_hash</code>, <code>email_verified_at</code>.</td></tr>
+      <tr><td><code>groups</code></td><td>Expense groups: <code>id</code>, <code>name</code>, <code>invite_code</code> (unique), <code>created_by</code>.</td></tr>
+      <tr><td><code>group_members</code></td><td>Membership and role: <code>group_id</code>, <code>user_id</code>, <code>role</code> (admin or member), <code>joined_at</code>.</td></tr>
+      <tr><td><code>expenses</code></td><td>One shared cost: <code>id</code>, <code>group_id</code>, <code>paid_by</code>, <code>amount_centavos</code>, <code>category</code>, <code>description</code>, <code>split_type</code>, <code>spent_on</code>.</td></tr>
+      <tr><td><code>expense_shares</code></td><td>Each member's part of an expense: <code>expense_id</code>, <code>user_id</code>, <code>share_centavos</code>. Shares must add up to the expense amount.</td></tr>
+      <tr><td><code>settlements</code></td><td>Payments between members: <code>id</code>, <code>group_id</code>, <code>from_user</code>, <code>to_user</code>, <code>amount_centavos</code>, <code>settled_on</code>.</td></tr>
+      <tr><td><code>activity_log</code></td><td>Feed of group events: <code>id</code>, <code>group_id</code>, <code>actor_id</code>, <code>action</code>, <code>created_at</code>.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 680 300" width="100%" role="img" aria-label="Entity relationship diagram of the seven tables">
+      <g fill="none" stroke="#4a5360" stroke-width="1.2">
+        <path d="M170 44 H275"/>
+        <path d="M405 44 H510"/>
+        <path d="M70 68 V136"/>
+        <path d="M130 68 V102 H310 V136"/>
+        <path d="M540 68 V102 H370 V136"/>
+        <path d="M600 68 V136"/>
+        <path d="M340 184 V232"/>
+      </g>
+      <g font-size="10" fill="#4a5360">
+        <text x="176" y="39">1</text><text x="262" y="39">N</text>
+        <text x="411" y="39">N</text><text x="498" y="39">1</text>
+        <text x="75" y="80">1</text><text x="75" y="131">N</text>
+        <text x="135" y="80">1</text><text x="315" y="131">N</text>
+        <text x="528" y="80">1</text><text x="375" y="131">N</text>
+        <text x="605" y="80">1</text><text x="605" y="131">N</text>
+        <text x="345" y="196">1</text><text x="345" y="228">N</text>
+      </g>
+      <g fill="#f1f5f4" stroke="#0b6e5f" stroke-width="1.2">
+        <rect x="40" y="20" width="130" height="48" rx="4"/>
+        <rect x="275" y="20" width="130" height="48" rx="4"/>
+        <rect x="510" y="20" width="130" height="48" rx="4"/>
+        <rect x="40" y="136" width="130" height="48" rx="4"/>
+        <rect x="275" y="136" width="130" height="48" rx="4"/>
+        <rect x="510" y="136" width="130" height="48" rx="4"/>
+        <rect x="275" y="232" width="130" height="48" rx="4"/>
+      </g>
+      <g font-size="12" font-weight="600" fill="#1b1f24" text-anchor="middle">
+        <text x="105" y="41">users</text>
+        <text x="340" y="41">group_members</text>
+        <text x="575" y="41">groups</text>
+        <text x="105" y="157">activity_log</text>
+        <text x="340" y="157">expenses</text>
+        <text x="575" y="157">settlements</text>
+        <text x="340" y="253">expense_shares</text>
+      </g>
+      <g font-size="9.5" fill="#4a5360" text-anchor="middle">
+        <text x="105" y="57">id, email</text>
+        <text x="340" y="57">group_id, user_id, role</text>
+        <text x="575" y="57">id, invite_code</text>
+        <text x="105" y="173">group_id, actor_id</text>
+        <text x="340" y="173">group_id, paid_by</text>
+        <text x="575" y="173">from_user, to_user</text>
+        <text x="340" y="269">expense_id, user_id</text>
+      </g>
+    </svg>
+    <figcaption>Main relationships (1 to many). Each of <code>expense_shares</code>, <code>settlements</code> and <code>activity_log</code> also references <code>users</code>.</figcaption>
+  </figure>
+
+  <h3>Non-technical specifications</h3>
+  <div class="keep">
+  <p><b>Target audience</b></p>
+  <ul>
+    <li>College students sharing a boarding house, dormitory or apartment.</li>
+    <li>Project, thesis and organization groups that buy materials together.</li>
+    <li>Friend groups splitting trips, meals and events.</li>
+  </ul>
+  </div>
+  <div class="keep">
+  <p><b>Core value proposition</b></p>
+  <p>One live, shared and accurate record of who owes whom, which every member sees update the moment an expense is added, and which shows the fewest payments needed to settle up.</p>
+  </div>
+  <div class="keep">
+  <p><b>UI/UX accessibility goals</b></p>
+  <ul>
+    <li>Text and controls meet WCAG 2.1 AA colour contrast.</li>
+    <li>Every action can be done with the keyboard alone, with a visible focus indicator.</li>
+    <li>Semantic HTML, labelled form fields and clear error messages that work with screen readers.</li>
+    <li>Mobile-first layout that works down to a 360px-wide screen, since most users will be on phones.</li>
+    <li>Light and dark modes, and reduced motion for users who request it.</li>
+    <li>Amounts owed and amounts due are shown with words and signs, never by colour alone.</li>
+    <li>Adding an expense takes one short form, so the app is quicker than typing into a group chat.</li>
+  </ul>
+  </div>
+</section>
+
+</body>
+</html>
