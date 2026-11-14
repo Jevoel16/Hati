@@ -4,6 +4,7 @@ import { useSession } from '../lib/session.tsx';
 import { Dialog } from './Dialog.tsx';
 import { PasswordForm } from './PasswordForm.tsx';
 import { ErrorState, Skeleton } from './States.tsx';
+import { ThemeToggle } from './ThemeToggle.tsx';
 import { Wordmark } from './Wordmark.tsx';
 
 // Wraps every signed-in page. Which screen shows depends on the session and account state:
@@ -52,6 +53,7 @@ export function Layout() {
           <Wordmark />
         </Link>
         <nav aria-label="Account">
+          <ThemeToggle />
           <Link to="/account" className="button button--link">
             {user.name}
           </Link>

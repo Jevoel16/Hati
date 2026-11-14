@@ -262,6 +262,15 @@ dialog::backdrop {
 .auth .button {
   width: 100%;
 }
+.auth-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+}
+.auth .theme-toggle {
+  width: auto;
+}
 .divider {
   display: flex;
   align-items: center;

@@ -13,6 +13,7 @@
     <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
     <link rel="icon" href="/favicon-48.png?v=2" type="image/png" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+    <script src="/theme.js"></script>
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hati" />
@@ -65,7 +66,16 @@
           <path class="wordmark-h-4" d="M20 13h6v13h12V13h12v38h-6V32H20z" /></svg
         >ati</a
       >
-      <a class="button button--quiet" href="/sign-in">Sign in</a>
+      <div class="site-header-actions">
+        <button type="button" class="button button--quiet theme-toggle" data-theme-toggle>
+          <svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 5h18v11H3z M8 20h8 M12 16v4" />
+          </svg>
+          <span class="visually-hidden">Theme: </span>
+          <span class="theme-toggle-label">System</span>
+        </button>
+        <a class="button button--quiet" href="/sign-in">Sign in</a>
+      </div>
     </header>
 
     <main id="main" class="page">

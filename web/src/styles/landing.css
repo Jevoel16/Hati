@@ -115,3 +115,9 @@ figcaption {
   color: var(--muted);
   font-size: var(--t-sm);
 }
+
+.site-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}

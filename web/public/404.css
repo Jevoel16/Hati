@@ -7,8 +7,19 @@
   --accent: #0b6e5f;
   --on-accent: #ffffff;
 }
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0e1412;
+  --ink: #e7eeeb;
+  --muted: #a7b4ae;
+  --accent: #63d2ba;
+  --on-accent: #04211b;
+}
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --bg: #0e1412;
     --ink: #e7eeeb;
     --muted: #a7b4ae;
