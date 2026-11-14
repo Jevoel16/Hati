@@ -57,7 +57,7 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 | Layer     | Tools                                                                          |
 | --------- | ------------------------------------------------------------------------------ |
 | Front end | React 19.3.1, React Router 7.18.5, Vite 8.3.8, plain CSS                       |
-| Back end  | Node.js 22.14.0, Express 5.3.0, ws 8.23.0, Zod 4.6.7, TypeScript 6.0.3         |
+| Back end  | Node.js 26.13.1, Express 5.3.0, ws 8.23.0, Zod 4.6.7, TypeScript 6.0.3         |
 | Database  | TiDB (MySQL protocol) through mysql2 3.24.6                                    |
 | Hosting   | Vercel (static site, API and WebSocket in one function), TiDB Cloud            |
 | Analytics | Vercel Web Analytics through @vercel/analytics 2.0.1                           |
@@ -65,7 +65,7 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 
 ## Getting Started
 
-You need Node.js 22 and a TiDB database (a free TiDB Cloud Serverless cluster works).
+You need Node.js 26 and a TiDB database (a free TiDB Cloud Serverless cluster works).
 
 ```bash
 npm install
