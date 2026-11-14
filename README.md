@@ -1,5 +1,6 @@
 <a id="top"></a>
 
+<p align="center"><img src="web/public/favicon.svg" width="96" alt="Hati logo"></p>
 <h1 align="center">Hati</h1>
 <p align="center">A shared expense splitter with live balances.</p>
 
