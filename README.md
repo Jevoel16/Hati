@@ -5,6 +5,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat" alt="License: MIT"></a>
+  <a href="https://github.com/Jevoel16/Hati/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Jevoel16/Hati/ci.yml?branch=main&label=CI&style=flat" alt="CI status"></a>
   <img src="https://img.shields.io/badge/platform-web-lightgrey?style=flat" alt="Platform: web">
 </p>
 
@@ -16,7 +17,7 @@
 
 ## About
 
-Hati (Filipino for "to split") is for housemates, project groups and friends who share costs and are tired of tracking them in a group chat. Everyone in a group records what they paid, Hati works out who owes whom to the centavo, and every member sees the balances change the moment an expense is added. It keeps records only and never moves money. Built as the ITE183 final project; the reasoning behind its main choices is in [docs/decisions.md](docs/decisions.md).
+Hati (Filipino for "to split") is for housemates, project groups and friends who share costs and are tired of tracking them in a group chat. Everyone in a group records what they paid, Hati works out who owes whom to the centavo, and every member sees the balances change the moment an expense is added. It keeps records only and never moves money. Try it at [hati.jevoelorbilla.dev](https://hati.jevoelorbilla.dev). Built as the ITE183 final project; the reasoning behind its main choices is in [docs/decisions.md](docs/decisions.md).
 
 ## Screenshots
 
