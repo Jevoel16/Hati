@@ -95,7 +95,7 @@ export async function startTestApp(options: { authLimit?: number; cronSecret?: s
       const text = await response.text();
       return {
         status: response.status,
-        body: text ? JSON.parse(text) : null,
+        body: response.headers.get('content-type')?.includes('json') ? JSON.parse(text) : null,
         location: response.headers.get('location'),
       };
     }
