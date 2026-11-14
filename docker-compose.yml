@@ -1,0 +1,31 @@
+# Development stack from the proposal: database, API and web client in separate containers.
+# Open http://localhost:8080 once all three are up.
+services:
+  db:
+    image: pingcap/tidb:v8.5.0
+    ports:
+      - '4000:4000'
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      APP_URL: http://localhost:8080
+      DATABASE_URL: mysql://root@db:4000/test
+      # Local-only placeholder; real deployments set their own secret.
+      JWT_SECRET: local-development-secret-change-me-0000
+    depends_on:
+      - db
+    restart: on-failure
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    ports:
+      - '8080:80'
+    depends_on:
+      - api

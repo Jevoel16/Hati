@@ -1,0 +1,66 @@
+/* Standalone: the 404 page is served as a static file, outside the Vite bundle. */
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --ink: #16201c;
+  --muted: #4f5c56;
+  --accent: #0b6e5f;
+  --on-accent: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1412;
+    --ink: #e7eeeb;
+    --muted: #a7b4ae;
+    --accent: #63d2ba;
+    --on-accent: #04211b;
+  }
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+}
+main {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+  max-width: 46rem;
+  margin-inline: auto;
+  padding: 48px 16px;
+}
+h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+p {
+  margin: 0;
+  color: var(--muted);
+}
+.wordmark {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.75rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
