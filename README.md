@@ -29,6 +29,14 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
     <td width="50%" align="center"><b>Group balances</b><br><a href="docs/images/balances.png"><img src="docs/images/balances.png" width="100%" alt="Group page showing You are owed 7,319.85 pesos, the Add expense button and each member's balance"></a></td>
     <td width="50%" align="center"><b>Your groups</b><br><a href="docs/images/groups.png"><img src="docs/images/groups.png" width="100%" alt="Groups list with one group and forms to start or join a group"></a></td>
   </tr>
+  <tr>
+    <td width="50%" align="center"><b>Sign in</b><br><a href="docs/images/sign-in.png"><img src="docs/images/sign-in.png" width="100%" alt="Sign-in page with Google and GitHub buttons above an email and password form"></a></td>
+    <td width="50%" align="center"><b>Expenses</b><br><a href="docs/images/expenses.png"><img src="docs/images/expenses.png" width="100%" alt="Expenses tab listing each expense with its date, category, who paid, your share and the amount"></a></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><b>Dark mode</b><br><a href="docs/images/dark-mode.png"><img src="docs/images/dark-mode.png" width="100%" alt="Group balances in dark mode"></a></td>
+    <td width="50%" align="center"><b>Phone (light and dark)</b><br><a href="docs/images/phone.png"><img src="docs/images/phone.png" width="100%" alt="Group balances at phone width, in light mode on the left and dark mode on the right"></a></td>
+  </tr>
 </table>
 
 </details>
