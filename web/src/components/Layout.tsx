@@ -4,6 +4,7 @@ import { useSession } from '../lib/session.tsx';
 import { Dialog } from './Dialog.tsx';
 import { PasswordForm } from './PasswordForm.tsx';
 import { ErrorState, Skeleton } from './States.tsx';
+import { Wordmark } from './Wordmark.tsx';
 
 // Wraps every signed-in page. Which screen shows depends on the session and account state:
 // loading, failed, signed out, password still to set, or the page itself.
@@ -47,8 +48,8 @@ export function Layout() {
         Skip to content
       </a>
       <header className="shell-header">
-        <Link to="/groups" className="wordmark">
-          Hati
+        <Link to="/groups" className="wordmark" aria-label="Hati">
+          <Wordmark />
         </Link>
         <nav aria-label="Account">
           <Link to="/account" className="button button--link">

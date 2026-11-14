@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { TextField } from '../components/Field.tsx';
 import { FormError, RemoteView, Skeleton, SubmitButton } from '../components/States.tsx';
+import { Wordmark } from '../components/Wordmark.tsx';
 import { api } from '../lib/api.ts';
 import { useDocumentTitle, useRemote, useSubmission } from '../lib/hooks.ts';
 import { useSession } from '../lib/session.tsx';
@@ -36,8 +37,8 @@ export default function SignIn() {
 
   return (
     <main id="main" className="page auth stack">
-      <Link to="/" className="wordmark" reloadDocument>
-        Hati
+      <Link to="/" className="wordmark" aria-label="Hati" reloadDocument>
+        <Wordmark />
       </Link>
       <h1>Sign in</h1>
       {params.get('error') === 'oauth' && (

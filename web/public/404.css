@@ -48,6 +48,20 @@ p {
   font-size: 1.75rem;
   color: var(--ink);
   text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+}
+.wordmark-h {
+  height: 0.75em;
+  width: auto;
+  margin-right: 0.06em;
+  stroke: var(--bg);
+}
+.wordmark-h-h {
+  fill: var(--ink);
+}
+.wordmark-h-4 {
+  fill: var(--accent);
 }
 .button {
   display: inline-flex;
