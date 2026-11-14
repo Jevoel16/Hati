@@ -67,3 +67,10 @@ Short records of the choices that are not obvious from the code.
 
 - **Choice:** the demo account cannot join real groups, real users cannot join demo groups, and its password cannot be changed. A daily cron wipes and rebuilds its sample group.
 - **Why:** its password is public by design.
+
+## 13. Page views with Vercel Web Analytics
+
+- **Problem:** once the site was live there was no way to tell whether anyone visited it or got past the landing page.
+- **Options:** Google Analytics (cookies, a consent banner and a third-party origin in the CSP); no analytics; Vercel Web Analytics.
+- **Choice:** Vercel Web Analytics. It sets no cookies, so no consent banner is needed, and its script and reports use `/_vercel/insights` on the site's own origin, so the CSP stays `'self'` only.
+- **Trade-off:** the landing page now loads one small script (it had none), and ad blockers hide some visits. Group ids, invite codes and query strings are removed from every reported address in the browser (`web/src/lib/analytics.ts`), so the reports show `/groups/[id]` and `/join/[code]`.

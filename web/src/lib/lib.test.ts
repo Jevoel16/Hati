@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { redactUrl } from './analytics.ts';
 import {
   liveTransition,
   reconnectDelayMs,
@@ -26,6 +27,25 @@ describe('parsePesos', () => {
 
   it('round-trips through the input format', () => {
     assert.equal(parsePesos(toPesoInput(125_050)), 125_050);
+  });
+});
+
+describe('redactUrl', () => {
+  it('hides group ids and invite codes', () => {
+    assert.equal(
+      redactUrl('https://hati.test/groups/42/expenses'),
+      'https://hati.test/groups/[id]/expenses',
+    );
+    assert.equal(redactUrl('https://hati.test/groups/42'), 'https://hati.test/groups/[id]');
+    assert.equal(redactUrl('https://hati.test/join/s3cret'), 'https://hati.test/join/[code]');
+  });
+
+  it('drops the query string and leaves other paths alone', () => {
+    assert.equal(
+      redactUrl('https://hati.test/sign-in?next=%2Fjoin%2Fs3cret#x'),
+      'https://hati.test/sign-in',
+    );
+    assert.equal(redactUrl('https://hati.test/groups'), 'https://hati.test/groups');
   });
 });
 

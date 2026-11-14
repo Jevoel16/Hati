@@ -11,8 +11,7 @@ How Hati meets each item of the project security checklist. File paths point to 
 | 5   | Password hashing             | bcrypt, cost 12 (`services/auth.ts`).                                                                                                                 |
 | 6   | No tokens in `localStorage`  | The session is an `httpOnly`, `Secure`, `SameSite=Lax` cookie (`middleware/session.ts`).                                                              |
 | 7   | Secrets stay on the server   | The web bundle reads no environment variables except the public site URL at build time.                                                               |
-| 8   | `.env` out of git            | `.gitignore` covers `.env*`; `.env.example` has placeholders only.                                                                                    |
-| 9   | No secrets in logs           | Only error messages and stacks are logged; request bodies, cookies and tokens never are.                                                              |
+| 8   | `.env` out of git            | `.gitignore` covers `.env*`; `.env.example` has placeholders only.                                                                                    |     | 9   | No secrets in logs | Only error messages and stacks are logged; request bodies, cookies and tokens never are. |
 | 10  | Parameterized SQL            | All values go through `?` placeholders (`server/src/db.ts`). The only interpolated names are constants in the code.                                   |
 | 11  | Server-side validation       | Zod schemas in `routes/schemas.ts` parse every body, parameter and query.                                                                             |
 | 12  | XSS                          | React escapes all output; no `dangerouslySetInnerHTML`. A strict CSP is set in `vercel.json` (pages) and by helmet (API).                             |
@@ -33,6 +32,10 @@ How Hati meets each item of the project security checklist. File paths point to 
 | 27  | Secret scanning              | gitleaks runs in CI.                                                                                                                                  |
 | 28  | Least privilege and data     | Use a database user limited to the Hati schema (see `docs/deploy.md`). Only name and email are stored; other members see names only.                  |
 | 29  | This document                | Linked from the README.                                                                                                                               |
+
+## Analytics
+
+Page views are counted with Vercel Web Analytics. It sets no cookies and needs no key in the bundle. Its script and reports use `/_vercel/insights` on the site's own origin, so the CSP allows no outside origin for it. Group ids, invite codes and query strings are stripped from every reported address before it leaves the browser (`web/src/lib/analytics.ts`).
 
 ## Known limits
 

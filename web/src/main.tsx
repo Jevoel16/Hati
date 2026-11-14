@@ -1,8 +1,10 @@
+import { Analytics } from '@vercel/analytics/react';
 import { Component, lazy, StrictMode, Suspense, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout.tsx';
 import { ErrorState, Skeleton } from './components/States.tsx';
+import { beforeSend } from './lib/analytics.ts';
 import { SessionProvider } from './lib/session.tsx';
 import Groups from './pages/Groups.tsx';
 import { Account, Join, NotFound } from './pages/Other.tsx';
@@ -42,6 +44,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { crashed: boolea
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <Analytics beforeSend={beforeSend} />
     <ErrorBoundary>
       <BrowserRouter>
         <SessionProvider>

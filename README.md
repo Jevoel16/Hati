@@ -51,6 +51,7 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 | Back end  | Node.js 22.14.0, Express 5.3.0, ws 8.23.0, Zod 4.6.7, TypeScript 6.0.3         |
 | Database  | TiDB (MySQL protocol) through mysql2 3.24.6                                    |
 | Hosting   | Vercel (static site, API and WebSocket in one function), TiDB Cloud            |
+| Analytics | Vercel Web Analytics through @vercel/analytics 2.0.1                           |
 | Tooling   | node:test through tsx 4.23.15, ESLint 10.15.0, Prettier 3.10.1, GitHub Actions |
 
 ## Getting Started
