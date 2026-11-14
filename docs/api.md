@@ -53,7 +53,7 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
 
 `GET /auth/:provider/start?next=/groups` (`google` or `github`) redirects to the provider. `GET /auth/:provider/callback` finishes sign-in, sets the cookie and redirects to `next`.
 
-`GET /auth/me`
+`GET /auth/me` returns `null` when nobody is signed in.
 
 ```json
 {

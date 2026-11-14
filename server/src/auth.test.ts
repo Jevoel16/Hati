@@ -60,7 +60,7 @@ describe('auth', { skip }, () => {
     assert.equal((await c.post('/api/auth/sign-out')).status, 204);
 
     const replay = await fetch(`${app.baseUrl}/api/auth/me`, { headers: { cookie: stolenCookie } });
-    assert.equal(replay.status, 401);
+    assert.equal(await replay.json(), null);
   });
 
   it('changing the password needs the current one and signs out other sessions', async () => {
@@ -79,15 +79,15 @@ describe('auth', { skip }, () => {
       currentPassword: PASSWORD,
     });
     assert.equal(changed.status, 204);
-    assert.equal((await second.get('/api/auth/me')).status, 200);
-    assert.equal((await first.get('/api/auth/me')).status, 401);
+    assert.ok((await second.get('/api/auth/me')).body);
+    assert.equal((await first.get('/api/auth/me')).body, null);
   });
 
   it('refuses an OAuth account whose email is not verified', async () => {
     const c = app.client();
     const callback = await app.oauthSignIn(c, 'unverified@example.com');
     assert.equal(callback.location, '/sign-in?error=oauth');
-    assert.equal((await c.get('/api/auth/me')).status, 401);
+    assert.equal((await c.get('/api/auth/me')).body, null);
   });
 
   it('refuses an OAuth callback whose state does not match', async () => {
@@ -95,7 +95,7 @@ describe('auth', { skip }, () => {
     await c.get('/api/auth/google/start');
     const callback = await c.get('/api/auth/google/callback?code=eve@example.com&state=forged');
     assert.equal(callback.location, '/sign-in?error=oauth');
-    assert.equal((await c.get('/api/auth/me')).status, 401);
+    assert.equal((await c.get('/api/auth/me')).body, null);
   });
 
   it('links GitHub to the existing account with the same verified email', async () => {

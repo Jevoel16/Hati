@@ -1,6 +1,7 @@
 import { Router, type CookieOptions, type Response } from 'express';
 import jwt from 'jsonwebtoken';
 import type { Ctx } from '../context.js';
+import type { SessionWithUser } from '../data/sessions.js';
 import { rateLimit } from '../middleware/guards.js';
 import { currentAuth, SESSION_COOKIE, sessionCookieOptions } from '../middleware/session.js';
 import { notFound } from '../errors.js';
@@ -39,9 +40,10 @@ export function authRoutes(ctx: Ctx): Router {
     });
   });
 
+  // Answers null instead of 401 when signed out, so a first visit logs no error in the console.
   router.get('/me', (_req, res) => {
-    const { user, authMethod } = currentAuth(res);
-    res.json({ user, authMethod });
+    const auth = res.locals.auth as SessionWithUser | undefined;
+    res.json(auth ? { user: auth.user, authMethod: auth.authMethod } : null);
   });
 
   router.post('/sign-in', limit, async (req, res) => {

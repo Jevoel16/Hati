@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-import { api, ApiError } from './api.ts';
+import { api } from './api.ts';
 import type { Remote } from './machines.ts';
 import type { Session } from './types.ts';
 
@@ -8,14 +8,7 @@ type SessionValue = { state: Remote<Session | null>; refresh: () => Promise<void
 
 const SessionContext = createContext<SessionValue | null>(null);
 
-async function loadSession(): Promise<Session | null> {
-  try {
-    return await api<Session>('GET', '/auth/me');
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 401) return null;
-    throw error;
-  }
-}
+const loadSession = () => api<Session | null>('GET', '/auth/me');
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<Remote<Session | null>>({ status: 'loading' });
