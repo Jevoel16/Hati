@@ -5,7 +5,7 @@
 <p align="center">A shared expense splitter with live balances.</p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat" alt="License: MIT"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Sprucetrap%20Source--Available%201.0-blue?style=flat" alt="License: Sprucetrap Source-Available 1.0"></a>
   <a href="https://github.com/Jevoel16/Hati/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Jevoel16/Hati/ci.yml?branch=main&label=CI&style=flat" alt="CI status"></a>
   <img src="https://img.shields.io/badge/platform-web-lightgrey?style=flat" alt="Platform: web">
 </p>
@@ -145,7 +145,7 @@ Work on a `feat/...` or `fix/...` branch and write [Conventional Commits](https:
 
 ## License
 
-[MIT](LICENSE) © 2026 Sprucetrap (github.com/Jevoel16).
+[Sprucetrap Source-Available License 1.0](LICENSE) © 2026 Sprucetrap (github.com/Jevoel16). Free for personal, educational and other non-commercial use with credit; commercial use needs written permission.
 
 ## Author
 

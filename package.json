@@ -2,7 +2,7 @@
   "name": "hati",
   "private": true,
   "description": "A shared expense splitter with live balances",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "engines": {
     "node": "26.x"
