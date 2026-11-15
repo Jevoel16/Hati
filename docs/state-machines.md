@@ -72,6 +72,23 @@ A second `submit` while `submitting` is ignored, so a double click cannot save t
 
 `closed` is final. Each `reconnecting` state schedules a retry after 1 s, 2 s, 4 s and so on, capped at 15 s.
 
+## QR scan (client)
+
+- **Owner:** `web/src/lib/machines.ts` (`scanReducer`), used by `web/src/components/QrScanner.tsx`
+- **Rendered by:** an exhaustive `switch` on the status for the dialog's message
+
+| State                             | Event         | Next state                  |
+| --------------------------------- | ------------- | --------------------------- |
+| `requesting`                      | `granted`     | `scanning`                  |
+| `requesting`                      | `denied`      | `denied`                    |
+| `requesting`                      | `unsupported` | `unsupported`               |
+| `requesting`, `scanning`          | `failed`      | `failed` (with `message`)   |
+| any but `found`                   | `decoded`     | `found` (with `text`)       |
+| `denied`, `unsupported`, `failed` | `failed`      | `failed` (a photo had none) |
+| `denied`, `unsupported`, `failed` | `retry`       | `requesting`                |
+
+`found` is final. The camera runs only in `requesting` and `scanning`; leaving them stops its tracks. A photo or screenshot can be decoded from every state except `found`, so a blocked camera never blocks scanning.
+
 ## Page shell (client)
 
 `web/src/components/Layout.tsx` picks one screen from the session and account state: loading, failed, signed out (redirect to sign-in), `password_pending` (username and password dialog), `username_pending` (username dialog) or the page, with an exhaustive `switch` on the account status.

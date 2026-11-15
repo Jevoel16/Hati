@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { redactUrl } from './analytics.ts';
+import { parseInviteCode } from './invite.ts';
 import {
   liveTransition,
   reconnectDelayMs,
   remoteReducer,
+  scanReducer,
   submissionReducer,
   type Remote,
+  type Scan,
   type Submission,
 } from './machines.ts';
 import { describeBalance, parsePesos, toPesoInput } from './money.ts';
@@ -145,5 +148,72 @@ describe('theme', () => {
     assert.equal(parseTheme('dark'), 'dark');
     assert.equal(parseTheme(null), 'system');
     assert.equal(parseTheme('purple'), 'system');
+  });
+});
+
+describe('parseInviteCode', () => {
+  it('reads a code from a bare code, a link or a scanned link', () => {
+    assert.equal(parseInviteCode(' abcd2345 '), 'ABCD2345');
+    assert.equal(parseInviteCode('https://hati.test/join/ABCD2345'), 'ABCD2345');
+    assert.equal(parseInviteCode('https://hati.test/join/ABCD2345/?ref=qr#x'), 'ABCD2345');
+  });
+
+  it('rejects anything that is not an invite', () => {
+    for (const bad of ['', 'ABCD234', 'ABCD23456', 'ABCD1345', 'https://hati.test/groups']) {
+      assert.equal(parseInviteCode(bad), null);
+    }
+  });
+});
+
+describe('scanReducer', () => {
+  const requesting: Scan = { status: 'requesting' };
+  const scanning: Scan = { status: 'scanning' };
+
+  it('opens the camera, then finds a code', () => {
+    assert.deepEqual(scanReducer(requesting, { type: 'granted' }), scanning);
+    assert.deepEqual(scanReducer(scanning, { type: 'decoded', text: 'hi' }), {
+      status: 'found',
+      text: 'hi',
+    });
+  });
+
+  it('ends in denied, unsupported or failed when the camera cannot start', () => {
+    assert.deepEqual(scanReducer(requesting, { type: 'denied' }), { status: 'denied' });
+    assert.deepEqual(scanReducer(requesting, { type: 'unsupported' }), {
+      status: 'unsupported',
+    });
+    assert.deepEqual(scanReducer(requesting, { type: 'failed', message: 'x' }), {
+      status: 'failed',
+      message: 'x',
+    });
+    assert.deepEqual(scanReducer(scanning, { type: 'failed', message: 'x' }), {
+      status: 'failed',
+      message: 'x',
+    });
+  });
+
+  it('still reads a photo after the camera fails, and can retry the camera', () => {
+    const denied: Scan = { status: 'denied' };
+    assert.deepEqual(scanReducer(denied, { type: 'decoded', text: 'hi' }), {
+      status: 'found',
+      text: 'hi',
+    });
+    assert.deepEqual(scanReducer(denied, { type: 'failed', message: 'no code' }), {
+      status: 'failed',
+      message: 'no code',
+    });
+    assert.deepEqual(scanReducer({ status: 'unsupported' }, { type: 'retry' }), requesting);
+    assert.deepEqual(
+      scanReducer({ status: 'failed', message: 'x' }, { type: 'retry' }),
+      requesting,
+    );
+  });
+
+  it('ignores events that do not apply', () => {
+    assert.equal(scanReducer(scanning, { type: 'granted' }), scanning);
+    assert.equal(scanReducer(requesting, { type: 'retry' }), requesting);
+    const found: Scan = { status: 'found', text: 'hi' };
+    assert.equal(scanReducer(found, { type: 'decoded', text: 'other' }), found);
+    assert.equal(scanReducer(found, { type: 'retry' }), found);
   });
 });

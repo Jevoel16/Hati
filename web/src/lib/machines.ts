@@ -1,4 +1,4 @@
-// The three client-side state machines. Each is a pure (state, event) -> state function;
+// The client-side state machines. Each is a pure (state, event) -> state function;
 // the tables are also written out in docs/state-machines.md.
 
 // --- Loading data from the API -------------------------------------------------------------
@@ -68,3 +68,42 @@ export const liveTransition = (state: LiveStatus, event: LiveEvent): LiveStatus 
 
 // 1s, 2s, 4s ... capped at 15s, so a server restart is not hammered by every open tab.
 export const reconnectDelayMs = (attempt: number): number => Math.min(1000 * 2 ** attempt, 15_000);
+
+// --- Scanning a QR code with the camera or a photo ----------------------------------------
+export type Scan =
+  | { status: 'requesting' }
+  | { status: 'scanning' }
+  | { status: 'found'; text: string }
+  | { status: 'denied' }
+  | { status: 'unsupported' }
+  | { status: 'failed'; message: string };
+
+export type ScanEvent =
+  | { type: 'granted' }
+  | { type: 'denied' }
+  | { type: 'unsupported' }
+  | { type: 'failed'; message: string }
+  | { type: 'decoded'; text: string }
+  | { type: 'retry' };
+
+export function scanReducer(state: Scan, event: ScanEvent): Scan {
+  // A photo can be decoded from any screen except the result, so it is accepted everywhere.
+  if (state.status === 'found') return state;
+  if (event.type === 'decoded') return { status: 'found', text: event.text };
+  switch (state.status) {
+    case 'requesting':
+      if (event.type === 'granted') return { status: 'scanning' };
+      if (event.type === 'denied') return { status: 'denied' };
+      if (event.type === 'unsupported') return { status: 'unsupported' };
+      if (event.type === 'failed') return { status: 'failed', message: event.message };
+      return state;
+    case 'scanning':
+      return event.type === 'failed' ? { status: 'failed', message: event.message } : state;
+    case 'denied':
+    case 'unsupported':
+    case 'failed':
+      if (event.type === 'retry') return { status: 'requesting' };
+      if (event.type === 'failed') return { status: 'failed', message: event.message };
+      return state;
+  }
+}

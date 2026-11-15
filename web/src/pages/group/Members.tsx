@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextField } from '../../components/Field.tsx';
+import { QrCode } from '../../components/QrCode.tsx';
 import { fieldError, FormError, SubmitButton } from '../../components/States.tsx';
 import { api } from '../../lib/api.ts';
 import { useSubmission } from '../../lib/hooks.ts';
@@ -27,7 +28,7 @@ function InviteSection() {
     <section className="panel stack stack--sm">
       <h2>Invite people</h2>
       <p>
-        Share this link, or the code <span className="code">{group.inviteCode}</span>.
+        Share this link or QR code, or the code <span className="code">{group.inviteCode}</span>.
       </p>
       <p className="code" style={{ overflowWrap: 'anywhere' }}>
         {link}
@@ -47,6 +48,12 @@ function InviteSection() {
           </button>
         )}
       </div>
+      <QrCode
+        text={link}
+        label={`QR code to join ${group.name}`}
+        fileName={`hati-invite-${group.inviteCode}`}
+        shareText={`Join ${group.name} on Hati: ${link}`}
+      />
       <p role="status">{copied && 'Link copied.'}</p>
       <FormError state={submission} />
     </section>

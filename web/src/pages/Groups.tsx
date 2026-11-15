@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { lazy, Suspense, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { TextField } from '../components/Field.tsx';
 import {
@@ -10,8 +10,12 @@ import {
 } from '../components/States.tsx';
 import { api } from '../lib/api.ts';
 import { useDocumentTitle, useRemote, useSubmission } from '../lib/hooks.ts';
+import { parseInviteCode } from '../lib/invite.ts';
 import { describeBalance } from '../lib/money.ts';
 import type { GroupListItem } from '../lib/types.ts';
+
+// The scanner and its QR decoder load only when someone opens it.
+const QrScanner = lazy(() => import('../components/QrScanner.tsx'));
 
 function NewGroupForm() {
   const navigate = useNavigate();
@@ -48,13 +52,19 @@ function JoinForm() {
   const navigate = useNavigate();
   const [code, setCode] = useState('');
   const [error, setError] = useState<string>();
+  const [scanning, setScanning] = useState(false);
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
-    // Accepts a pasted invite link as well as the bare code.
-    const cleaned = code.trim().split('/').pop()!.toUpperCase();
-    if (!/^[A-Z2-9]{8}$/.test(cleaned)) return setError('Invite codes are 8 letters and numbers.');
+    const cleaned = parseInviteCode(code);
+    if (!cleaned) return setError('Invite codes are 8 letters and numbers.');
     navigate(`/join/${cleaned}`);
+  };
+  const onScan = (text: string) => {
+    setScanning(false);
+    const cleaned = parseInviteCode(text);
+    if (cleaned) navigate(`/join/${cleaned}`);
+    else setError('That QR code is not a Hati invite.');
   };
 
   return (
@@ -66,9 +76,24 @@ function JoinForm() {
         onChange={(e) => setCode(e.target.value)}
         error={error}
       />
-      <button type="submit" className="button button--quiet">
-        Find group
-      </button>
+      <div className="row">
+        <button type="submit" className="button button--quiet">
+          Find group
+        </button>
+        <button type="button" className="button button--quiet" onClick={() => setScanning(true)}>
+          Scan QR code
+        </button>
+      </div>
+      {scanning && (
+        <Suspense fallback={null}>
+          <QrScanner
+            title="Scan an invite"
+            hint="Scan the QR code on the group’s Members tab, or choose a screenshot of it."
+            onScan={onScan}
+            onClose={() => setScanning(false)}
+          />
+        </Suspense>
+      )}
     </form>
   );
 }
