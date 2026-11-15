@@ -27,8 +27,8 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 
 <table>
   <tr>
-    <td width="50%" align="center"><b>Group balances</b><br><a href="docs/images/balances.png"><img src="docs/images/balances.png" width="100%" alt="Group page showing You are owed 7,319.85 pesos, the Add expense button and each member's balance"></a></td>
-    <td width="50%" align="center"><b>Your groups</b><br><a href="docs/images/groups.png"><img src="docs/images/groups.png" width="100%" alt="Groups list with one group and forms to start or join a group"></a></td>
+    <td width="50%" align="center"><b>Group balances</b><br><a href="docs/images/balances.png"><img src="docs/images/balances.png" width="100%" alt="Group page on desktop: the balance and Add expense button on the left, each member's balance and the settle-up payments with Show QR buttons on the right"></a></td>
+    <td width="50%" align="center"><b>Your groups</b><br><a href="docs/images/groups.png"><img src="docs/images/groups.png" width="100%" alt="Groups list beside the forms to start a group or join one by code or by scanning a QR code"></a></td>
   </tr>
   <tr>
     <td width="50%" align="center"><b>Sign in</b><br><a href="docs/images/sign-in.png"><img src="docs/images/sign-in.png" width="100%" alt="Sign-in page with Google and GitHub buttons with their logos, a theme switch, and an email and password form"></a></td>
