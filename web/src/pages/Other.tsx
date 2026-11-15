@@ -68,6 +68,7 @@ export function Account() {
     <div className="stack stack--lg">
       <section className="stack stack--sm">
         <h1>{user.name}</h1>
+        {user.username && <p>@{user.username}</p>}
         <p className="muted">{user.email}</p>
       </section>
       <section className="stack" aria-labelledby="password-heading">

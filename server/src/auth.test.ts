@@ -12,30 +12,73 @@ describe('auth', { skip }, () => {
   });
   after(() => app.stop());
 
-  it('first OAuth sign-in creates an account that must set a password', async () => {
+  it('first OAuth sign-in creates an account that must finish setup', async () => {
     const c = app.client();
     const callback = await app.oauthSignIn(c, 'ana@example.com');
     assert.equal(callback.location, '/groups');
 
     const me = await c.get('/api/auth/me');
     assert.equal(me.body.user.status, 'password_pending');
+    assert.equal(me.body.user.username, null);
     assert.equal(me.body.user.passwordHash, undefined);
 
     const blocked = await c.get('/api/groups');
     assert.equal(blocked.status, 403);
-    assert.equal(blocked.body.error.code, 'password_required');
+    assert.equal(blocked.body.error.code, 'setup_required');
+    assert.equal((await c.post('/api/auth/password', { password: PASSWORD })).status, 403);
   });
 
-  it('rejects a short password, then activates the account with a valid one', async () => {
+  it('setup needs a valid username and a password, then activates the account', async () => {
     const c = app.client();
     await app.oauthSignIn(c, 'ana@example.com');
-    const short = await c.post('/api/auth/password', { password: 'short' });
+    const badName = await c.post('/api/auth/setup', { username: 'a!', password: PASSWORD });
+    assert.equal(badName.status, 400);
+    assert.ok(badName.body.error.fields.username);
+
+    const noPassword = await c.post('/api/auth/setup', { username: 'ana' });
+    assert.equal(noPassword.status, 400);
+    assert.ok(noPassword.body.error.fields.password);
+
+    const short = await c.post('/api/auth/setup', { username: 'ana', password: 'short' });
     assert.equal(short.status, 400);
     assert.ok(short.body.error.fields.password);
 
-    assert.equal((await c.post('/api/auth/password', { password: PASSWORD })).status, 204);
-    assert.equal((await c.get('/api/auth/me')).body.user.status, 'active');
+    const ok = await c.post('/api/auth/setup', { username: ' Ana_1 ', password: PASSWORD });
+    assert.equal(ok.status, 204);
+    const me = await c.get('/api/auth/me');
+    assert.equal(me.body.user.status, 'active');
+    assert.equal(me.body.user.username, 'ana_1');
     assert.equal((await c.get('/api/groups')).status, 200);
+
+    const again = await c.post('/api/auth/setup', { username: 'ana_2', password: PASSWORD });
+    assert.equal(again.status, 409);
+  });
+
+  it('refuses a username someone already has', async () => {
+    const c = app.client();
+    await app.oauthSignIn(c, 'other@example.com');
+    const taken = await c.post('/api/auth/setup', { username: 'ANA_1', password: PASSWORD });
+    assert.equal(taken.status, 409);
+    assert.ok(taken.body.error.fields.username);
+    assert.equal((await c.get('/api/auth/me')).body.user.status, 'password_pending');
+  });
+
+  it('an older account without a username only has to choose one', async () => {
+    const { client: c } = await app.signUp('dee@example.com');
+    await app.ctx.db.query(
+      "UPDATE users SET status = 'username_pending', username = NULL WHERE email = ?",
+      ['dee@example.com'],
+    );
+    assert.equal((await c.get('/api/groups')).status, 403);
+
+    assert.equal((await c.post('/api/auth/setup', { username: 'dee_l' })).status, 204);
+    const me = await c.get('/api/auth/me');
+    assert.equal(me.body.user.status, 'active');
+    assert.equal(me.body.user.username, 'dee_l');
+    const signIn = await app
+      .client()
+      .post('/api/auth/sign-in', { email: 'dee@example.com', password: PASSWORD });
+    assert.equal(signIn.status, 204);
   });
 
   it('signs in with the password, and fails the same way for a wrong password or unknown email', async () => {

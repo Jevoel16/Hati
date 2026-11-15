@@ -2,13 +2,15 @@
 
 export const ACCOUNT_STATUS = Object.freeze({
   passwordPending: 'password_pending',
+  usernamePending: 'username_pending',
   active: 'active',
 } as const);
 export type AccountStatus = (typeof ACCOUNT_STATUS)[keyof typeof ACCOUNT_STATUS];
-export type AccountEvent = 'password_set' | 'password_changed';
+export type AccountEvent = 'setup_completed' | 'username_set' | 'password_changed';
 
 const accountTransitions: Record<AccountStatus, Partial<Record<AccountEvent, AccountStatus>>> = {
-  password_pending: { password_set: 'active' },
+  password_pending: { setup_completed: 'active' },
+  username_pending: { username_set: 'active' },
   active: { password_changed: 'active' },
 };
 

@@ -51,6 +51,7 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 - Recorded payments that adjust everyone's balance
 - Spending summary by category and by month
 - Sign-in with Google or GitHub, plus a public demo account
+- A username and password chosen on first sign-in
 - Phone-first layout with a system, light or dark theme switch and full keyboard access
 
 ## Tech Stack

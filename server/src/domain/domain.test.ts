@@ -157,12 +157,15 @@ describe('simplifyDebts', () => {
 
 describe('state machines', () => {
   it('account: setting a password activates a pending account', () => {
-    assert.equal(transitionAccount('password_pending', 'password_set'), 'active');
+    assert.equal(transitionAccount('password_pending', 'setup_completed'), 'active');
+    assert.equal(transitionAccount('username_pending', 'username_set'), 'active');
     assert.equal(transitionAccount('active', 'password_changed'), 'active');
   });
 
   it('account: rejects events that do not belong to the state', () => {
-    assert.throws(() => transitionAccount('active', 'password_set'), TransitionError);
+    assert.throws(() => transitionAccount('active', 'setup_completed'), TransitionError);
+    assert.throws(() => transitionAccount('active', 'username_set'), TransitionError);
+    assert.throws(() => transitionAccount('username_pending', 'setup_completed'), TransitionError);
     assert.throws(() => transitionAccount('password_pending', 'password_changed'), TransitionError);
   });
 

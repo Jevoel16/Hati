@@ -23,7 +23,11 @@ async function ensureDemoUser(ctx: Ctx, name: string, email: string, password: s
   let user = await users.findByEmail(ctx.db, email);
   if (!user) {
     const id = await users.create(ctx.db, { name, email, isDemo: true });
-    await users.setPassword(ctx.db, id, await bcrypt.hash(password, ctx.hashCost), 'active');
+    await users.completeSetup(ctx.db, id, {
+      username: email.split('@')[0]!,
+      passwordHash: await bcrypt.hash(password, ctx.hashCost),
+      status: 'active',
+    });
     user = await users.findById(ctx.db, id);
   }
   return user as User;

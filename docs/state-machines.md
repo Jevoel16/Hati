@@ -5,14 +5,15 @@ Every machine has one status field, one transition function and tests for each a
 ## Account
 
 - **Owner:** `server/src/domain/machines.ts` (`transitionAccount`), used by `server/src/services/auth.ts`
-- **Stored as:** `users.status` (`ENUM`); `password_hash` exists only in `active`
+- **Stored as:** `users.status` (`ENUM`); `password_hash` is missing only in `password_pending`, `username` is set only in `active`
 
 | State              | Event              | Next state |
 | ------------------ | ------------------ | ---------- |
-| `password_pending` | `password_set`     | `active`   |
+| `password_pending` | `setup_completed`  | `active`   |
+| `username_pending` | `username_set`     | `active`   |
 | `active`           | `password_changed` | `active`   |
 
-A `password_pending` account can only read its profile, set its password and sign out; every other route returns `403 password_required` (`requireActive`).
+A new Google or GitHub account starts in `password_pending` and finishes setup with a username and a password together. Accounts made before usernames existed were moved to `username_pending` by migration 002 and only choose a username. Until an account is `active` it can only read its profile, finish setup (`POST /auth/setup`) and sign out; every other route returns `403 setup_required` (`requireActive`).
 
 ## Group membership
 
@@ -73,4 +74,4 @@ A second `submit` while `submitting` is ignored, so a double click cannot save t
 
 ## Page shell (client)
 
-`web/src/components/Layout.tsx` picks one screen from the session and account state: loading, failed, signed out (redirect to sign-in), `password_pending` (the set-password dialog) or the page.
+`web/src/components/Layout.tsx` picks one screen from the session and account state: loading, failed, signed out (redirect to sign-in), `password_pending` (username and password dialog), `username_pending` (username dialog) or the page, with an exhaustive `switch` on the account status.

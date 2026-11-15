@@ -52,6 +52,12 @@ export function authRoutes(ctx: Ctx): Router {
     res.status(204).end();
   });
 
+  router.post('/setup', limit, async (req, res) => {
+    const token = await auth.completeSetup(ctx, currentAuth(res), schemas.setup.parse(req.body));
+    if (token) startSession(res, token);
+    res.status(204).end();
+  });
+
   router.post('/password', limit, async (req, res) => {
     const token = await auth.setPassword(ctx, currentAuth(res), schemas.password.parse(req.body));
     startSession(res, token);

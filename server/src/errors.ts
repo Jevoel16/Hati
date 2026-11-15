@@ -17,4 +17,6 @@ export const forbidden = (message = 'You are not allowed to do that.') =>
   new AppError(403, 'forbidden', message);
 // Also used when the caller is not a member, so a group's existence is not revealed.
 export const notFound = (what = 'Page') => new AppError(404, 'not_found', `${what} not found.`);
+export const setupRequired = () =>
+  new AppError(403, 'setup_required', 'Finish setting up your account to continue.');
 export const conflict = (message: string) => new AppError(409, 'conflict', message);

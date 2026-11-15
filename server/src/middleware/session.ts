@@ -2,7 +2,7 @@ import type { CookieOptions, RequestHandler, Response } from 'express';
 import type { Config } from '../config.js';
 import type { Ctx } from '../context.js';
 import type { SessionWithUser } from '../data/sessions.js';
-import { AppError, unauthorized } from '../errors.js';
+import { setupRequired, unauthorized } from '../errors.js';
 import { resolveSession, TOKEN_MAX_AGE_SECONDS } from '../services/auth.js';
 
 export const SESSION_COOKIE = 'hati_session';
@@ -31,10 +31,8 @@ export function currentAuth(res: Response): SessionWithUser {
 
 export const currentUser = (res: Response) => currentAuth(res).user;
 
-// An account that has not set its password yet may only do that, or sign out.
+// An account still in setup may only read its profile, finish setup, or sign out.
 export const requireActive: RequestHandler = (_req, res, next) => {
-  if (currentUser(res).status !== 'active') {
-    throw new AppError(403, 'password_required', 'Set a password to continue.');
-  }
+  if (currentUser(res).status !== 'active') throw setupRequired();
   next();
 };

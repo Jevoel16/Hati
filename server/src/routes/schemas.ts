@@ -19,8 +19,20 @@ export const signIn = z.object({
   password: z.string().max(200),
 });
 
+export const USERNAME_PATTERN = /^[a-z0-9_]{3,20}$/;
+const usernameRule = 'Use 3 to 20 lowercase letters, numbers or underscores.';
+const newPassword = z
+  .string()
+  .min(PASSWORD_MIN_LENGTH, `Use at least ${PASSWORD_MIN_LENGTH} characters.`);
+
+// The password is required by the service only when the account has none yet.
+export const setup = z.object({
+  username: z.string(usernameRule).trim().toLowerCase().regex(USERNAME_PATTERN, usernameRule),
+  password: newPassword.optional(),
+});
+
 export const password = z.object({
-  password: z.string().min(PASSWORD_MIN_LENGTH, `Use at least ${PASSWORD_MIN_LENGTH} characters.`),
+  password: newPassword,
   currentPassword: z.string().max(200).optional(),
 });
 

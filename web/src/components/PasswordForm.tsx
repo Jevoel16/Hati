@@ -7,7 +7,7 @@ import { fieldError, FormError, SubmitButton } from './States.tsx';
 
 const MIN_LENGTH = 10;
 
-// Used for the first password (after OAuth sign-up) and for changing it later.
+// Changes the password on the account page. The first password is set by SetupForm.
 export function PasswordForm({
   askCurrent,
   submitLabel,

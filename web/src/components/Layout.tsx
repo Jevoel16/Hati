@@ -1,14 +1,39 @@
 import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api.ts';
 import { useSession } from '../lib/session.tsx';
+import type { User } from '../lib/types.ts';
 import { Dialog } from './Dialog.tsx';
-import { PasswordForm } from './PasswordForm.tsx';
+import { SetupForm } from './SetupForm.tsx';
 import { ErrorState, Skeleton } from './States.tsx';
 import { ThemeToggle } from './ThemeToggle.tsx';
 import { Wordmark } from './Wordmark.tsx';
 
 // Wraps every signed-in page. Which screen shows depends on the session and account state:
-// loading, failed, signed out, password still to set, or the page itself.
+// loading, failed, signed out, account setup still to finish, or the page itself.
+function renderPage(user: User) {
+  switch (user.status) {
+    case 'password_pending':
+      return (
+        <Dialog title="Finish setting up your account" dismissable={false}>
+          <p>
+            You signed in with Google or GitHub. Choose a username, and a password so you can always
+            get into Hati with {user.email}.
+          </p>
+          <SetupForm needsPassword />
+        </Dialog>
+      );
+    case 'username_pending':
+      return (
+        <Dialog title="Choose a username" dismissable={false}>
+          <p>Hati now gives every account a username. Pick yours to continue.</p>
+          <SetupForm needsPassword={false} />
+        </Dialog>
+      );
+    case 'active':
+      return <Outlet />;
+  }
+}
+
 export function Layout() {
   const { state, refresh } = useSession();
   const location = useLocation();
@@ -62,19 +87,7 @@ export function Layout() {
           </button>
         </nav>
       </header>
-      <main id="main">
-        {user.status === 'password_pending' ? (
-          <Dialog title="Set a password to continue" dismissable={false}>
-            <p>
-              You signed in with Google or GitHub. Choose a password too, so you can always get into
-              Hati with {user.email}.
-            </p>
-            <PasswordForm askCurrent={false} submitLabel="Save and continue" />
-          </Dialog>
-        ) : (
-          <Outlet />
-        )}
-      </main>
+      <main id="main">{renderPage(user)}</main>
     </div>
   );
 }

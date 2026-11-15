@@ -14,14 +14,14 @@ Every error has the same shape:
 }
 ```
 
-| Status | Code                                  | Meaning                                               |
-| ------ | ------------------------------------- | ----------------------------------------------------- |
-| 400    | `validation_error`                    | A field is wrong; `fields` says which                 |
-| 401    | `unauthorized`, `invalid_credentials` | Not signed in, or wrong email/password                |
-| 403    | `forbidden`, `password_required`      | Not allowed, or the account must set a password first |
-| 404    | `not_found`                           | Missing, or you are not a member                      |
-| 409    | `conflict`                            | The action is not possible right now                  |
-| 429    | `rate_limited`                        | Too many attempts; see `Retry-After`                  |
+| Status | Code                                  | Meaning                                             |
+| ------ | ------------------------------------- | --------------------------------------------------- |
+| 400    | `validation_error`                    | A field is wrong; `fields` says which               |
+| 401    | `unauthorized`, `invalid_credentials` | Not signed in, or wrong email/password              |
+| 403    | `forbidden`, `setup_required`         | Not allowed, or the account must finish setup first |
+| 404    | `not_found`                           | Missing, or you are not a member                    |
+| 409    | `conflict`                            | The action is not possible right now                |
+| 429    | `rate_limited`                        | Too many attempts; see `Retry-After`                |
 
 Writes (anything but `GET`) must carry this site's `Origin` header, which browsers add themselves.
 
@@ -60,6 +60,7 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
   "user": {
     "id": "9b2f…",
     "name": "Ana",
+    "username": "ana",
     "email": "ana@example.com",
     "status": "active",
     "isDemo": false
@@ -74,7 +75,13 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
 { "email": "ana@example.com", "password": "correct-horse-battery" }
 ```
 
-`POST /auth/password` → `204`. Sets the first password, or changes it (`currentPassword` is needed unless the session came from Google or GitHub).
+`POST /auth/setup` → `204`. Finishes a new account: `username` (3 to 20 lowercase letters, numbers or underscores, unique, cannot be changed) and, for an account with no password yet, `password`. `409` with `fields.username` when the username is taken, `409` when the account is already set up.
+
+```json
+{ "username": "ana", "password": "correct-horse-battery" }
+```
+
+`POST /auth/password` → `204`. Changes the password of a set-up account (`currentPassword` is needed unless the session came from Google or GitHub).
 
 ```json
 { "password": "a-new-long-password", "currentPassword": "correct-horse-battery" }

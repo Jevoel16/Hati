@@ -114,11 +114,11 @@ export async function startTestApp(options: { authLimit?: number; cronSecret?: s
     return c.get(`/api/auth/${provider}/callback?code=${encodeURIComponent(email)}&state=${state}`);
   }
 
-  // A fully set-up account: signed in through OAuth, password chosen.
+  // A fully set-up account: signed in through OAuth, username and password chosen.
   async function signUp(email: string, password = 'correct-horse-battery') {
     const c = client();
     await oauthSignIn(c, email);
-    await c.post('/api/auth/password', { password });
+    await c.post('/api/auth/setup', { username: email.split('@')[0], password });
     const me = await c.get('/api/auth/me');
     return { client: c, id: me.body.user.id as string };
   }

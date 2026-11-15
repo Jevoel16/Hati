@@ -3,8 +3,9 @@
 export type User = {
   id: string;
   name: string;
+  username: string | null;
   email: string;
-  status: 'password_pending' | 'active';
+  status: 'password_pending' | 'username_pending' | 'active';
   isDemo: boolean;
 };
 export type Session = { user: User; authMethod: 'oauth' | 'password' };
