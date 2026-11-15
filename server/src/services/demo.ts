@@ -66,8 +66,12 @@ export async function resetDemo(ctx: Ctx): Promise<void> {
     mates.push(await ensureDemoUser(ctx, mate.name, mate.email, password));
   }
   const [bea, carlo, dana] = mates as [User, User, User];
+  // Two sample methods each, so the payer gets to pick one.
   for (const person of [demo, ...mates]) {
-    await users.setPaymentQr(ctx.db, person.id, sampleQrPh(person.name));
+    await users.removeAllPaymentQrs(ctx.db, person.id);
+    for (const label of ['GCash', 'Landbank']) {
+      await users.addPaymentQr(ctx.db, person.id, { label, payload: sampleQrPh(person.name) });
+    }
   }
 
   await groups.removeCreatedBy(ctx.db, demo.id);

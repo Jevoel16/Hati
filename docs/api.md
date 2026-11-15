@@ -89,19 +89,19 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
 
 `POST /auth/sign-out` → `204`
 
-`GET /auth/payment-qr` returns the payee name read from your saved payment QR, or `null`.
+`GET /auth/payment-qrs` lists your saved payment QRs, oldest first, with the payee name read from each. The QR text itself is not returned.
 
 ```json
-{ "payeeName": "ANA REYES" }
+{ "methods": [{ "id": "5c1e…", "label": "GCash", "payeeName": "ANA REYES" }] }
 ```
 
-`PUT /auth/payment-qr` saves your QR Ph text (GCash, Maya or a bank's InstaPay QR, at most 512 characters), decoded in the browser. Returns the payee name as above. `400` with `fields.payload` when it is not a valid QR Ph in pesos, `403` for the demo account.
+`POST /auth/payment-qrs` saves one QR Ph (GCash, Maya or a bank's InstaPay QR, at most 512 characters), decoded in the browser, under a name of 1 to 40 characters. Returns `201` with the new method as above. `400` with `fields.payload` when it is not a valid QR Ph in pesos, `fields.label` when you already use that name, or a plain `400` past 5 QRs; `403` for the demo account.
 
 ```json
-{ "payload": "00020101021127…5303608…5802PH5909ANA REYES…6304A1B2" }
+{ "label": "GCash", "payload": "00020101021127…5303608…5802PH5909ANA REYES…6304A1B2" }
 ```
 
-`DELETE /auth/payment-qr` → `204` (`403` for the demo account).
+`DELETE /auth/payment-qrs/:id` → `204`. `404` when it is not one of yours, `403` for the demo account.
 
 ## Groups
 
@@ -187,13 +187,19 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
 }
 ```
 
-`GET /groups/:id/payment-qr?from=<userId>&to=<userId>` returns the payee's QR with the exact amount of that settle-up payment filled in. The amount comes from the current `payments` above, never from the request. `404` when there is no such payment or the payee has no payment QR.
+`GET /groups/:id/payment-qr?from=<userId>&to=<userId>` returns every QR the payee saved, each with the exact amount of that settle-up payment filled in, so the payer can pick one. The amount comes from the current `payments` above, never from the request. `404` when there is no such payment or the payee has no payment QR.
 
 ```json
 {
-  "payload": "00020101021227…54066.665303608…6304C3D4",
   "amountCentavos": 666,
-  "payeeName": "ANA REYES"
+  "methods": [
+    {
+      "id": "5c1e…",
+      "label": "GCash",
+      "payeeName": "ANA REYES",
+      "payload": "00020101021227…54066.665303608…6304C3D4"
+    }
+  ]
 }
 ```
 

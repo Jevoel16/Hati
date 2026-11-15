@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Dialog } from '../../components/Dialog.tsx';
 import { QrCode } from '../../components/QrCode.tsx';
 import { RemoteView } from '../../components/States.tsx';
@@ -24,24 +25,7 @@ export default function PaymentQrDialog({
   return (
     <Dialog title={sentence} onClose={onClose}>
       <RemoteView state={qr} onRetry={reload}>
-        {(data) => (
-          <div className="stack">
-            <p className="figure-sm num">{formatPeso(data.amountCentavos)}</p>
-            <p>
-              Scan with GCash, Maya or any InstaPay banking app. It pays{' '}
-              <strong>{data.payeeName}</strong>; check the name and amount before you confirm.
-            </p>
-            <QrCode
-              text={data.payload}
-              label={`Payment QR for ${formatPeso(data.amountCentavos)} to ${data.payeeName}`}
-              fileName={`hati-pay-${data.amountCentavos}`}
-              shareText={`${sentence} ${formatPeso(data.amountCentavos)} for ${group.name}. Scan this QR to pay.`}
-            />
-            <p className="muted">
-              Hati does not move money. Once it is paid, use Mark as paid to update the balances.
-            </p>
-          </div>
-        )}
+        {(data) => <PayWith data={data} sentence={sentence} groupName={group.name} />}
       </RemoteView>
       <div className="dialog-actions">
         <button type="button" className="button button--quiet" onClick={onClose}>
@@ -49,5 +33,58 @@ export default function PaymentQrDialog({
         </button>
       </div>
     </Dialog>
+  );
+}
+
+// The payee may have several wallets or banks; the payer picks the one they also use.
+function PayWith({
+  data,
+  sentence,
+  groupName,
+}: {
+  data: PaymentQr;
+  sentence: string;
+  groupName: string;
+}) {
+  const [chosenId, setChosenId] = useState(data.methods[0]!.id);
+  const method = data.methods.find((m) => m.id === chosenId) ?? data.methods[0]!;
+  const amount = formatPeso(data.amountCentavos);
+
+  return (
+    <div className="stack">
+      <p className="figure-sm num">{amount}</p>
+      {data.methods.length > 1 && (
+        <fieldset className="stack stack--sm">
+          <legend className="legend">Pay with</legend>
+          <div className="choice-row">
+            {data.methods.map((m) => (
+              <label key={m.id} className="choice">
+                <input
+                  type="radio"
+                  name="pay-with"
+                  checked={m.id === method.id}
+                  onChange={() => setChosenId(m.id)}
+                />
+                {m.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
+      <p>
+        Scan with {method.label} or any InstaPay banking app. It pays{' '}
+        <strong>{method.payeeName}</strong>; check the name and amount before you confirm.
+      </p>
+      <QrCode
+        key={method.id}
+        text={method.payload}
+        label={`${method.label} payment QR for ${amount} to ${method.payeeName}`}
+        fileName={`hati-pay-${method.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${data.amountCentavos}`}
+        shareText={`${sentence} ${amount} for ${groupName}. Scan this ${method.label} QR to pay.`}
+      />
+      <p className="muted">
+        Hati does not move money. Once it is paid, use Mark as paid to update the balances.
+      </p>
+    </div>
   );
 }

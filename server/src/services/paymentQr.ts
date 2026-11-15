@@ -8,34 +8,55 @@ import { groupBalances, requireMember } from './groups.js';
 
 const NOT_QR_PH =
   'That is not a QR Ph payment code. Use the QR from GCash, Maya or your bank’s InstaPay.';
+const DEMO_FIXED = 'The demo account keeps its sample payment QRs.';
+export const MAX_PAYMENT_QRS = 5;
 
 function requireOwnAccount(user: User) {
   if (user.status !== 'active') throw setupRequired();
 }
 
-export async function getOwnQr(ctx: Ctx, user: User) {
+// Rows whose text no longer parses are left out rather than shown broken.
+function describe(rows: users.PaymentQrRow[]) {
+  return rows.flatMap((row) => {
+    const parsed = parseQrPh(row.payload);
+    return parsed ? [{ ...row, payeeName: parsed.payeeName }] : [];
+  });
+}
+
+export async function listOwnQrs(ctx: Ctx, user: User) {
   requireOwnAccount(user);
-  const payload = await users.findPaymentQr(ctx.db, user.id);
-  return payload ? parseQrPh(payload) : null;
+  const methods = describe(await users.listPaymentQrs(ctx.db, user.id));
+  return methods.map(({ id, label, payeeName }) => ({ id, label, payeeName }));
 }
 
 // Stores the text only; the image was decoded in the browser and never uploaded.
-export async function saveOwnQr(ctx: Ctx, user: User, payload: string) {
+export async function addOwnQr(ctx: Ctx, user: User, input: { label: string; payload: string }) {
   requireOwnAccount(user);
-  if (user.isDemo) throw forbidden('The demo account keeps its sample payment QR.');
-  const parsed = parseQrPh(payload);
+  if (user.isDemo) throw forbidden(DEMO_FIXED);
+  const parsed = parseQrPh(input.payload);
   if (!parsed) throw badRequest(NOT_QR_PH, { payload: NOT_QR_PH });
-  await users.setPaymentQr(ctx.db, user.id, payload.trim());
-  return parsed;
+  const existing = await users.listPaymentQrs(ctx.db, user.id);
+  if (existing.length >= MAX_PAYMENT_QRS) {
+    throw badRequest(`You can save up to ${MAX_PAYMENT_QRS} payment QRs. Remove one first.`);
+  }
+  const label = input.label.trim();
+  if (existing.some((qr) => qr.label.toLowerCase() === label.toLowerCase())) {
+    const taken = `You already have a QR named ${label}. Pick another name.`;
+    throw badRequest(taken, { label: taken });
+  }
+  const id = await users.addPaymentQr(ctx.db, user.id, { label, payload: input.payload.trim() });
+  return { id, label, payeeName: parsed.payeeName };
 }
 
-export async function removeOwnQr(ctx: Ctx, user: User) {
+export async function removeOwnQr(ctx: Ctx, user: User, id: string) {
   requireOwnAccount(user);
-  if (user.isDemo) throw forbidden('The demo account keeps its sample payment QR.');
-  await users.setPaymentQr(ctx.db, user.id, null);
+  if (user.isDemo) throw forbidden(DEMO_FIXED);
+  const owned = await users.listPaymentQrs(ctx.db, user.id);
+  if (!owned.some((qr) => qr.id === id)) throw notFound('Payment QR');
+  await users.removePaymentQr(ctx.db, user.id, id);
 }
 
-// The amount comes from the group's current settle-up plan, never from the request.
+// Every QR the payee saved, each with the amount from the group's current settle-up plan.
 export async function getPaymentQr(
   ctx: Ctx,
   user: User,
@@ -49,12 +70,15 @@ export async function getPaymentQr(
     (p) => p.fromUser === fromUser && p.toUser === toUser,
   );
   if (!payment) throw notFound('Payment');
-  const payload = await users.findPaymentQr(ctx.db, toUser);
-  const parsed = payload && parseQrPh(payload);
-  if (!payload || !parsed) throw notFound('Payment QR');
+  const methods = describe(await users.listPaymentQrs(ctx.db, toUser));
+  if (methods.length === 0) throw notFound('Payment QR');
   return {
-    payload: withAmount(payload, payment.amountCentavos),
     amountCentavos: payment.amountCentavos,
-    payeeName: parsed.payeeName,
+    methods: methods.map((m) => ({
+      id: m.id,
+      label: m.label,
+      payeeName: m.payeeName,
+      payload: withAmount(m.payload, payment.amountCentavos),
+    })),
   };
 }

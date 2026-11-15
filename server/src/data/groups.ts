@@ -106,7 +106,7 @@ export async function findMembership(
 export async function listMembers(q: Queryable, groupId: string): Promise<Member[]> {
   const rows = await q.query<Omit<Member, 'hasPaymentQr'> & { hasPaymentQr: number }>(
     `SELECT m.user_id AS userId, u.name, m.role, m.status,
-            u.payment_qr IS NOT NULL AS hasPaymentQr
+            EXISTS (SELECT 1 FROM payment_qrs p WHERE p.user_id = m.user_id) AS hasPaymentQr
      FROM group_members m JOIN users u ON u.id = m.user_id
      WHERE m.group_id = ?
      ORDER BY m.joined_at, u.name`,

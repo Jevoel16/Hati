@@ -65,17 +65,18 @@ export function authRoutes(ctx: Ctx): Router {
     res.status(204).end();
   });
 
-  router.get('/payment-qr', async (_req, res) => {
-    res.json(await paymentQr.getOwnQr(ctx, currentAuth(res).user));
+  router.get('/payment-qrs', async (_req, res) => {
+    res.json({ methods: await paymentQr.listOwnQrs(ctx, currentAuth(res).user) });
   });
 
-  router.put('/payment-qr', limit, async (req, res) => {
-    const { payload } = schemas.paymentQr.parse(req.body);
-    res.json(await paymentQr.saveOwnQr(ctx, currentAuth(res).user, payload));
+  router.post('/payment-qrs', limit, async (req, res) => {
+    const input = schemas.paymentQr.parse(req.body);
+    res.status(201).json(await paymentQr.addOwnQr(ctx, currentAuth(res).user, input));
   });
 
-  router.delete('/payment-qr', async (_req, res) => {
-    await paymentQr.removeOwnQr(ctx, currentAuth(res).user);
+  router.delete('/payment-qrs/:id', async (req, res) => {
+    const id = schemas.id.parse(req.params.id);
+    await paymentQr.removeOwnQr(ctx, currentAuth(res).user, id);
     res.status(204).end();
   });
 

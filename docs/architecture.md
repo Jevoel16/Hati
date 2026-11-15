@@ -131,11 +131,12 @@ flowchart LR
 
 ## Data model
 
-From `server/migrations/` (001 creates the tables, 002 adds usernames, 003 adds payment QRs).
+From `server/migrations/` (001 creates the tables, 002 adds usernames, 003 adds a payment QR, 004 moves it to `payment_qrs` so a member can save several).
 
 ```mermaid
 erDiagram
   users ||--o{ sessions : "signs in with"
+  users ||--o{ payment_qrs : "gets paid through"
   users ||--o{ group_members : "belongs through"
   groups ||--o{ group_members : has
   groups ||--o{ expenses : has
@@ -151,7 +152,6 @@ erDiagram
     varchar email UK
     varchar username UK
     enum status "password_pending, username_pending, active"
-    varchar payment_qr "QR Ph text, nullable"
     bool is_demo
   }
   groups {
@@ -191,6 +191,12 @@ erDiagram
     char36 id PK
     enum auth_method "oauth, password"
     datetime expires_at
+  }
+  payment_qrs {
+    char36 id PK
+    char36 user_id FK
+    varchar label "GCash, Landbank…; unique per user"
+    varchar payload "QR Ph text"
   }
 ```
 

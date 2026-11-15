@@ -89,19 +89,35 @@ export async function setPassword(
   ]);
 }
 
-export async function findPaymentQr(q: Queryable, userId: string): Promise<string | null> {
-  const rows = await q.query<{ paymentQr: string | null }>(
-    'SELECT payment_qr AS paymentQr FROM users WHERE id = ?',
+export type PaymentQrRow = { id: string; label: string; payload: string };
+
+// Oldest first, so a member's first method stays at the top.
+export async function listPaymentQrs(q: Queryable, userId: string): Promise<PaymentQrRow[]> {
+  return q.query<PaymentQrRow>(
+    'SELECT id, label, payload FROM payment_qrs WHERE user_id = ? ORDER BY created_at, label',
     [userId],
   );
-  return rows[0]?.paymentQr ?? null;
 }
 
-// null removes it.
-export async function setPaymentQr(
+export async function addPaymentQr(
   q: Queryable,
   userId: string,
-  payload: string | null,
-): Promise<void> {
-  await q.query('UPDATE users SET payment_qr = ? WHERE id = ?', [payload, userId]);
+  qr: { label: string; payload: string },
+): Promise<string> {
+  const id = randomUUID();
+  await q.query(
+    `INSERT INTO payment_qrs (id, user_id, label, payload, created_at)
+     VALUES (?, ?, ?, ?, UTC_TIMESTAMP(3))`,
+    [id, userId, qr.label, qr.payload],
+  );
+  return id;
+}
+
+// Scoped to the owner, so nobody can remove another member's QR by guessing its id.
+export async function removePaymentQr(q: Queryable, userId: string, id: string): Promise<void> {
+  await q.query('DELETE FROM payment_qrs WHERE id = ? AND user_id = ?', [id, userId]);
+}
+
+export async function removeAllPaymentQrs(q: Queryable, userId: string): Promise<void> {
+  await q.query('DELETE FROM payment_qrs WHERE user_id = ?', [userId]);
 }

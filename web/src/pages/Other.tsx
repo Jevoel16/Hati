@@ -1,11 +1,12 @@
 import { lazy, Suspense, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { TextField } from '../components/Field.tsx';
 import { PasswordForm } from '../components/PasswordForm.tsx';
-import { FormError, RemoteView, SubmitButton } from '../components/States.tsx';
+import { fieldError, FormError, RemoteView, SubmitButton } from '../components/States.tsx';
 import { api } from '../lib/api.ts';
 import { useDocumentTitle, useRemote, useSubmission } from '../lib/hooks.ts';
 import { useSession, useUser } from '../lib/session.tsx';
-import type { InvitePreview } from '../lib/types.ts';
+import type { InvitePreview, PaymentMethod } from '../lib/types.ts';
 
 const QrScanner = lazy(() => import('../components/QrScanner.tsx'));
 
@@ -58,65 +59,106 @@ export function Join() {
   );
 }
 
+// Suggestions only; any InstaPay bank or wallet name is fine.
+const METHOD_NAMES = ['GCash', 'Maya', 'Landbank', 'BDO', 'BPI', 'UnionBank', 'GoTyme', 'SeaBank'];
+const MAX_METHODS = 5;
+
 function PaymentQrSection() {
   const user = useUser();
-  const [saved, reload] = useRemote<{ payeeName: string } | null>('/auth/payment-qr');
+  const [saved, reload] = useRemote<{ methods: PaymentMethod[] }>('/auth/payment-qrs');
   const [submission, run] = useSubmission();
+  const [label, setLabel] = useState('');
   const [scanning, setScanning] = useState(false);
   const busy = submission.status === 'submitting';
-  const hasQr = saved.status === 'success' && saved.data !== null;
+  const count = saved.status === 'success' ? saved.data.methods.length : 0;
 
   const onScan = (payload: string) => {
     setScanning(false);
-    void run(() => api('PUT', '/auth/payment-qr', { payload })).then((ok) => ok && reload());
+    void run(() => api('POST', '/auth/payment-qrs', { label, payload })).then((ok) => {
+      if (!ok) return;
+      setLabel('');
+      reload();
+    });
   };
-  const remove = () => {
-    if (!window.confirm('Remove your payment QR? Others will no longer see it.')) return;
-    void run(() => api('DELETE', '/auth/payment-qr')).then((ok) => ok && reload());
+  const remove = (method: PaymentMethod) => {
+    if (!window.confirm(`Remove your ${method.label} QR? Others will no longer see it.`)) return;
+    void run(() => api('DELETE', `/auth/payment-qrs/${method.id}`)).then((ok) => ok && reload());
   };
 
   return (
     <section className="stack" aria-labelledby="payment-heading">
-      <h2 id="payment-heading">Payment QR</h2>
+      <h2 id="payment-heading">Payment QRs</h2>
       <p className="muted">
-        Add the QR Ph code from GCash, Maya or your bank’s InstaPay. When someone in a group owes
-        you, Hati shows them your QR with the exact amount filled in.
+        Add the QR Ph code from each wallet or bank you use. When someone in a group owes you, they
+        pick one and Hati fills in the exact amount.
       </p>
       <RemoteView state={saved} onRetry={reload}>
-        {(data) =>
-          data ? (
-            <p>
-              Payments go to <strong>{data.payeeName}</strong>.
-            </p>
+        {({ methods }) =>
+          methods.length === 0 ? (
+            <p>No payment QRs yet. Add one so others can pay you their share.</p>
           ) : (
-            <p>No payment QR yet.</p>
+            <ul className="list">
+              {methods.map((method) => (
+                <li key={method.id}>
+                  <span className="list-main">
+                    <span className="list-title">{method.label}</span>{' '}
+                    <span className="muted">pays {method.payeeName}</span>
+                  </span>
+                  {!user.isDemo && (
+                    <button
+                      type="button"
+                      className="button button--link"
+                      disabled={busy}
+                      onClick={() => remove(method)}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
           )
         }
       </RemoteView>
       {user.isDemo ? (
-        <p className="muted">The demo account keeps its sample QR, which pays no real account.</p>
+        <p className="muted">The demo account keeps its sample QRs, which pay no real account.</p>
+      ) : count >= MAX_METHODS ? (
+        <p className="muted">That’s the most you can save. Remove one to add another.</p>
       ) : (
-        <div className="row">
-          <button
-            type="button"
-            className="button button--quiet"
-            disabled={busy}
-            onClick={() => setScanning(true)}
-          >
-            {hasQr ? 'Replace payment QR' : 'Add payment QR'}
-          </button>
-          {hasQr && (
-            <button type="button" className="button button--link" disabled={busy} onClick={remove}>
-              Remove
+        <form
+          className="stack stack--sm"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setScanning(true);
+          }}
+        >
+          <TextField
+            label="Wallet or bank"
+            list="payment-method-names"
+            value={label}
+            maxLength={40}
+            required
+            autoComplete="off"
+            error={fieldError(submission, 'label')}
+            onChange={(event) => setLabel(event.target.value)}
+          />
+          <datalist id="payment-method-names">
+            {METHOD_NAMES.map((name) => (
+              <option key={name} value={name} />
+            ))}
+          </datalist>
+          <div className="row">
+            <button type="submit" className="button button--quiet" disabled={busy}>
+              Add its QR
             </button>
-          )}
-        </div>
+          </div>
+        </form>
       )}
       <FormError state={submission} />
       {scanning && (
         <Suspense fallback={null}>
           <QrScanner
-            title="Add your payment QR"
+            title={`Add your ${label.trim()} QR`}
             hint="Scan the QR Ph from your banking app, or choose a screenshot of it. Only the code’s text is saved, never the image."
             onScan={onScan}
             onClose={() => setScanning(false)}

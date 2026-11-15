@@ -82,6 +82,7 @@ Short records of the choices that are not obvious from the code.
 - **Choice:** the browser reads the user's QR Ph (camera or screenshot, with `jsqr`) and sends only its text, which the server checks (format, CRC, pesos) in `server/src/domain/qrph.ts`. For a settle-up payment, the server rebuilds the QR with the amount field (54) set from its own settle-up plan and a new CRC, and the browser draws it with `qrcode-generator`.
 - **Why:** no image uploads reach the server, so there is no file storage or file-type risk; the amount cannot be tampered with from the client; and a member's QR is sent to others only as part of a payment they actually owe.
 - **Trade-off:** whether a banking app pre-fills the amount from field 54 is up to the app, so the dialog tells the payer to check the name and amount before confirming.
+- **Later:** members can save up to 5 QRs, one per wallet or bank, in `payment_qrs` (migration 004). Payers often use only one of GCash, Maya or a given bank, so the dialog lets them pick a QR they can pay into instead of transferring between apps first.
 
 ## 15. MySQL 8 locally, TiDB when deployed
 

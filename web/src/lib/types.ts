@@ -41,7 +41,11 @@ export type InvitePreview = {
 export type Balance = { userId: string; netCentavos: number };
 export type Payment = { fromUser: string; toUser: string; amountCentavos: number };
 export type Balances = { balances: Balance[]; payments: Payment[] };
-export type PaymentQr = { payload: string; amountCentavos: number; payeeName: string };
+export type PaymentMethod = { id: string; label: string; payeeName: string };
+export type PaymentQr = {
+  amountCentavos: number;
+  methods: (PaymentMethod & { payload: string })[];
+};
 
 export const CATEGORIES = [
   'rent',

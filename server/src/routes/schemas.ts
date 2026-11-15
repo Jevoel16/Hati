@@ -72,7 +72,10 @@ export const settlement = z.object({
   settledOn: date,
 });
 
-export const paymentQr = z.object({ payload: z.string().trim().min(1).max(MAX_QR_LENGTH) });
+export const paymentQr = z.object({
+  label: z.string().trim().min(1).max(40),
+  payload: z.string().trim().min(1).max(MAX_QR_LENGTH),
+});
 export const paymentQrQuery = z.object({ from: id, to: id });
 
 // Every list endpoint is paginated, with a hard ceiling on the page size.
