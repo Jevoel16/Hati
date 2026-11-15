@@ -8,7 +8,7 @@ Hati deploys as one Vercel project: the built React app is served as static file
 2. Create a SQL user for the app that can only use that database (not `root`), and note its connection details.
 3. Build the URL: `mysql://<user>:<password>@<host>:4000/hati`. TLS is turned on automatically for any host that is not `localhost`.
 
-For running the API tests locally, also set `TEST_DATABASE_URL` to a user that may create and drop databases named `hati_test_*`.
+Local development uses MySQL 8 instead (created in MySQL Workbench), on `mysql://<user>:<password>@127.0.0.1:3306/hati` ([decision 15](decisions.md#15-mysql-8-locally-tidb-when-deployed)). For running the API tests locally, also set `TEST_DATABASE_URL` to a user that may create and drop databases named `hati_test_*`.
 
 ## 2. OAuth apps
 

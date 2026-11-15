@@ -18,7 +18,8 @@
     "test": "tsx --env-file-if-exists=.env --test \"server/src/**/*.test.ts\" \"web/src/**/*.test.ts\"",
     "typecheck": "tsc --noEmit -p server && tsc --noEmit -p web",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "start": "tsx server/src/dev.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

@@ -82,3 +82,10 @@ Short records of the choices that are not obvious from the code.
 - **Choice:** the browser reads the user's QR Ph (camera or screenshot, with `jsqr`) and sends only its text, which the server checks (format, CRC, pesos) in `server/src/domain/qrph.ts`. For a settle-up payment, the server rebuilds the QR with the amount field (54) set from its own settle-up plan and a new CRC, and the browser draws it with `qrcode-generator`.
 - **Why:** no image uploads reach the server, so there is no file storage or file-type risk; the amount cannot be tampered with from the client; and a member's QR is sent to others only as part of a payment they actually owe.
 - **Trade-off:** whether a banking app pre-fills the amount from field 54 is up to the app, so the dialog tells the payer to check the name and amount before confirming.
+
+## 15. MySQL 8 locally, TiDB when deployed
+
+- **Problem:** a TiDB server is awkward to run on a Windows laptop, and the team already has MySQL 8 with Workbench.
+- **Options:** TiDB everywhere (local TiDB through Docker); MySQL 8 locally and TiDB Cloud when deployed.
+- **Choice:** MySQL 8 locally, TiDB Cloud on Vercel, and a `pingcap/tidb` service in CI so every push is tested on the same engine as production.
+- **Trade-off:** the SQL has to run on both, so it sticks to what they share: no `CHECK` reliance (decision 2), `ENUM` statuses and a quoted `groups` table name.
