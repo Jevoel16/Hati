@@ -329,9 +329,6 @@ dialog::backdrop {
   height: 1.25rem;
   flex-shrink: 0;
 }
-.auth .theme-toggle {
-  width: auto;
-}
 .divider {
   display: flex;
   align-items: center;

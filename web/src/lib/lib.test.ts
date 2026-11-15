@@ -13,7 +13,7 @@ import {
   type Submission,
 } from './machines.ts';
 import { describeBalance, parsePesos, toPesoInput } from './money.ts';
-import { nextTheme, parseTheme } from './theme.ts';
+import { parseTheme } from './theme.ts';
 
 describe('parsePesos', () => {
   it('turns typed pesos into centavos without float errors', () => {
@@ -138,12 +138,6 @@ describe('live connection machine', () => {
 });
 
 describe('theme', () => {
-  it('cycles system, light, dark and back', () => {
-    assert.equal(nextTheme('system'), 'light');
-    assert.equal(nextTheme('light'), 'dark');
-    assert.equal(nextTheme('dark'), 'system');
-  });
-
   it('treats anything but light or dark as system', () => {
     assert.equal(parseTheme('dark'), 'dark');
     assert.equal(parseTheme(null), 'system');

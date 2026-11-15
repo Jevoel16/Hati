@@ -156,32 +156,6 @@ figcaption {
   gap: var(--s3);
 }
 
-.site-footer {
-  display: grid;
-  gap: var(--s3);
-  padding-block: var(--s5);
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: var(--t-sm);
-}
-.footer-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 var(--s5);
-}
-.footer-nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--ink);
-  font-size: var(--t-md);
-  font-weight: 500;
-}
-.footer-nav a[aria-current='page'] {
-  color: var(--accent);
-  text-decoration-thickness: 2px;
-}
-
 .site-header-actions {
   display: flex;
   align-items: center;

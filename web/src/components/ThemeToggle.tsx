@@ -1,30 +1,38 @@
 import { useState } from 'react';
 import {
   applyTheme,
-  nextTheme,
   readTheme,
   THEME_ICONS,
   THEME_LABELS,
+  THEMES,
   type Theme,
 } from '../lib/theme.ts';
 
-// Cycles system, light and dark. The landing page has the same button in plain HTML.
+// One button per theme so any choice is one click. The landing pages have the same markup in plain HTML.
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(readTheme);
 
-  const toggle = () => {
-    const next = nextTheme(theme);
+  const choose = (next: Theme) => {
     applyTheme(next);
     setTheme(next);
   };
 
   return (
-    <button type="button" className="button button--quiet theme-toggle" onClick={toggle}>
-      <svg className="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d={THEME_ICONS[theme]} />
-      </svg>
-      <span className="visually-hidden">Theme: </span>
-      <span className="theme-toggle-label">{THEME_LABELS[theme]}</span>
-    </button>
+    <div className="theme-picker" role="group" aria-label="Theme">
+      {THEMES.map((t) => (
+        <button
+          key={t}
+          type="button"
+          aria-label={THEME_LABELS[t]}
+          title={THEME_LABELS[t]}
+          aria-pressed={t === theme}
+          onClick={() => choose(t)}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d={THEME_ICONS[t]} />
+          </svg>
+        </button>
+      ))}
+    </div>
   );
 }

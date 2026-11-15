@@ -19,9 +19,6 @@ export const THEME_ICONS: Record<Theme, string> = {
   dark: 'M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z',
 };
 
-export const nextTheme = (theme: Theme): Theme =>
-  THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length]!;
-
 export const parseTheme = (value: string | null): Theme =>
   value === 'light' || value === 'dark' ? value : 'system';
 

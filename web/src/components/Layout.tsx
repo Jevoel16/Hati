@@ -88,6 +88,14 @@ export function Layout() {
         </nav>
       </header>
       <main id="main">{renderPage(user)}</main>
+      {/* Plain links: these are static pages outside the app's router. */}
+      <footer className="site-footer">
+        <nav className="footer-nav" aria-label="About Hati">
+          <a href="/how-it-works">How it works</a>
+          <a href="/features">Features</a>
+          <a href="/faq">Questions</a>
+        </nav>
+      </footer>
     </div>
   );
 }
