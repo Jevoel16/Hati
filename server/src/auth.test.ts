@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
+import { migrate } from './migrate.js';
 import { DEMO_ACCOUNT } from './services/demo.js';
 import { skip, startTestApp } from './testing.js';
 
@@ -194,6 +195,21 @@ describe('auth', { skip }, () => {
       currentPassword: DEMO_ACCOUNT.password,
     });
     assert.equal(change.status, 403);
+  });
+
+  // Parallel setups used to deadlock on the username and session index locks.
+  it('finishes several sign-ups at the same moment', async () => {
+    const emails = ['par1', 'par2', 'par3', 'par4', 'par5', 'par6'].map((n) => `${n}@example.com`);
+    const accounts = await Promise.all(emails.map((email) => app.signUp(email)));
+    for (const { client } of accounts) {
+      assert.equal((await client.get('/api/auth/me')).body.user.status, 'active');
+    }
+  });
+
+  // A deploy or dev restart can stop a migration halfway; running it again must finish it.
+  it('re-runs the username migration after an interruption', async () => {
+    await app.ctx.db.query("DELETE FROM schema_migrations WHERE name = '002_username.sql'");
+    assert.deepEqual(await migrate(app.ctx.db), ['002_username.sql']);
   });
 });
 

@@ -13,7 +13,14 @@ const statementsOf = (sql: string) =>
     .map((statement) => statement.trim())
     .filter(Boolean);
 
-// DDL commits on its own in TiDB, so a migration is recorded only after all of it ran.
+// Duplicate column, duplicate key, missing constraint to drop, duplicate constraint:
+// the step already ran before an interruption (or CHECK was ignored when the table was made).
+const ALREADY_APPLIED = new Set([1060, 1061, 3940, 3822]);
+const alreadyApplied = (error: unknown) =>
+  ALREADY_APPLIED.has((error as { errno?: number } | null)?.errno ?? 0);
+
+// DDL commits on its own in TiDB, so a migration is recorded only after all of it ran, and
+// re-running a half-applied one skips the steps that already happened.
 export async function migrate(db: Db): Promise<string[]> {
   await db.query(`CREATE TABLE IF NOT EXISTS schema_migrations (
     name VARCHAR(100) NOT NULL PRIMARY KEY,
@@ -27,7 +34,9 @@ export async function migrate(db: Db): Promise<string[]> {
   for (const file of files) {
     if (applied.has(file)) continue;
     for (const statement of statementsOf(await readFile(join(migrationsDir, file), 'utf8'))) {
-      await db.query(statement);
+      await db.query(statement).catch((error: unknown) => {
+        if (!alreadyApplied(error)) throw error;
+      });
     }
     await db.query(
       'INSERT INTO schema_migrations (name, applied_at) VALUES (?, UTC_TIMESTAMP(3))',

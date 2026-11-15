@@ -11,6 +11,10 @@ export interface Db extends Queryable {
 }
 
 const QUERY_TIMEOUT_MS = 10_000;
+// Concurrent transactions can deadlock on index gap locks; the database rolls one back and
+// asks for a retry (errno 1213). Transaction bodies only touch the database, so a rerun is safe.
+const DEADLOCK_ATTEMPTS = 3;
+const isDeadlock = (error: unknown) => (error as { errno?: number } | null)?.errno === 1213;
 
 export function connect(url: string): Db {
   const { hostname } = new URL(url);
@@ -36,17 +40,19 @@ export function connect(url: string): Db {
   return {
     ...wrap(pool),
     async transaction(fn) {
-      const connection = await pool.getConnection();
-      try {
-        await connection.beginTransaction();
-        const result = await fn(wrap(connection));
-        await connection.commit();
-        return result;
-      } catch (error) {
-        await connection.rollback().catch(() => {});
-        throw error;
-      } finally {
-        connection.release();
+      for (let attempt = 1; ; attempt++) {
+        const connection = await pool.getConnection();
+        try {
+          await connection.beginTransaction();
+          const result = await fn(wrap(connection));
+          await connection.commit();
+          return result;
+        } catch (error) {
+          await connection.rollback().catch(() => {});
+          if (!isDeadlock(error) || attempt === DEADLOCK_ATTEMPTS) throw error;
+        } finally {
+          connection.release();
+        }
       }
     },
     close: () => pool.end(),
