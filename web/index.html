@@ -85,7 +85,10 @@
           Hati keeps one record of your group’s expenses. Add a bill and every member’s balance
           updates on their screen right away, with no refresh.
         </p>
-        <p><a class="button" href="/sign-in">Open the demo</a></p>
+        <p class="intro-actions">
+          <a class="button" href="/sign-in">Open the demo</a>
+          <a class="button button--quiet" href="/how-it-works">How it works</a>
+        </p>
       </section>
 
       <figure class="sample">
@@ -104,62 +107,14 @@
         </div>
         <figcaption>The balances screen for a boarding house of four.</figcaption>
       </figure>
-
-      <section class="tabs" aria-label="About Hati">
-        <div class="tab-list" role="tablist" aria-label="About Hati" hidden>
-          <button type="button" class="tab" role="tab" id="tab-how" aria-controls="how">
-            How it works
-          </button>
-          <button type="button" class="tab" role="tab" id="tab-features" aria-controls="features">
-            What you get
-          </button>
-          <button type="button" class="tab" role="tab" id="tab-faq" aria-controls="faq">
-            Questions
-          </button>
-        </div>
-        <div class="tab-panel" id="how">
-          <h2>How it works</h2>
-          <ol class="steps">
-            <li>Create a group for your house, project or trip, and share its invite link.</li>
-            <li>
-              Add each expense with who paid. Split it equally, by exact amounts or by percentage.
-            </li>
-            <li>Hati works out each balance and the fewest payments that settle everyone.</li>
-            <li>Record a payment once it is made, and the balances adjust for the whole group.</li>
-          </ol>
-        </div>
-
-        <div class="tab-panel" id="features">
-          <h2>What you get</h2>
-          <ul class="points">
-            <li>Balances and an activity feed that update live for everyone viewing the group.</li>
-            <li>Amounts kept to the centavo, so shares always add up to the bill.</li>
-            <li>A spending summary by category and by month.</li>
-            <li>Sign-in with Google or GitHub; group data is visible to its members only.</li>
-            <li>Works on a phone, in light or dark mode, and with the keyboard alone.</li>
-          </ul>
-        </div>
-
-        <div class="tab-panel" id="faq">
-          <h2>Questions</h2>
-          <dl class="faq">
-            <dt>Does Hati move money?</dt>
-            <dd>
-              No. Hati only keeps the record. You pay each other however you like, then record it.
-            </dd>
-            <dt>What does “Hati” mean?</dt>
-            <dd>It is Filipino for “to split”.</dd>
-            <dt>Is it free?</dt>
-            <dd>
-              Yes. Hati is a student project for ITE183, and its code is public on
-              <a href="https://github.com/Jevoel16">GitHub</a>.
-            </dd>
-          </dl>
-        </div>
-      </section>
     </main>
 
     <footer class="page site-footer">
+      <nav class="footer-nav" aria-label="About Hati">
+        <a href="/how-it-works">How it works</a>
+        <a href="/features">Features</a>
+        <a href="/faq">Questions</a>
+      </nav>
       <p>
         Built by <a href="https://github.com/Jevoel16">Sprucetrap</a>. Source-available under the
         <a href="https://github.com/Jevoel16/Hati/blob/main/LICENSE">Sprucetrap License</a>.

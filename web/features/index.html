@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hati features: live balances, exact splits and settle-up</title>
+    <meta
+      name="description"
+      content="Live balances and activity, amounts kept to the centavo, a spending summary, and sign-in with Google or GitHub."
+    />
+    <link rel="canonical" href="__SITE_URL__/features" />
+    <meta name="theme-color" content="#0b6e5f" />
+    <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-48.png?v=2" type="image/png" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+    <script src="/theme.js"></script>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hati" />
+    <meta property="og:title" content="Hati features: live balances, exact splits and settle-up" />
+    <meta
+      property="og:description"
+      content="Live balances and activity, amounts kept to the centavo, a spending summary, and sign-in with Google or GitHub."
+    />
+    <meta property="og:url" content="__SITE_URL__/features" />
+    <meta property="og:image" content="__SITE_URL__/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Hati: a shared expense splitter with live balances" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hati features: live balances, exact splits and settle-up" />
+    <meta
+      name="twitter:description"
+      content="Live balances and activity, amounts kept to the centavo, a spending summary, and sign-in with Google or GitHub."
+    />
+    <meta name="twitter:image" content="__SITE_URL__/og.png" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap"
+    />
+    <link rel="stylesheet" href="/src/styles/base.css" />
+    <link rel="stylesheet" href="/src/styles/landing.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="page site-header">
+      <a class="wordmark" href="/" aria-label="Hati"
+        ><svg class="wordmark-h" viewBox="14 13 36 38" aria-hidden="true">
+          <path class="wordmark-h-h" d="M14 13h6v19h24v19h-6V38H26v13H14z" />
+          <path class="wordmark-h-4" d="M20 13h6v13h12V13h12v38h-6V32H20z" /></svg
+        >ati</a
+      >
+      <div class="site-header-actions">
+        <button type="button" class="button button--quiet theme-toggle" data-theme-toggle>
+          <svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 5h18v11H3z M8 20h8 M12 16v4" />
+          </svg>
+          <span class="visually-hidden">Theme: </span>
+          <span class="theme-toggle-label">System</span>
+        </button>
+        <a class="button button--quiet" href="/sign-in">Sign in</a>
+      </div>
+    </header>
+
+    <main id="main" class="page detail">
+      <h1>Features</h1>
+      <ul class="points">
+        <li>
+          <h2>Live for everyone</h2>
+          <p>Balances and an activity feed update on every member’s screen, with no refresh.</p>
+        </li>
+        <li>
+          <h2>Exact to the centavo</h2>
+          <p>Shares always add up to the bill, however you split it.</p>
+        </li>
+        <li>
+          <h2>Fewest payments</h2>
+          <p>Hati settles the whole group with as few transfers as possible.</p>
+        </li>
+        <li>
+          <h2>Spending summary</h2>
+          <p>See what the group spent by category and by month.</p>
+        </li>
+        <li>
+          <h2>Private groups</h2>
+          <p>Sign in with Google or GitHub; group data is visible to its members only.</p>
+        </li>
+        <li>
+          <h2>Anywhere</h2>
+          <p>Works on a phone or a desktop, in light or dark mode, and with the keyboard alone.</p>
+        </li>
+      </ul>
+      <p><a class="button" href="/sign-in">Open the demo</a></p>
+    </main>
+
+    <footer class="page site-footer">
+      <nav class="footer-nav" aria-label="About Hati">
+        <a href="/how-it-works">How it works</a>
+        <a href="/features" aria-current="page">Features</a>
+        <a href="/faq">Questions</a>
+      </nav>
+      <p>
+        Built by <a href="https://github.com/Jevoel16">Sprucetrap</a>. Source-available under the
+        <a href="https://github.com/Jevoel16/Hati/blob/main/LICENSE">Sprucetrap License</a>.
+      </p>
+    </footer>
+    <script type="module" src="/src/landing.ts"></script>
+  </body>
+</html>
