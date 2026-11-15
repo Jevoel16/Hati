@@ -5,20 +5,22 @@
 <p align="center">A shared expense splitter with live balances.</p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Sprucetrap%20Source--Available%201.0-blue?style=flat" alt="License: Sprucetrap Source-Available 1.0"></a>
   <a href="https://github.com/Jevoel16/Hati/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Jevoel16/Hati/ci.yml?branch=main&label=CI&style=flat" alt="CI status"></a>
   <img src="https://img.shields.io/badge/platform-web-lightgrey?style=flat" alt="Platform: web">
+  <img src="https://img.shields.io/badge/React-19-blue?style=flat" alt="React 19">
 </p>
 
+<p align="center"><img src="docs/images/hero.png" width="100%" alt="Group page: the amount you are owed with Add expense and Record payment on the left, everyone's balance and the fewest payments to settle up with Show QR buttons on the right"></p>
+
 <p align="center">
-  <a href="#about">About</a> · <a href="#screenshots">Screenshots</a> · <a href="#features">Features</a> · <a href="#tech-stack">Tech Stack</a> · <a href="#architecture">Architecture</a> · <a href="#getting-started">Getting Started</a> · <a href="#configuration">Configuration</a> · <a href="#usage">Usage</a> · <a href="#more">More</a> · <a href="#contributing">Contributing</a> · <a href="#license">License</a> · <a href="#author">Author</a>
+  <a href="#about">About</a> · <a href="#screenshots">Screenshots</a> · <a href="#features">Features</a> · <a href="#tech-stack">Tech Stack</a> · <a href="#architecture">Architecture</a> · <a href="#getting-started">Getting Started</a> · <a href="#configuration">Configuration</a> · <a href="#usage">Usage</a> · <a href="#more">More</a>
 </p>
 
 ---
 
 ## About
 
-Hati (Filipino for "to split") is for housemates, project groups and friends who share costs and are tired of tracking them in a group chat. Everyone in a group records what they paid, Hati works out who owes whom to the centavo, and every member sees the balances change the moment an expense is added. It keeps records only and never moves money. Try it at [hati.jevoelorbilla.dev](https://hati.jevoelorbilla.dev). Built as the ITE183 final project; the reasoning behind its main choices is in [docs/decisions.md](docs/decisions.md).
+Hati (Filipino for "to split") is for housemates, project groups and friends who share costs and are tired of tracking them in a group chat. Everyone in a group records what they paid, Hati works out who owes whom to the centavo, and every member sees the balances change the moment an expense is added. It keeps records only and never moves money. Built as the ITE183 final project; the reasoning behind its main choices is in [docs/decisions.md](docs/decisions.md).
 
 ## Screenshots
 
@@ -27,7 +29,7 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 
 <table>
   <tr>
-    <td width="50%" align="center"><b>Group balances</b><br><a href="docs/images/balances.png"><img src="docs/images/balances.png" width="100%" alt="Group page on desktop: the balance and Add expense button on the left, each member's balance and the settle-up payments with Show QR buttons on the right"></a></td>
+    <td width="50%" align="center"><b>Pay with a QR</b><br><a href="docs/images/payment-qr.png"><img src="docs/images/payment-qr.png" width="100%" alt="Payment dialog: Dana Lim pays you 3,399.84 pesos, with a choice between GCash and Landbank above the QR code, and Share and Download buttons"></a></td>
     <td width="50%" align="center"><b>Your groups</b><br><a href="docs/images/groups.png"><img src="docs/images/groups.png" width="100%" alt="Groups list beside the forms to start a group or join one by code or by scanning a QR code"></a></td>
   </tr>
   <tr>
@@ -63,7 +65,7 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 | Front end | React 19.3.1, React Router 7.18.5, Vite 8.3.8, plain CSS                       |
 | QR codes  | qrcode-generator 2.0.4 (drawing), jsQR 1.4.0 (camera and photo scanning)       |
 | Back end  | Node.js 26.13.1, Express 5.3.0, ws 8.23.0, Zod 4.6.7, TypeScript 6.0.3         |
-| Database  | TiDB (MySQL protocol) through mysql2 3.24.6                                    |
+| Database  | MySQL 8 locally, TiDB Cloud deployed, through mysql2 3.24.6                    |
 | Hosting   | Vercel (static site, API and WebSocket in one function), TiDB Cloud            |
 | Analytics | Vercel Web Analytics through @vercel/analytics 2.0.1                           |
 | Tooling   | node:test through tsx 4.23.15, ESLint 10.15.0, Prettier 3.10.1, GitHub Actions |
@@ -88,7 +90,7 @@ The full write-up, with the request path, live updates, auth, data model and fro
 
 ## Getting Started
 
-You need Node.js 26 and a TiDB database (a free TiDB Cloud Serverless cluster works).
+You need Node.js 26 and MySQL 8 (Workbench) with an empty `hati` database and a user for it.
 
 ```bash
 npm install
@@ -107,17 +109,17 @@ All settings are environment variables; [.env.example](.env.example) lists them 
 <details>
 <summary>Environment variables</summary>
 
-| Variable                                   | Required   | Purpose                                                      |
-| ------------------------------------------ | ---------- | ------------------------------------------------------------ |
-| `NODE_ENV`                                 | no         | `development`, `test` or `production`                        |
-| `PORT`                                     | no         | API port for local development (default 3000)                |
-| `APP_URL`                                  | yes        | Public address of the site; used for OAuth callbacks and SEO |
-| `DATABASE_URL`                             | yes        | `mysql://` connection string for TiDB                        |
-| `TEST_DATABASE_URL`                        | tests only | A TiDB server where tests may create and drop databases      |
-| `JWT_SECRET`                               | yes        | At least 32 random characters; signs the session cookie      |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | no         | Turns on Google sign-in                                      |
-| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | no         | Turns on GitHub sign-in                                      |
-| `CRON_SECRET`                              | production | At least 16 characters; protects the daily maintenance route |
+| Variable                                   | Required   | Purpose                                                          |
+| ------------------------------------------ | ---------- | ---------------------------------------------------------------- |
+| `NODE_ENV`                                 | no         | `development`, `test` or `production`                            |
+| `PORT`                                     | no         | API port for local development (default 3000)                    |
+| `APP_URL`                                  | yes        | Public address of the site; used for OAuth callbacks and SEO     |
+| `DATABASE_URL`                             | yes        | `mysql://` connection string (MySQL 8 locally, TiDB deployed)    |
+| `TEST_DATABASE_URL`                        | tests only | A MySQL or TiDB server where tests may create and drop databases |
+| `JWT_SECRET`                               | yes        | At least 32 random characters; signs the session cookie          |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | no         | Turns on Google sign-in                                          |
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | no         | Turns on GitHub sign-in                                          |
+| `CRON_SECRET`                              | production | At least 16 characters; protects the daily maintenance route     |
 
 </details>
 
@@ -153,6 +155,7 @@ docker/    Dockerfiles for the web, API and database containers
 | ------------------- | ------------------------------------------------ |
 | `npm run dev`       | API on port 3000 and web app on port 5173        |
 | `npm run build`     | Builds the web app into `public/`                |
+| `npm start`         | Runs the API without watching for changes        |
 | `npm test`          | Unit tests, plus API tests when a test DB is set |
 | `npm run typecheck` | Type-checks the server and the web app           |
 | `npm run lint`      | ESLint                                           |
@@ -161,17 +164,5 @@ docker/    Dockerfiles for the web, API and database containers
 | `npm run seed`      | Creates or resets the demo account               |
 
 </details>
-
-## Contributing
-
-Work on a `feat/...` or `fix/...` branch and write [Conventional Commits](https://www.conventionalcommits.org) such as `feat: add CSV export`. Versions are bumped only at a release. Update this README with every change.
-
-## License
-
-[Sprucetrap Source-Available License 1.0](LICENSE) © 2026 Sprucetrap (github.com/Jevoel16). Free for personal, educational and other non-commercial use with credit; commercial use needs written permission.
-
-## Author
-
-[Jevoel16](https://github.com/Jevoel16) (Sprucetrap), for ITE183 Web Systems and Technologies.
 
 <p align="right"><a href="#top">Back to top</a></p>
