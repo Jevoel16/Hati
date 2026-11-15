@@ -6,6 +6,7 @@ import { rateLimit } from '../middleware/guards.js';
 import { currentAuth, SESSION_COOKIE, sessionCookieOptions } from '../middleware/session.js';
 import { notFound } from '../errors.js';
 import * as auth from '../services/auth.js';
+import * as paymentQr from '../services/paymentQr.js';
 import { DEMO_ACCOUNT } from '../services/demo.js';
 import { authorizationUrl, createPkce, fetchProfile, isProvider } from '../services/oauth.js';
 import * as schemas from './schemas.js';
@@ -61,6 +62,20 @@ export function authRoutes(ctx: Ctx): Router {
   router.post('/password', limit, async (req, res) => {
     const token = await auth.setPassword(ctx, currentAuth(res), schemas.password.parse(req.body));
     startSession(res, token);
+    res.status(204).end();
+  });
+
+  router.get('/payment-qr', async (_req, res) => {
+    res.json(await paymentQr.getOwnQr(ctx, currentAuth(res).user));
+  });
+
+  router.put('/payment-qr', limit, async (req, res) => {
+    const { payload } = schemas.paymentQr.parse(req.body);
+    res.json(await paymentQr.saveOwnQr(ctx, currentAuth(res).user, payload));
+  });
+
+  router.delete('/payment-qr', async (_req, res) => {
+    await paymentQr.removeOwnQr(ctx, currentAuth(res).user);
     res.status(204).end();
   });
 

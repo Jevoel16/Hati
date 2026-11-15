@@ -5,7 +5,14 @@ import type { MemberStatus } from '../domain/machines.js';
 export type Role = 'admin' | 'member';
 export type Group = { id: string; name: string; inviteCode: string; createdByDemo: boolean };
 export type Membership = { role: Role; status: MemberStatus };
-export type Member = { userId: string; name: string; role: Role; status: MemberStatus };
+export type Member = {
+  userId: string;
+  name: string;
+  role: Role;
+  status: MemberStatus;
+  // Whether they saved a payment QR; the QR itself is only sent with an amount.
+  hasPaymentQr: boolean;
+};
 export type GroupListItem = {
   id: string;
   name: string;
@@ -97,13 +104,16 @@ export async function findMembership(
 }
 
 export async function listMembers(q: Queryable, groupId: string): Promise<Member[]> {
-  return q.query<Member>(
-    `SELECT m.user_id AS userId, u.name, m.role, m.status
+  const rows = await q.query<Omit<Member, 'hasPaymentQr'> & { hasPaymentQr: number }>(
+    `SELECT m.user_id AS userId, u.name, m.role, m.status,
+            u.payment_qr IS NOT NULL AS hasPaymentQr
      FROM group_members m JOIN users u ON u.id = m.user_id
      WHERE m.group_id = ?
      ORDER BY m.joined_at, u.name`,
     [groupId],
   );
+  // TiDB returns the boolean as 0 or 1.
+  return rows.map((row) => ({ ...row, hasPaymentQr: Boolean(row.hasPaymentQr) }));
 }
 
 export async function addMember(

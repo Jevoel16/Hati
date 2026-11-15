@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CATEGORIES, MAX_AMOUNT_CENTAVOS } from '../domain/money.js';
+import { MAX_QR_LENGTH } from '../domain/qrph.js';
 import { PASSWORD_MIN_LENGTH } from '../services/auth.js';
 import { INVITE_CODE_PATTERN } from '../services/groups.js';
 
@@ -70,6 +71,9 @@ export const settlement = z.object({
   amountCentavos: amount,
   settledOn: date,
 });
+
+export const paymentQr = z.object({ payload: z.string().trim().min(1).max(MAX_QR_LENGTH) });
+export const paymentQrQuery = z.object({ from: id, to: id });
 
 // Every list endpoint is paginated, with a hard ceiling on the page size.
 export const page = z.object({

@@ -1,3 +1,4 @@
+import { lazy, Suspense, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PasswordForm } from '../components/PasswordForm.tsx';
 import { FormError, RemoteView, SubmitButton } from '../components/States.tsx';
@@ -5,7 +6,8 @@ import { api } from '../lib/api.ts';
 import { useDocumentTitle, useRemote, useSubmission } from '../lib/hooks.ts';
 import { useSession, useUser } from '../lib/session.tsx';
 import type { InvitePreview } from '../lib/types.ts';
-import { useState } from 'react';
+
+const QrScanner = lazy(() => import('../components/QrScanner.tsx'));
 
 export function Join() {
   useDocumentTitle('Join a group');
@@ -56,6 +58,75 @@ export function Join() {
   );
 }
 
+function PaymentQrSection() {
+  const user = useUser();
+  const [saved, reload] = useRemote<{ payeeName: string } | null>('/auth/payment-qr');
+  const [submission, run] = useSubmission();
+  const [scanning, setScanning] = useState(false);
+  const busy = submission.status === 'submitting';
+  const hasQr = saved.status === 'success' && saved.data !== null;
+
+  const onScan = (payload: string) => {
+    setScanning(false);
+    void run(() => api('PUT', '/auth/payment-qr', { payload })).then((ok) => ok && reload());
+  };
+  const remove = () => {
+    if (!window.confirm('Remove your payment QR? Others will no longer see it.')) return;
+    void run(() => api('DELETE', '/auth/payment-qr')).then((ok) => ok && reload());
+  };
+
+  return (
+    <section className="stack" aria-labelledby="payment-heading">
+      <h2 id="payment-heading">Payment QR</h2>
+      <p className="muted">
+        Add the QR Ph code from GCash, Maya or your bank’s InstaPay. When someone in a group owes
+        you, Hati shows them your QR with the exact amount filled in.
+      </p>
+      <RemoteView state={saved} onRetry={reload}>
+        {(data) =>
+          data ? (
+            <p>
+              Payments go to <strong>{data.payeeName}</strong>.
+            </p>
+          ) : (
+            <p>No payment QR yet.</p>
+          )
+        }
+      </RemoteView>
+      {user.isDemo ? (
+        <p className="muted">The demo account keeps its sample QR, which pays no real account.</p>
+      ) : (
+        <div className="row">
+          <button
+            type="button"
+            className="button button--quiet"
+            disabled={busy}
+            onClick={() => setScanning(true)}
+          >
+            {hasQr ? 'Replace payment QR' : 'Add payment QR'}
+          </button>
+          {hasQr && (
+            <button type="button" className="button button--link" disabled={busy} onClick={remove}>
+              Remove
+            </button>
+          )}
+        </div>
+      )}
+      <FormError state={submission} />
+      {scanning && (
+        <Suspense fallback={null}>
+          <QrScanner
+            title="Add your payment QR"
+            hint="Scan the QR Ph from your banking app, or choose a screenshot of it. Only the code’s text is saved, never the image."
+            onScan={onScan}
+            onClose={() => setScanning(false)}
+          />
+        </Suspense>
+      )}
+    </section>
+  );
+}
+
 export function Account() {
   useDocumentTitle('Account');
   const user = useUser();
@@ -88,6 +159,7 @@ export function Account() {
           </>
         )}
       </section>
+      <PaymentQrSection />
     </div>
   );
 }

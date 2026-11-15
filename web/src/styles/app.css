@@ -194,6 +194,11 @@ fieldset {
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
+.figure-sm {
+  font-family: var(--font-display);
+  font-size: var(--t-2xl);
+  line-height: 1;
+}
 .live-status {
   font-size: var(--t-sm);
   color: var(--muted);

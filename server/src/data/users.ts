@@ -88,3 +88,20 @@ export async function setPassword(
     userId,
   ]);
 }
+
+export async function findPaymentQr(q: Queryable, userId: string): Promise<string | null> {
+  const rows = await q.query<{ paymentQr: string | null }>(
+    'SELECT payment_qr AS paymentQr FROM users WHERE id = ?',
+    [userId],
+  );
+  return rows[0]?.paymentQr ?? null;
+}
+
+// null removes it.
+export async function setPaymentQr(
+  q: Queryable,
+  userId: string,
+  payload: string | null,
+): Promise<void> {
+  await q.query('UPDATE users SET payment_qr = ? WHERE id = ?', [payload, userId]);
+}

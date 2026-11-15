@@ -74,3 +74,11 @@ Short records of the choices that are not obvious from the code.
 - **Options:** Google Analytics (cookies, a consent banner and a third-party origin in the CSP); no analytics; Vercel Web Analytics.
 - **Choice:** Vercel Web Analytics. It sets no cookies, so no consent banner is needed, and its script and reports use `/_vercel/insights` on the site's own origin, so the CSP stays `'self'` only.
 - **Trade-off:** the landing page now loads one small script (it had none), and ad blockers hide some visits. Group ids, invite codes and query strings are removed from every reported address in the browser (`web/src/lib/analytics.ts`), so the reports show `/groups/[id]` and `/join/[code]`.
+
+## 14. Payment QRs: decoded in the browser, amount set by the server
+
+- **Problem:** people settle up by GCash, Maya or bank transfer, and typing the payee's number and the exact amount is where mistakes happen.
+- **Options:** store account numbers as text; let users upload a QR image; read the QR Ph in the browser and store only its text.
+- **Choice:** the browser reads the user's QR Ph (camera or screenshot, with `jsqr`) and sends only its text, which the server checks (format, CRC, pesos) in `server/src/domain/qrph.ts`. For a settle-up payment, the server rebuilds the QR with the amount field (54) set from its own settle-up plan and a new CRC, and the browser draws it with `qrcode-generator`.
+- **Why:** no image uploads reach the server, so there is no file storage or file-type risk; the amount cannot be tampered with from the client; and a member's QR is sent to others only as part of a payment they actually owe.
+- **Trade-off:** whether a banking app pre-fills the amount from field 54 is up to the app, so the dialog tells the payer to check the name and amount before confirming.

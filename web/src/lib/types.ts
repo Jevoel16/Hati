@@ -16,7 +16,13 @@ export type Providers = {
 };
 
 export type Role = 'admin' | 'member';
-export type Member = { userId: string; name: string; role: Role; status: 'active' | 'left' };
+export type Member = {
+  userId: string;
+  name: string;
+  role: Role;
+  status: 'active' | 'left';
+  hasPaymentQr: boolean;
+};
 export type GroupListItem = {
   id: string;
   name: string;
@@ -35,6 +41,7 @@ export type InvitePreview = {
 export type Balance = { userId: string; netCentavos: number };
 export type Payment = { fromUser: string; toUser: string; amountCentavos: number };
 export type Balances = { balances: Balance[]; payments: Payment[] };
+export type PaymentQr = { payload: string; amountCentavos: number; payeeName: string };
 
 export const CATEGORIES = [
   'rent',

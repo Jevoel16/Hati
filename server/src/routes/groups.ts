@@ -3,6 +3,7 @@ import type { Ctx } from '../context.js';
 import { currentUser } from '../middleware/session.js';
 import * as groups from '../services/groups.js';
 import * as ledger from '../services/ledger.js';
+import * as paymentQr from '../services/paymentQr.js';
 import * as schemas from './schemas.js';
 
 // Handlers only parse the request, call one service function and shape the response.
@@ -64,6 +65,11 @@ export function groupRoutes(ctx: Ctx): Router {
 
   router.get('/groups/:id/balances', async (req, res) => {
     res.json(await groups.getBalances(ctx, currentUser(res), param(req.params.id)));
+  });
+
+  router.get('/groups/:id/payment-qr', async (req, res) => {
+    const { from, to } = schemas.paymentQrQuery.parse(req.query);
+    res.json(await paymentQr.getPaymentQr(ctx, currentUser(res), param(req.params.id), from, to));
   });
 
   router.get('/groups/:id/summary', async (req, res) => {

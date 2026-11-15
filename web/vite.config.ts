@@ -36,7 +36,7 @@ const site = (): Plugin => ({
     );
     emit(
       'llms.txt',
-      `# Hati\n\n> A shared expense splitter with live balances for housemates, project groups and trips.\n\nHati records who paid for what in a group, works out each member's balance to the centavo, and shows the fewest payments needed to settle up. Balances update live for everyone viewing the group. It keeps records only and never moves money.\n\n- [Home](${siteUrl}/): what Hati does\n- [How it works](${siteUrl}/how-it-works): the four steps from a group to settling up\n- [Features](${siteUrl}/features): live balances, exact splits and the summary\n- [Questions](${siteUrl}/faq): money, the name and the cost\n- [Sign in](${siteUrl}/sign-in): Google, GitHub or password sign-in, plus a public demo account\n`,
+      `# Hati\n\n> A shared expense splitter with live balances for housemates, project groups and trips.\n\nHati records who paid for what in a group, works out each member's balance to the centavo, and shows the fewest payments needed to settle up. Balances update live for everyone viewing the group. It keeps records only and never moves money.\n\n- [Home](${siteUrl}/): what Hati does\n- [How it works](${siteUrl}/how-it-works): the four steps from a group to settling up\n- [Features](${siteUrl}/features): live balances, exact splits, payment QRs and the summary\n- [Questions](${siteUrl}/faq): money, the name and the cost\n- [Sign in](${siteUrl}/sign-in): Google, GitHub or password sign-in, plus a public demo account\n`,
     );
   },
 });

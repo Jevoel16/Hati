@@ -4,6 +4,7 @@ import type { Ctx } from '../context.js';
 import * as groups from '../data/groups.js';
 import * as users from '../data/users.js';
 import type { User } from '../data/users.js';
+import { encode, tlv } from '../domain/qrph.js';
 import { createGroup, getGroup, joinGroup } from './groups.js';
 import { createExpense, createSettlement } from './ledger.js';
 
@@ -15,6 +16,28 @@ const HOUSEMATES = [
   { name: 'Carlo Reyes', email: 'carlo@hati.example' },
   { name: 'Dana Lim', email: 'dana@hati.example' },
 ];
+
+// A QR Ph that is clearly fake: the format is real, so it renders, but no account is behind it.
+const sampleQrPh = (name: string) =>
+  encode([
+    { id: '00', value: '01' },
+    { id: '01', value: '11' },
+    {
+      id: '27',
+      value: [
+        { id: '00', value: 'com.p2pqrpay' },
+        { id: '01', value: 'HATIDEMO' },
+        { id: '04', value: '0000000000' },
+      ]
+        .map(tlv)
+        .join(''),
+    },
+    { id: '52', value: '6016' },
+    { id: '53', value: '608' },
+    { id: '58', value: 'PH' },
+    { id: '59', value: `HATI DEMO ${name.split(' ')[0]!.toUpperCase()}` },
+    { id: '60', value: 'DEMO' },
+  ]);
 
 const daysAgo = (days: number) =>
   new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10);
@@ -43,6 +66,9 @@ export async function resetDemo(ctx: Ctx): Promise<void> {
     mates.push(await ensureDemoUser(ctx, mate.name, mate.email, password));
   }
   const [bea, carlo, dana] = mates as [User, User, User];
+  for (const person of [demo, ...mates]) {
+    await users.setPaymentQr(ctx.db, person.id, sampleQrPh(person.name));
+  }
 
   await groups.removeCreatedBy(ctx.db, demo.id);
   const groupId = await createGroup(ctx, demo, 'Unit 3B Boarding House');

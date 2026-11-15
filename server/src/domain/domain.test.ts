@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { computeBalances, simplifyDebts, type Balance } from './balances.js';
 import { TransitionError, transitionAccount, transitionMember } from './machines.js';
+import { amountText, crc16, encode, parseQrPh, tlv, withAmount, type Field } from './qrph.js';
 import { SplitError, splitByPercent, splitEqually, splitExact } from './split.js';
 
 const total = (shares: { shareCentavos: number }[]) =>
@@ -178,5 +179,90 @@ describe('state machines', () => {
   it('member: rejects leaving twice or rejoining while active', () => {
     assert.throws(() => transitionMember('left', 'leave'), TransitionError);
     assert.throws(() => transitionMember('active', 'rejoin'), TransitionError);
+  });
+});
+
+describe('QR Ph', () => {
+  const fields = (overrides: Record<string, string | null> = {}): Field[] =>
+    [
+      { id: '00', value: '01' },
+      { id: '01', value: '11' },
+      {
+        id: '27',
+        value: [
+          { id: '00', value: 'com.p2pqrpay' },
+          { id: '04', value: '0917' },
+        ]
+          .map(tlv)
+          .join(''),
+      },
+      { id: '52', value: '6016' },
+      { id: '53', value: '608' },
+      { id: '58', value: 'PH' },
+      { id: '59', value: 'BEA SANTOS' },
+      { id: '60', value: 'ILIGAN' },
+    ]
+      .map((f) => (f.id in overrides ? { id: f.id, value: overrides[f.id] } : f))
+      .filter((f): f is Field => f.value !== null);
+  const valid = encode(fields());
+
+  it('computes the CRC-16/CCITT-FALSE check value', () => {
+    assert.equal(crc16('123456789'), '29B1');
+  });
+
+  it('reads the payee from a valid code, with spaces around it', () => {
+    assert.deepEqual(
+      parseQrPh(`  ${valid}
+`),
+      { payeeName: 'BEA SANTOS' },
+    );
+  });
+
+  it('rejects a broken CRC, other currencies or countries, and garbage', () => {
+    const badCrc = valid.slice(0, -1) + (valid.endsWith('0') ? '1' : '0');
+    for (const bad of [
+      badCrc,
+      encode(fields({ '53': '840' })),
+      encode(fields({ '58': 'US' })),
+      encode(fields({ '27': null })),
+      encode(fields({ '59': null })),
+      encode(fields({ '00': '02' })),
+      'https://hati.test/join/ABCD2345',
+      '',
+      'x'.repeat(600),
+    ]) {
+      assert.equal(parseQrPh(bad), null, bad);
+    }
+  });
+
+  it('formats centavos for the amount field without floats', () => {
+    assert.equal(amountText(1), '0.01');
+    assert.equal(amountText(230_889), '2308.89');
+    assert.equal(amountText(100_000_000), '1000000.00');
+  });
+
+  it('adds the exact amount as a single-use code that still validates', () => {
+    const paid = withAmount(valid, 230_889);
+    assert.deepEqual(parseQrPh(paid), { payeeName: 'BEA SANTOS' });
+    assert.ok(paid.startsWith('000201010212'));
+    assert.ok(paid.includes('54072308.89'));
+    // The amount sits before the country field, in id order.
+    assert.ok(
+      paid.indexOf('5303608') < paid.indexOf('5407') &&
+        paid.indexOf('5407') < paid.indexOf('5802PH'),
+    );
+    assert.match(paid, /6304[0-9A-F]{4}$/);
+  });
+
+  it('replaces an amount and type already in the code', () => {
+    const twice = withAmount(withAmount(valid, 500), 12_345);
+    assert.equal(twice.match(/5406/g)?.length, 1);
+    assert.ok(twice.includes('5406123.45'));
+    assert.equal(twice.match(/010212/g)?.length, 1);
+  });
+
+  it('refuses an amount that is not whole positive centavos', () => {
+    assert.throws(() => withAmount(valid, 0));
+    assert.throws(() => withAmount(valid, 1.5));
   });
 });

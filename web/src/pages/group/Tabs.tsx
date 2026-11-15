@@ -1,11 +1,14 @@
-import type { ReactNode } from 'react';
+import { lazy, Suspense, useState, type ReactNode } from 'react';
 import { EmptyState, RemoteView } from '../../components/States.tsx';
 import { api } from '../../lib/api.ts';
 import { usePagedList, useRemote, useSubmission } from '../../lib/hooks.ts';
 import { describeBalance, formatDay, formatMonth, formatPeso } from '../../lib/money.ts';
 import { useUser } from '../../lib/session.tsx';
-import type { ActivityEntry, Expense, Settlement, Summary } from '../../lib/types.ts';
+import type { ActivityEntry, Expense, Payment, Settlement, Summary } from '../../lib/types.ts';
 import { useGroup } from './GroupPage.tsx';
+
+// The QR encoder loads only when someone opens a payment QR.
+const PaymentQrDialog = lazy(() => import('./PaymentQr.tsx'));
 
 const balanceClass = (net: number) => (net > 0 ? 'owed' : net < 0 ? 'owes' : 'muted');
 
@@ -72,6 +75,9 @@ export function BalancesTab() {
   const me = useUser();
   const payments = usePagedList<Settlement>(`/groups/${group.id}/settlements`, refreshKey);
   const canRecord = (ids: string[]) => group.role === 'admin' || ids.includes(me.id);
+  const hasQr = (userId: string) =>
+    group.members.some((m) => m.userId === userId && m.hasPaymentQr);
+  const [showing, setShowing] = useState<Payment | null>(null);
   // People who left stay listed only while they still owe or are owed something.
   const isShown = (b: { userId: string; netCentavos: number }) =>
     b.netCentavos !== 0 ||
@@ -111,15 +117,26 @@ export function BalancesTab() {
                         {nameOf(p.toUser, true)}{' '}
                         <span className="amount">{formatPeso(p.amountCentavos)}</span>
                       </span>
-                      {canRecord([p.fromUser, p.toUser]) && (
-                        <button
-                          type="button"
-                          className="button button--quiet"
-                          onClick={() => recordPayment(p)}
-                        >
-                          Mark as paid
-                        </button>
-                      )}
+                      <span className="row">
+                        {hasQr(p.toUser) && (
+                          <button
+                            type="button"
+                            className="button button--quiet"
+                            onClick={() => setShowing(p)}
+                          >
+                            Show QR
+                          </button>
+                        )}
+                        {canRecord([p.fromUser, p.toUser]) && (
+                          <button
+                            type="button"
+                            className="button button--quiet"
+                            onClick={() => recordPayment(p)}
+                          >
+                            Mark as paid
+                          </button>
+                        )}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -164,6 +181,12 @@ export function BalancesTab() {
           }
         </RemoteView>
       </Section>
+
+      {showing && (
+        <Suspense fallback={null}>
+          <PaymentQrDialog payment={showing} onClose={() => setShowing(null)} />
+        </Suspense>
+      )}
     </div>
   );
 }
