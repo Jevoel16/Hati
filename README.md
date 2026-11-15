@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="#about">About</a> · <a href="#screenshots">Screenshots</a> · <a href="#features">Features</a> · <a href="#tech-stack">Tech Stack</a> · <a href="#getting-started">Getting Started</a> · <a href="#configuration">Configuration</a> · <a href="#usage">Usage</a> · <a href="#more">More</a> · <a href="#contributing">Contributing</a> · <a href="#license">License</a> · <a href="#author">Author</a>
+  <a href="#about">About</a> · <a href="#screenshots">Screenshots</a> · <a href="#features">Features</a> · <a href="#tech-stack">Tech Stack</a> · <a href="#architecture">Architecture</a> · <a href="#getting-started">Getting Started</a> · <a href="#configuration">Configuration</a> · <a href="#usage">Usage</a> · <a href="#more">More</a> · <a href="#contributing">Contributing</a> · <a href="#license">License</a> · <a href="#author">Author</a>
 </p>
 
 ---
@@ -68,6 +68,24 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 | Analytics | Vercel Web Analytics through @vercel/analytics 2.0.1                           |
 | Tooling   | node:test through tsx 4.23.15, ESLint 10.15.0, Prettier 3.10.1, GitHub Actions |
 
+## Architecture
+
+```mermaid
+flowchart LR
+  browser["Browser<br/>landing pages + React app"] -->|"pages"| static["Vercel static files"]
+  browser <-->|"REST /api/* and WebSocket /api/ws"| fn["One Vercel Function<br/>Express + ws"]
+  fn -->|mysql2| db[("TiDB Cloud")]
+  fn --> oauth["Google / GitHub OAuth"]
+  cron["Vercel Cron, daily"] --> fn
+```
+
+- The site, API and WebSocket share one origin, so the session cookie is first-party and there is no CORS.
+- On the server, routes call services and services call the data layer; the money math is pure functions in `server/src/domain`.
+- Every write also adds a row to `group_events`; each instance polls it every second and tells its sockets "this group changed", and the browser refetches.
+- Amounts are whole centavos everywhere, so shares and balances always add up exactly.
+
+The full write-up, with the request path, live updates, auth, data model and front end: [docs/architecture.md](docs/architecture.md).
+
 ## Getting Started
 
 You need Node.js 26 and a TiDB database (a free TiDB Cloud Serverless cluster works).
@@ -111,7 +129,7 @@ All settings are environment variables; [.env.example](.env.example) lists them 
 4. Add expenses as they happen and pick how each one is split.
 5. Check the Balances tab for the fewest payments that settle up, use Show QR to pay or share the payee's QR, and record each payment once it is made.
 
-Guides: [API reference](docs/api.md) · [Deploying to Vercel](docs/deploy.md) · [Security](docs/security.md) · [State machines](docs/state-machines.md) · [Performance](docs/performance.md)
+Guides: [Architecture](docs/architecture.md) · [API reference](docs/api.md) · [Deploying to Vercel](docs/deploy.md) · [Security](docs/security.md) · [State machines](docs/state-machines.md) · [Performance](docs/performance.md)
 
 ## More
 
