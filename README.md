@@ -44,21 +44,24 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 
 ## Features
 
-- Groups you join with an invite link or code, with admins and members
+- Groups you join with an invite link, a code or by scanning its QR code, with admins and members
 - Expenses split equally, by exact amounts or by percentage
 - Each member's balance, and the fewest payments that settle the whole group
 - Balances and an activity feed that update live, with no refresh
+- Payment QRs: save your GCash, Maya or bank InstaPay QR, and the people who owe you get it with the exact amount filled in, to scan or share
 - Recorded payments that adjust everyone's balance
 - Spending summary by category and by month
 - Sign-in with Google or GitHub, plus a public demo account
 - A username and password chosen on first sign-in
-- Phone-first layout with a system, light or dark theme switch and full keyboard access
+- A layout that uses the full width on desktop and phones, a system, light or dark theme switch and full keyboard access
+- Landing page with How it works, Features and Questions pages linked from its footer
 
 ## Tech Stack
 
 | Layer     | Tools                                                                          |
 | --------- | ------------------------------------------------------------------------------ |
 | Front end | React 19.3.1, React Router 7.18.5, Vite 8.3.8, plain CSS                       |
+| QR codes  | qrcode-generator 2.0.4 (drawing), jsQR 1.4.0 (camera and photo scanning)       |
 | Back end  | Node.js 26.13.1, Express 5.3.0, ws 8.23.0, Zod 4.6.7, TypeScript 6.0.3         |
 | Database  | TiDB (MySQL protocol) through mysql2 3.24.6                                    |
 | Hosting   | Vercel (static site, API and WebSocket in one function), TiDB Cloud            |
@@ -103,9 +106,10 @@ All settings are environment variables; [.env.example](.env.example) lists them 
 ## Usage
 
 1. Sign in with Google or GitHub and choose a password, or open the demo.
-2. Create a group and send its invite link to the others.
-3. Add expenses as they happen and pick how each one is split.
-4. Check the Balances tab for the fewest payments that settle up, and record each payment once it is made.
+2. Create a group and send its invite link or QR code to the others; they can scan it from Join a group.
+3. Optionally add your InstaPay QR on the Account page, so people who owe you can pay the exact amount.
+4. Add expenses as they happen and pick how each one is split.
+5. Check the Balances tab for the fewest payments that settle up, use Show QR to pay or share the payee's QR, and record each payment once it is made.
 
 Guides: [API reference](docs/api.md) · [Deploying to Vercel](docs/deploy.md) · [Security](docs/security.md) · [State machines](docs/state-machines.md) · [Performance](docs/performance.md)
 
