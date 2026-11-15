@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { TextField } from '../components/Field.tsx';
 import { FormError, RemoteView, Skeleton, SubmitButton } from '../components/States.tsx';
+import { GitHubIcon, GoogleIcon } from '../components/ProviderIcons.tsx';
 import { ThemeToggle } from '../components/ThemeToggle.tsx';
 import { Wordmark } from '../components/Wordmark.tsx';
 import { api } from '../lib/api.ts';
@@ -55,12 +56,14 @@ export default function SignIn() {
         {(available) => (
           <div className="stack">
             {available.google && (
-              <a className="button" href={`/api/auth/google/start?next=${next}`}>
+              <a className="button button--quiet" href={`/api/auth/google/start?next=${next}`}>
+                <GoogleIcon />
                 Continue with Google
               </a>
             )}
             {available.github && (
               <a className="button button--quiet" href={`/api/auth/github/start?next=${next}`}>
+                <GitHubIcon />
                 Continue with GitHub
               </a>
             )}
@@ -87,11 +90,7 @@ export default function SignIn() {
                 onChange={(e) => setPassword(e.target.value)}
               />
               <FormError state={submission} />
-              <SubmitButton
-                state={submission}
-                className={available.google ? 'button button--quiet' : 'button'}
-                busyLabel="Signing in…"
-              >
+              <SubmitButton state={submission} busyLabel="Signing in…">
                 Sign in
               </SubmitButton>
             </form>
