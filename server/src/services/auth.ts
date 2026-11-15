@@ -105,7 +105,7 @@ async function rotateSessions(
 }
 
 const usernameTaken = () =>
-  new AppError(409, 'conflict', 'That username is taken.', {
+  new AppError(409, 'conflict', 'Check the username.', {
     username: 'That username is taken. Try another.',
   });
 
