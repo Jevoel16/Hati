@@ -121,3 +121,54 @@ figcaption {
   align-items: center;
   gap: var(--s2);
 }
+
+/* Tabs: without JavaScript the panels stack like ordinary sections. */
+.tabs {
+  gap: var(--s8);
+}
+.tabs--ready {
+  gap: var(--s5);
+}
+.tab-list {
+  display: flex;
+  gap: var(--s1);
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+}
+.tab-list[hidden],
+.tab-panel[hidden] {
+  display: none;
+}
+.tab {
+  min-height: 44px;
+  margin-bottom: -1px;
+  padding: 0 var(--s2);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.tab:hover {
+  color: var(--ink);
+}
+.tab[aria-selected='true'] {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+}
+.tab-panel {
+  display: grid;
+  gap: var(--s4);
+}
+/* The tab names the panel, so its heading stays only for screen readers and search. */
+.tabs--ready .tab-panel > h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
