@@ -31,7 +31,7 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
     <td width="50%" align="center"><b>Your groups</b><br><a href="docs/images/groups.png"><img src="docs/images/groups.png" width="100%" alt="Groups list with one group and forms to start or join a group"></a></td>
   </tr>
   <tr>
-    <td width="50%" align="center"><b>Sign in</b><br><a href="docs/images/sign-in.png"><img src="docs/images/sign-in.png" width="100%" alt="Sign-in page with Google and GitHub buttons above an email and password form"></a></td>
+    <td width="50%" align="center"><b>Sign in</b><br><a href="docs/images/sign-in.png"><img src="docs/images/sign-in.png" width="100%" alt="Sign-in page with Google and GitHub buttons with their logos, a theme switch, and an email and password form"></a></td>
     <td width="50%" align="center"><b>Expenses</b><br><a href="docs/images/expenses.png"><img src="docs/images/expenses.png" width="100%" alt="Expenses tab listing each expense with its date, category, who paid, your share and the amount"></a></td>
   </tr>
   <tr>
