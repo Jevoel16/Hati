@@ -82,7 +82,7 @@ export default function GroupPage() {
           recordPayment: (prefill) => setDialog({ kind: 'payment', prefill }),
         };
         return (
-          <div className="stack stack--lg">
+          <div className="stack stack--lg group-layout">
             <section className="balance-hero">
               <h1>{data.name}</h1>
               {myNet === null ? (

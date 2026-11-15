@@ -116,6 +116,31 @@ figcaption {
   font-weight: 600;
 }
 
+/* Desktop: the pitch beside the sample screen, and the detail lists in two columns. */
+@media (min-width: 60rem) {
+  main:has(> .intro) {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: var(--s7);
+    min-height: min(70vh, 40rem);
+  }
+}
+@media (min-width: 48rem) {
+  .detail > :is(ol, ul, dl) {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s6) var(--s7);
+  }
+}
+@media (max-width: 30rem) {
+  main {
+    gap: var(--s7);
+    padding-block: var(--s5) var(--s7);
+  }
+  .intro-actions .button {
+    flex: 1 1 auto;
+  }
+}
+
 /* Detail pages linked from the footer. */
 .detail {
   display: grid;

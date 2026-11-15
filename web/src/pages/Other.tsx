@@ -24,7 +24,7 @@ export function Join() {
     <RemoteView state={invite} onRetry={reload}>
       {(preview) => (
         <form
-          className="stack"
+          className="stack narrow"
           onSubmit={(event) => {
             event.preventDefault();
             void join();
@@ -65,7 +65,7 @@ export function Account() {
   const viaOAuth = state.status === 'success' && state.data?.authMethod === 'oauth';
 
   return (
-    <div className="stack stack--lg">
+    <div className="stack stack--lg narrow">
       <section className="stack stack--sm">
         <h1>{user.name}</h1>
         {user.username && <p>@{user.username}</p>}
@@ -95,7 +95,7 @@ export function Account() {
 export function NotFound() {
   useDocumentTitle('Page not found');
   return (
-    <div className="stack">
+    <div className="stack narrow">
       <h1>That page does not exist</h1>
       <p className="muted">The link may be old, or the group may have been deleted.</p>
       <div>

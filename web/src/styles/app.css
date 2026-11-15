@@ -14,6 +14,45 @@
 main {
   padding-block: var(--s5) var(--s8);
 }
+@media (max-width: 30rem) {
+  main {
+    padding-block: var(--s4) var(--s7);
+  }
+}
+/* Pages of mostly forms or prose keep a readable width inside the wide page. */
+.narrow {
+  max-width: var(--measure);
+}
+
+/* Desktop group page: the balance and actions stay in view beside the sections. */
+@media (min-width: 60rem) {
+  .group-layout {
+    grid-template-columns: 22rem minmax(0, 1fr);
+    align-items: start;
+    gap: var(--s7);
+  }
+  .group-layout > .balance-hero {
+    position: sticky;
+    top: var(--s5);
+  }
+  .group-layout .balance-hero .figure {
+    font-size: 3rem;
+  }
+  .groups-layout {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: start;
+    gap: var(--s5) var(--s7);
+  }
+  .groups-layout > :first-child {
+    grid-row: span 2;
+  }
+}
+/* Phones: the hero's actions share the full width. */
+@media (max-width: 40rem) {
+  .balance-hero .row > .button {
+    flex: 1 1 9rem;
+  }
+}
 
 .stack {
   display: grid;
@@ -215,6 +254,18 @@ dialog {
   border-radius: var(--r2);
   background: var(--bg);
   color: var(--ink);
+}
+/* Phones: dialogs become a full-width sheet at the bottom of the screen. */
+@media (max-width: 30rem) {
+  dialog {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - var(--s5));
+    margin: auto 0 0;
+    padding: var(--s5) var(--s4);
+    border-radius: var(--r2) var(--r2) 0 0;
+    border-bottom: 0;
+  }
 }
 dialog::backdrop {
   background: rgb(0 0 0 / 0.55);

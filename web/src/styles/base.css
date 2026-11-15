@@ -34,7 +34,10 @@
   --t-2xl: 2.5rem;
   --t-hero: clamp(2.75rem, 10vw, 4.5rem);
 
-  --page: 46rem;
+  --page: 72rem;
+  /* Longest comfortable line of text, for forms and prose inside the wider page. */
+  --measure: 40rem;
+  --gutter: var(--s4);
 }
 
 /* Dark tokens apply for a saved "dark" choice, or for "system" on a dark device. */
@@ -164,7 +167,17 @@ a {
   width: 100%;
   max-width: var(--page);
   margin-inline: auto;
-  padding-inline: var(--s4);
+  padding-inline: var(--gutter);
+}
+@media (max-width: 30rem) {
+  :root {
+    --gutter: var(--s3);
+  }
+}
+@media (min-width: 60rem) {
+  :root {
+    --gutter: var(--s5);
+  }
 }
 
 .theme-toggle {

@@ -78,7 +78,7 @@ export default function Groups() {
   const [groups, reload] = useRemote<{ groups: GroupListItem[] }>('/groups');
 
   return (
-    <div className="stack stack--lg">
+    <div className="stack stack--lg groups-layout">
       <section className="stack" aria-labelledby="groups-heading">
         <h1 id="groups-heading">Your groups</h1>
         <RemoteView state={groups} onRetry={reload}>
