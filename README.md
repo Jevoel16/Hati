@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/Jevoel16/Hati/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Jevoel16/Hati/ci.yml?branch=main&label=CI&style=flat" alt="CI status"></a>
+  <img src="https://img.shields.io/badge/version-1.0.0-blue?style=flat" alt="Version 1.0.0">
   <img src="https://img.shields.io/badge/platform-web-lightgrey?style=flat" alt="Platform: web">
   <img src="https://img.shields.io/badge/React-19-blue?style=flat" alt="React 19">
 </p>
