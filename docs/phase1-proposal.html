@@ -8,32 +8,34 @@
   :root { --ink: #1b1f24; --muted: #4a5360; --line: #c9d0d8; --accent: #0b6e5f; --fill: #f1f5f4; }
   * { box-sizing: border-box; }
   body { font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.5; margin: 0; }
-  h1, h2, h3 { text-wrap: balance; line-height: 1.2; margin: 0; }
+  h1, h2, h3, h4 { text-wrap: balance; line-height: 1.2; margin: 0; page-break-after: avoid; }
   p, li { text-wrap: pretty; }
   p { margin: 0 0 8pt; }
   ul { margin: 0 0 8pt; padding-left: 16pt; }
   li { margin-bottom: 3pt; }
-  .cover { height: 250mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+  .cover { height: 252mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
   .cover .course { font-size: 11pt; color: var(--muted); }
   .cover h1 { font-size: 40pt; color: var(--accent); margin-bottom: 6pt; }
   .cover .sub { font-size: 16pt; margin-bottom: 18pt; }
   .cover .doc { font-size: 12pt; color: var(--muted); }
-  .cover dl { display: grid; grid-template-columns: 32mm 1fr; gap: 4pt 0; margin: 0; font-size: 11pt; }
+  .cover dl { display: grid; grid-template-columns: 32mm 1fr; gap: 4pt 0; margin: 0 0 18pt; font-size: 11pt; }
   .cover dt { color: var(--muted); }
   .cover dd { margin: 0; }
+  .cover .note { font-size: 9.5pt; color: var(--muted); margin: 0; }
   section { page-break-before: always; }
-  section:first-of-type { page-break-before: auto; }
   h2 { font-size: 17pt; color: var(--accent); padding-bottom: 5pt; border-bottom: 1.5pt solid var(--accent); margin-bottom: 12pt; }
-  h3 { font-size: 11.5pt; margin: 14pt 0 5pt; page-break-after: avoid; }
-  table { width: 100%; border-collapse: collapse; margin: 0 0 10pt; font-size: 9.5pt; page-break-inside: avoid; }
+  .cover h2 { font-size: 14pt; margin-bottom: 8pt; }
+  h3 { font-size: 13pt; color: var(--accent); margin: 16pt 0 6pt; }
+  h4 { font-size: 11pt; margin: 12pt 0 4pt; }
+  h2 + h3 { margin-top: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 6pt; font-size: 10pt; page-break-inside: avoid; }
   th, td { border: 0.75pt solid var(--line); padding: 5pt 6pt; text-align: left; vertical-align: top; }
   th { background: var(--fill); font-weight: 600; }
   .blank { background: #fff6d6; padding: 0 3pt; }
   code { font-family: Consolas, monospace; font-size: 9.5pt; }
-  figure { margin: 10pt 0; page-break-inside: avoid; }
-  figcaption { font-size: 9pt; color: var(--muted); margin-top: 4pt; }
-  svg text { font-family: "Segoe UI", Arial, sans-serif; }
-  .keep { page-break-inside: avoid; }
+  figure { margin: 0; page-break-before: always; page-break-after: always; page-break-inside: avoid; }
+  figure h4 { margin-top: 0; margin-bottom: 8pt; }
+  figcaption { font-size: 9pt; color: var(--muted); margin-top: 6pt; }
 </style>
 </head>
 <body>
@@ -45,59 +47,34 @@
     <div class="sub">A shared expense splitter with live balances</div>
     <div class="doc">Phase 1 Project Proposal</div>
   </div>
-  <dl>
-    <dt>Group</dt><dd><span class="blank">[Group Name]</span></dd>
-    <dt>Members</dt><dd>4</dd>
-    <dt>Submitted</dt><dd>November 10, 2026</dd>
-  </dl>
+  <div>
+    <dl>
+      <dt>Group</dt><dd><span class="blank">[Group Name]</span></dd>
+      <dt>Submitted</dt><dd>November 10, 2026</dd>
+    </dl>
+    <h2>Section A: Team Details &amp; Roles</h2>
+    <table>
+      <thead>
+        <tr><th style="width:40%">Name</th><th style="width:22%">ID Number</th><th>Role</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="blank">[Member 1 Name]</span></td><td><span class="blank">[ID Number]</span></td><td>Project Lead / Full-Stack Integrator</td></tr>
+        <tr><td><span class="blank">[Member 2 Name]</span></td><td><span class="blank">[ID Number]</span></td><td>Front-End Developer</td></tr>
+        <tr><td><span class="blank">[Member 3 Name]</span></td><td><span class="blank">[ID Number]</span></td><td>Back-End Developer</td></tr>
+        <tr><td><span class="blank">[Member 4 Name]</span></td><td><span class="blank">[ID Number]</span></td><td>Database &amp; QA Engineer</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Group size: four members, within the standard size of three to five, so no justification is required.</p>
+  </div>
 </div>
-
-<section>
-  <h2>Section A: Team Details &amp; Roles</h2>
-  <table>
-    <thead>
-      <tr><th style="width:24%">Name</th><th style="width:14%">ID Number</th><th style="width:22%">Role</th><th>Responsibilities</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="blank">[Member 1 Name]</span></td><td><span class="blank">[ID Number]</span></td>
-        <td>Project Lead / Full-Stack Integrator</td>
-        <td>Scope and schedule, repository and code review, Docker setup, CI/CD pipeline, deployment, connecting front end and back end.</td>
-      </tr>
-      <tr>
-        <td><span class="blank">[Member 2 Name]</span></td><td><span class="blank">[ID Number]</span></td>
-        <td>Front-End Developer</td>
-        <td>React pages and components, responsive layout, forms and client-side validation, accessibility, live updates in the interface.</td>
-      </tr>
-      <tr>
-        <td><span class="blank">[Member 3 Name]</span></td><td><span class="blank">[ID Number]</span></td>
-        <td>Back-End Developer</td>
-        <td>Express REST API, middleware, JWT authentication and authorization, WebSocket server, balance and settlement logic.</td>
-      </tr>
-      <tr>
-        <td><span class="blank">[Member 4 Name]</span></td><td><span class="blank">[ID Number]</span></td>
-        <td>Database &amp; QA Engineer</td>
-        <td>MySQL schema and migrations (MySQL 8 locally, TiDB Cloud when deployed), data validation and constraints, automated and manual testing, project documentation.</td>
-      </tr>
-    </tbody>
-  </table>
-  <h3>Group size</h3>
-  <p>The group has four members, which is within the standard size of three to five. No group-size justification is required.</p>
-  <h3>How the team works</h3>
-  <ul>
-    <li>Every member contributes code; roles name who owns and reviews each area, not who is limited to it.</li>
-    <li>Work is tracked in one shared GitHub repository, with each change reviewed by another member before it is merged.</li>
-    <li>The group meets weekly to check progress against the phase deadlines.</li>
-  </ul>
-</section>
 
 <section>
   <h2>Section B: Project Concept &amp; Motivation</h2>
 
-  <h3>Working title</h3>
+  <h3>B.1 Working Title</h3>
   <p><b>Hati</b> (Filipino for "to split"): a shared expense splitter with live balances.</p>
 
-  <h3>Core functionality</h3>
+  <h3>B.2 Core Functionality</h3>
   <ul>
     <li><b>Accounts.</b> Users sign in with Google or GitHub, then choose a username and password.</li>
     <li><b>Groups.</b> A user creates a group (for example a boarding house, a project team or a trip) and invites others with a code, a link or a QR code to scan. Each group has an admin and members.</li>
@@ -110,10 +87,10 @@
   </ul>
   <p>Hati keeps records only. It does not process or hold real money.</p>
 
-  <h3>Problem statement</h3>
+  <h3>B.3 Problem Statement</h3>
   <p>Students who share costs, such as housemates paying rent, utilities and groceries, project groups buying materials, or friends splitting a trip, usually track them in group chats, notes or memory. Entries get buried, arithmetic is done by hand and each person keeps a different version of the total. The result is forgotten debts, wrong amounts and uncomfortable disputes among people who live or work together. There is no single, current record that everyone in the group can see and trust.</p>
 
-  <h3>Why this project?</h3>
+  <h3>B.4 Why This Project?</h3>
   <ul>
     <li><b>It solves a problem the team and its classmates have.</b> The intended users are easy to reach for feedback and testing.</li>
     <li><b>It is a live data monitoring system built entirely in software.</b> Every member of a group watches the same balances change as expenses are added, with no hardware or sensors required.</li>
@@ -126,113 +103,391 @@
 <section>
   <h2>Section C: Technical &amp; Non-Technical Specifications</h2>
 
-  <h3>Technical specifications</h3>
-  <table>
-    <thead><tr><th style="width:20%">Layer</th><th style="width:28%">Choice</th><th>Details</th></tr></thead>
-    <tbody>
-      <tr><td>Front-End</td><td>React (built with Vite)</td><td>Single-page application with React Router; plain CSS with shared design tokens; the browser's native WebSocket API for live updates.</td></tr>
-      <tr><td>Back-End</td><td>Node.js with Express</td><td>RESTful API; middleware for input validation, rate limiting and error handling; Google and GitHub OAuth sign-in; a signed JWT in an httpOnly, SameSite cookie that names a session row in the database, so any sign-in can be revoked; passwords hashed with bcrypt; a WebSocket server (<code>ws</code>) that pushes balance and activity events to everyone viewing a group.</td></tr>
-      <tr><td>Database</td><td>MySQL 8 locally, TiDB Cloud when deployed (relational, MySQL-compatible)</td><td>Normalized schema with foreign keys, ENUM status columns and check constraints, with the same rules also enforced in code; amounts stored as whole centavos to avoid rounding errors; parameterized queries only, through <code>mysql2</code>.</td></tr>
-      <tr><td>Deployment</td><td>Docker, GitHub Actions, Vercel</td><td>Separate containers for the database, API and web client, run together with Docker Compose in development; GitHub Actions runs lint, type checks, tests (against a TiDB database) and the build on every push; in production, one Vercel project serves the React site and runs the REST API and WebSocket in a single function, deployed on every push to <code>main</code>; TiDB Cloud Serverless database; HTTPS throughout.</td></tr>
-    </tbody>
-  </table>
+  <h3>C.1 Technical Specifications</h3>
 
-  <div class="keep">
-  <h3>Database schema</h3>
-  <table>
-    <thead><tr><th style="width:22%">Table</th><th>Purpose and key columns</th></tr></thead>
-    <tbody>
-      <tr><td><code>users</code></td><td>Accounts: <code>id</code>, <code>name</code>, <code>email</code> (unique), <code>username</code> (unique), <code>password_hash</code>, <code>status</code> (password_pending, username_pending or active), <code>google_sub</code>, <code>github_id</code>, <code>is_demo</code>.</td></tr>
-      <tr><td><code>sessions</code></td><td>Signed-in devices the cookie points to: <code>id</code>, <code>user_id</code>, <code>auth_method</code> (oauth or password), <code>last_seen_at</code>, <code>expires_at</code>.</td></tr>
-      <tr><td><code>payment_qrs</code></td><td>A member's payment QRs (GCash, Maya or a bank, up to five): <code>id</code>, <code>user_id</code>, <code>label</code>, <code>payload</code> (the QR text, not the image).</td></tr>
-      <tr><td><code>groups</code></td><td>Expense groups: <code>id</code>, <code>name</code>, <code>invite_code</code> (unique), <code>created_by</code>.</td></tr>
-      <tr><td><code>group_members</code></td><td>Membership and role: <code>group_id</code>, <code>user_id</code>, <code>role</code> (admin or member), <code>status</code> (active or left), <code>joined_at</code>.</td></tr>
-      <tr><td><code>expenses</code></td><td>One shared cost: <code>id</code>, <code>group_id</code>, <code>paid_by</code>, <code>created_by</code>, <code>amount_centavos</code>, <code>category</code>, <code>description</code>, <code>split_type</code>, <code>spent_on</code>.</td></tr>
-      <tr><td><code>expense_shares</code></td><td>Each member's part of an expense: <code>expense_id</code>, <code>user_id</code>, <code>share_centavos</code>. Shares must add up to the expense amount.</td></tr>
-      <tr><td><code>settlements</code></td><td>Payments between members: <code>id</code>, <code>group_id</code>, <code>from_user</code>, <code>to_user</code>, <code>created_by</code>, <code>amount_centavos</code>, <code>settled_on</code>.</td></tr>
-      <tr><td><code>activity_log</code></td><td>Feed of group events: <code>id</code>, <code>group_id</code>, <code>actor_id</code>, <code>action</code>, <code>summary</code>, <code>created_at</code>.</td></tr>
-      <tr><td><code>group_events</code></td><td>Short-lived outbox for live updates: <code>id</code>, <code>group_id</code>, <code>action</code>, <code>created_at</code>. Each write adds a row in the same transaction; the server checks it every second and pushes new rows to that group's WebSockets.</td></tr>
-      <tr><td><code>rate_limits</code></td><td>Request counters for rate limiting: <code>bucket</code>, <code>window_start</code>, <code>hits</code>.</td></tr>
-    </tbody>
-  </table>
-  </div>
+  <h4>C.1.1 Front-End Framework</h4>
+  <p>React, built with Vite and written in TypeScript.</p>
+  <ul>
+    <li>Single-page application with React Router, plus a static landing page.</li>
+    <li>Plain CSS with shared design tokens, and light and dark themes.</li>
+    <li>The browser's native WebSocket API for live updates.</li>
+  </ul>
+
+  <h4>C.1.2 Back-End Framework</h4>
+  <p>Node.js with Express, written in TypeScript.</p>
+  <ul>
+    <li>RESTful API with middleware for input validation, rate limiting and error handling.</li>
+    <li>Google and GitHub OAuth sign-in, followed by a username and a password hashed with bcrypt.</li>
+    <li>A signed JWT in an httpOnly, SameSite cookie that names a session row in the database, so any sign-in can be revoked.</li>
+    <li>A WebSocket server (<code>ws</code>) that pushes balance and activity events to everyone viewing a group.</li>
+  </ul>
+
+  <h4>C.1.3 Database Schema Choice</h4>
+  <p>A relational database: MySQL 8 locally and TiDB Cloud (MySQL-compatible) when deployed. Hati's data is linked records (groups, members, expenses, shares and payments) whose totals must always agree, so foreign keys and transactions matter more than a flexible document format.</p>
+  <ul>
+    <li>Amounts are stored as whole centavos (integers) to avoid rounding errors.</li>
+    <li>Statuses are ENUM columns. Check constraints guard the data, and the same rules are enforced in code, since TiDB may not enforce CHECK.</li>
+    <li>Parameterized queries only, through <code>mysql2</code>, with versioned migration files.</li>
+    <li><code>sessions</code> holds one row per signed-in device; deleting the row signs that device out.</li>
+    <li><code>group_events</code> is a short-lived outbox: each write adds a row in its transaction, and the server checks it every second to push new rows to that group's WebSockets.</li>
+    <li><code>rate_limits</code> counts requests per client and time window.</li>
+  </ul>
+  <p>Figure 1 shows all eleven tables.</p>
+
+  <h4>C.1.4 Deployment Plan</h4>
+  <ul>
+    <li><b>Development:</b> Docker Compose runs the database, API and web client in separate containers; the app also runs against a local MySQL 8 database.</li>
+    <li><b>Continuous integration:</b> GitHub Actions runs lint, type checks, tests (against a TiDB database) and the build on every push.</li>
+    <li><b>Production:</b> one Vercel project serves the React site and runs the REST API and WebSocket in a single function, deployed automatically on every push to <code>main</code>.</li>
+    <li><b>Database:</b> TiDB Cloud Serverless.</li>
+    <li><b>Security:</b> HTTPS throughout, with a strict content security policy.</li>
+  </ul>
 
   <figure>
-    <svg viewBox="0 0 680 300" width="100%" role="img" aria-label="Entity relationship diagram of the nine linked tables">
-      <g fill="none" stroke="#4a5360" stroke-width="1.2">
-        <path d="M145 44 H188"/>
-        <path d="M318 44 H361"/>
-        <path d="M491 44 H534"/>
-        <path d="M200 68 V112 H80 V136"/>
-        <path d="M218 68 V136"/>
-        <path d="M288 68 V102 H396 V136"/>
-        <path d="M569 68 V102 H456 V136"/>
-        <path d="M629 68 V136"/>
-        <path d="M426 184 V232"/>
-      </g>
-      <g font-size="10" fill="#4a5360">
-        <text x="150" y="39">N</text><text x="178" y="39">1</text>
-        <text x="323" y="39">1</text><text x="350" y="39">N</text>
-        <text x="496" y="39">N</text><text x="524" y="39">1</text>
-        <text x="190" y="80">1</text><text x="85" y="131">N</text>
-        <text x="223" y="80">1</text><text x="223" y="131">N</text>
-        <text x="293" y="80">1</text><text x="401" y="131">N</text>
-        <text x="558" y="80">1</text><text x="461" y="131">N</text>
-        <text x="634" y="80">1</text><text x="634" y="131">N</text>
-        <text x="431" y="196">1</text><text x="431" y="228">N</text>
-      </g>
-      <g fill="#f1f5f4" stroke="#0b6e5f" stroke-width="1.2">
-        <rect x="15" y="20" width="130" height="48" rx="4"/>
-        <rect x="188" y="20" width="130" height="48" rx="4"/>
-        <rect x="361" y="20" width="130" height="48" rx="4"/>
-        <rect x="534" y="20" width="130" height="48" rx="4"/>
-        <rect x="15" y="136" width="130" height="48" rx="4"/>
-        <rect x="188" y="136" width="130" height="48" rx="4"/>
-        <rect x="361" y="136" width="130" height="48" rx="4"/>
-        <rect x="534" y="136" width="130" height="48" rx="4"/>
-        <rect x="361" y="232" width="130" height="48" rx="4"/>
-      </g>
-      <g font-size="12" font-weight="600" fill="#1b1f24" text-anchor="middle">
-        <text x="80" y="41">sessions</text>
-        <text x="253" y="41">users</text>
-        <text x="426" y="41">group_members</text>
-        <text x="599" y="41">groups</text>
-        <text x="80" y="157">payment_qrs</text>
-        <text x="253" y="157">activity_log</text>
-        <text x="426" y="157">expenses</text>
-        <text x="599" y="157">settlements</text>
-        <text x="426" y="253">expense_shares</text>
-      </g>
-      <g font-size="9.5" fill="#4a5360" text-anchor="middle">
-        <text x="80" y="57">user_id, auth_method</text>
-        <text x="253" y="57">id, email, username</text>
-        <text x="426" y="57">group_id, user_id, role</text>
-        <text x="599" y="57">id, invite_code</text>
-        <text x="80" y="173">user_id, label</text>
-        <text x="253" y="173">group_id, actor_id</text>
-        <text x="426" y="173">group_id, paid_by</text>
-        <text x="599" y="173">from_user, to_user</text>
-        <text x="426" y="269">expense_id, user_id</text>
-      </g>
-    </svg>
-    <figcaption>Main relationships (1 to many). <code>expenses</code>, <code>expense_shares</code>, <code>settlements</code> and <code>activity_log</code> also reference <code>users</code>. <code>group_events</code> and <code>rate_limits</code> have no foreign keys and are not drawn.</figcaption>
+    <h4>Figure 1. Entity relationship diagram (crow's foot notation)</h4>
+    <svg viewBox="0 0 690 727" width="100%" role="img" aria-label="Crow's foot entity relationship diagram of all eleven tables">
+<style>text{font-family:"Segoe UI",Arial,sans-serif}.mono{font-family:Consolas,monospace}</style>
+<path d="M255 45.0 L222 45.0 L222 439.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M249 50.0 L249 40.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M245 50.0 L245 40.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M222 59.0 L190 59.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M201 59.0 L190 54.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M201 59.0 L190 59.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M201 59.0 L190 64.0" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="205.5" cy="59.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M222 199.0 L190 199.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M201 199.0 L190 194.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M201 199.0 L190 199.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M201 199.0 L190 204.0" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="205.5" cy="199.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M222 439.0 L255 439.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M244 439.0 L255 444.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M244 439.0 L255 439.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M244 439.0 L255 434.0" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="239.5" cy="439.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M435 45.0 L476 45.0 L476 543.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M441 40.0 L441 50.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M445 40.0 L445 50.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M476 73.0 L500 73.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 73.0 L500 78.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 73.0 L500 73.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 73.0 L500 68.0" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="484.5" cy="73.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M476 261.0 L500 261.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 261.0 L500 266.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 261.0 L500 261.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 261.0 L500 256.0" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="484.5" cy="261.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M476 373.0 L500 373.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 373.0 L500 378.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 373.0 L500 373.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 373.0 L500 368.0" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="484.5" cy="373.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M476 543.0 L500 543.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 543.0 L500 548.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 543.0 L500 543.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 543.0 L500 538.0" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="484.5" cy="543.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M435 275.0 L455 275.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M455 59.0 L455 529.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M441 270.0 L441 280.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M445 270.0 L445 280.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M455 59.0 L500 59.0" fill="none" stroke="#fff" stroke-width="5"/>
+<path d="M455 59.0 L500 59.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 59.0 L500 64.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 59.0 L500 59.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 59.0 L500 54.0" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="484.5" cy="59.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M455 359.0 L500 359.0" fill="none" stroke="#fff" stroke-width="5"/>
+<path d="M455 359.0 L500 359.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 359.0 L500 364.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 359.0 L500 359.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 359.0 L500 354.0" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="484.5" cy="359.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M455 529.0 L500 529.0" fill="none" stroke="#fff" stroke-width="5"/>
+<path d="M455 529.0 L500 529.0" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 529.0 L500 534.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 529.0 L500 529.0" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M489 529.0 L500 524.0" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="484.5" cy="529.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M300 197 L300 250" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M295 203 L305 203" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M295 207 L305 207" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M300 239 L305 250" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M300 239 L300 250" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M300 239 L295 250" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="300.0" cy="234.5" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M390 343 L390 400" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M385 349 L395 349" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M385 353 L395 353" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M390 389 L395 400" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M390 389 L390 400" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M390 389 L385 400" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="390.0" cy="384.5" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M590 183 L590 222" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M585 189 L595 189" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M585 193 L595 193" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M590 211 L595 222" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M590 211 L590 222" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M590 211 L585 222" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="590.0" cy="206.5" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<rect x="255" y="20" width="180" height="177" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M255 38 V23 Q255 20 258 20 H432 Q435 20 435 23 V38 Z" fill="#0b6e5f"/>
+<text x="345.0" y="32.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">users</text>
+<text x="260" y="48" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
+<text x="289" y="48" class="mono" font-size="9" fill="#1b1f24">id</text>
+<text x="430" y="48" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="256" y="52" width="178" height="14" fill="#f1f5f4"/>
+<text x="289" y="62" class="mono" font-size="9" fill="#1b1f24">name</text>
+<text x="430" y="62" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(80)</text>
+<text x="260" y="76" font-size="7.5" fill="#4a5360">UK</text>
+<text x="289" y="76" class="mono" font-size="9" fill="#1b1f24">email</text>
+<text x="430" y="76" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(254)</text>
+<rect x="256" y="80" width="178" height="14" fill="#f1f5f4"/>
+<text x="260" y="90" font-size="7.5" fill="#4a5360">UK</text>
+<text x="289" y="90" class="mono" font-size="9" fill="#1b1f24">username</text>
+<text x="430" y="90" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(20)</text>
+<text x="289" y="104" class="mono" font-size="9" fill="#1b1f24">password_hash</text>
+<text x="430" y="104" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(100)</text>
+<rect x="256" y="108" width="178" height="14" fill="#f1f5f4"/>
+<text x="289" y="118" class="mono" font-size="9" fill="#1b1f24">status</text>
+<text x="430" y="118" text-anchor="end" class="mono" font-size="8" fill="#4a5360">ENUM</text>
+<text x="260" y="132" font-size="7.5" fill="#4a5360">UK</text>
+<text x="289" y="132" class="mono" font-size="9" fill="#1b1f24">google_sub</text>
+<text x="430" y="132" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(64)</text>
+<rect x="256" y="136" width="178" height="14" fill="#f1f5f4"/>
+<text x="260" y="146" font-size="7.5" fill="#4a5360">UK</text>
+<text x="289" y="146" class="mono" font-size="9" fill="#1b1f24">github_id</text>
+<text x="430" y="146" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(32)</text>
+<text x="289" y="160" class="mono" font-size="9" fill="#1b1f24">email_verified_at</text>
+<text x="430" y="160" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<rect x="256" y="164" width="178" height="14" fill="#f1f5f4"/>
+<text x="289" y="174" class="mono" font-size="9" fill="#1b1f24">is_demo</text>
+<text x="430" y="174" text-anchor="end" class="mono" font-size="8" fill="#4a5360">BOOLEAN</text>
+<text x="289" y="188" class="mono" font-size="9" fill="#1b1f24">created_at</text>
+<text x="430" y="188" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<rect x="255" y="250" width="180" height="93" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M255 268 V253 Q255 250 258 250 H432 Q435 250 435 253 V268 Z" fill="#0b6e5f"/>
+<text x="345.0" y="262.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">groups</text>
+<text x="260" y="278" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
+<text x="289" y="278" class="mono" font-size="9" fill="#1b1f24">id</text>
+<text x="430" y="278" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="256" y="282" width="178" height="14" fill="#f1f5f4"/>
+<text x="289" y="292" class="mono" font-size="9" fill="#1b1f24">name</text>
+<text x="430" y="292" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(60)</text>
+<text x="260" y="306" font-size="7.5" fill="#4a5360">UK</text>
+<text x="289" y="306" class="mono" font-size="9" fill="#1b1f24">invite_code</text>
+<text x="430" y="306" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(16)</text>
+<rect x="256" y="310" width="178" height="14" fill="#f1f5f4"/>
+<text x="260" y="320" font-size="7.5" fill="#4a5360">FK</text>
+<text x="289" y="320" class="mono" font-size="9" fill="#1b1f24">created_by</text>
+<text x="430" y="320" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="289" y="334" class="mono" font-size="9" fill="#1b1f24">created_at</text>
+<text x="430" y="334" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<rect x="255" y="400" width="180" height="93" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M255 418 V403 Q255 400 258 400 H432 Q435 400 435 403 V418 Z" fill="#0b6e5f"/>
+<text x="345.0" y="412.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">group_members</text>
+<text x="260" y="428" font-size="7.5" font-weight="700" fill="#0b6e5f">PK FK</text>
+<text x="289" y="428" class="mono" font-size="9" fill="#1b1f24">group_id</text>
+<text x="430" y="428" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="256" y="432" width="178" height="14" fill="#f1f5f4"/>
+<text x="260" y="442" font-size="7.5" font-weight="700" fill="#0b6e5f">PK FK</text>
+<text x="289" y="442" class="mono" font-size="9" fill="#1b1f24">user_id</text>
+<text x="430" y="442" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="289" y="456" class="mono" font-size="9" fill="#1b1f24">role</text>
+<text x="430" y="456" text-anchor="end" class="mono" font-size="8" fill="#4a5360">ENUM</text>
+<rect x="256" y="460" width="178" height="14" fill="#f1f5f4"/>
+<text x="289" y="470" class="mono" font-size="9" fill="#1b1f24">status</text>
+<text x="430" y="470" text-anchor="end" class="mono" font-size="8" fill="#4a5360">ENUM</text>
+<text x="289" y="484" class="mono" font-size="9" fill="#1b1f24">joined_at</text>
+<text x="430" y="484" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<rect x="10" y="20" width="180" height="107" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M10 38 V23 Q10 20 13 20 H187 Q190 20 190 23 V38 Z" fill="#0b6e5f"/>
+<text x="100.0" y="32.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">sessions</text>
+<text x="15" y="48" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
+<text x="44" y="48" class="mono" font-size="9" fill="#1b1f24">id</text>
+<text x="185" y="48" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="11" y="52" width="178" height="14" fill="#f1f5f4"/>
+<text x="15" y="62" font-size="7.5" fill="#4a5360">FK</text>
+<text x="44" y="62" class="mono" font-size="9" fill="#1b1f24">user_id</text>
+<text x="185" y="62" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="44" y="76" class="mono" font-size="9" fill="#1b1f24">auth_method</text>
+<text x="185" y="76" text-anchor="end" class="mono" font-size="8" fill="#4a5360">ENUM</text>
+<rect x="11" y="80" width="178" height="14" fill="#f1f5f4"/>
+<text x="44" y="90" class="mono" font-size="9" fill="#1b1f24">created_at</text>
+<text x="185" y="90" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<text x="44" y="104" class="mono" font-size="9" fill="#1b1f24">last_seen_at</text>
+<text x="185" y="104" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<rect x="11" y="108" width="178" height="14" fill="#f1f5f4"/>
+<text x="44" y="118" class="mono" font-size="9" fill="#1b1f24">expires_at</text>
+<text x="185" y="118" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<rect x="10" y="160" width="180" height="93" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M10 178 V163 Q10 160 13 160 H187 Q190 160 190 163 V178 Z" fill="#0b6e5f"/>
+<text x="100.0" y="172.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">payment_qrs</text>
+<text x="15" y="188" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
+<text x="44" y="188" class="mono" font-size="9" fill="#1b1f24">id</text>
+<text x="185" y="188" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="11" y="192" width="178" height="14" fill="#f1f5f4"/>
+<text x="15" y="202" font-size="7.5" fill="#4a5360">FK</text>
+<text x="44" y="202" class="mono" font-size="9" fill="#1b1f24">user_id</text>
+<text x="185" y="202" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="44" y="216" class="mono" font-size="9" fill="#1b1f24">label</text>
+<text x="185" y="216" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(40)</text>
+<rect x="11" y="220" width="178" height="14" fill="#f1f5f4"/>
+<text x="44" y="230" class="mono" font-size="9" fill="#1b1f24">payload</text>
+<text x="185" y="230" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(512)</text>
+<text x="44" y="244" class="mono" font-size="9" fill="#1b1f24">created_at</text>
+<text x="185" y="244" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<rect x="10" y="540" width="180" height="79" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M10 558 V543 Q10 540 13 540 H187 Q190 540 190 543 V558 Z" fill="#0b6e5f"/>
+<text x="100.0" y="552.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">group_events</text>
+<text x="15" y="568" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
+<text x="44" y="568" class="mono" font-size="9" fill="#1b1f24">id</text>
+<text x="185" y="568" text-anchor="end" class="mono" font-size="8" fill="#4a5360">BIGINT</text>
+<rect x="11" y="572" width="178" height="14" fill="#f1f5f4"/>
+<text x="44" y="582" class="mono" font-size="9" fill="#1b1f24">group_id</text>
+<text x="185" y="582" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="44" y="596" class="mono" font-size="9" fill="#1b1f24">action</text>
+<text x="185" y="596" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(32)</text>
+<rect x="11" y="600" width="178" height="14" fill="#f1f5f4"/>
+<text x="44" y="610" class="mono" font-size="9" fill="#1b1f24">created_at</text>
+<text x="185" y="610" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<rect x="10" y="650" width="180" height="65" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M10 668 V653 Q10 650 13 650 H187 Q190 650 190 653 V668 Z" fill="#0b6e5f"/>
+<text x="100.0" y="662.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">rate_limits</text>
+<text x="15" y="678" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
+<text x="44" y="678" class="mono" font-size="9" fill="#1b1f24">bucket</text>
+<text x="185" y="678" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(160)</text>
+<rect x="11" y="682" width="178" height="14" fill="#f1f5f4"/>
+<text x="15" y="692" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
+<text x="44" y="692" class="mono" font-size="9" fill="#1b1f24">window_start</text>
+<text x="185" y="692" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<text x="44" y="706" class="mono" font-size="9" fill="#1b1f24">hits</text>
+<text x="185" y="706" text-anchor="end" class="mono" font-size="8" fill="#4a5360">INT</text>
+<rect x="500" y="20" width="180" height="163" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M500 38 V23 Q500 20 503 20 H677 Q680 20 680 23 V38 Z" fill="#0b6e5f"/>
+<text x="590.0" y="32.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">expenses</text>
+<text x="505" y="48" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
+<text x="534" y="48" class="mono" font-size="9" fill="#1b1f24">id</text>
+<text x="675" y="48" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="501" y="52" width="178" height="14" fill="#f1f5f4"/>
+<text x="505" y="62" font-size="7.5" fill="#4a5360">FK</text>
+<text x="534" y="62" class="mono" font-size="9" fill="#1b1f24">group_id</text>
+<text x="675" y="62" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="505" y="76" font-size="7.5" fill="#4a5360">FK</text>
+<text x="534" y="76" class="mono" font-size="9" fill="#1b1f24">paid_by</text>
+<text x="675" y="76" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="501" y="80" width="178" height="14" fill="#f1f5f4"/>
+<text x="505" y="90" font-size="7.5" fill="#4a5360">FK</text>
+<text x="534" y="90" class="mono" font-size="9" fill="#1b1f24">created_by</text>
+<text x="675" y="90" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="534" y="104" class="mono" font-size="9" fill="#1b1f24">amount_centavos</text>
+<text x="675" y="104" text-anchor="end" class="mono" font-size="8" fill="#4a5360">INT</text>
+<rect x="501" y="108" width="178" height="14" fill="#f1f5f4"/>
+<text x="534" y="118" class="mono" font-size="9" fill="#1b1f24">category</text>
+<text x="675" y="118" text-anchor="end" class="mono" font-size="8" fill="#4a5360">ENUM</text>
+<text x="534" y="132" class="mono" font-size="9" fill="#1b1f24">description</text>
+<text x="675" y="132" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(120)</text>
+<rect x="501" y="136" width="178" height="14" fill="#f1f5f4"/>
+<text x="534" y="146" class="mono" font-size="9" fill="#1b1f24">split_type</text>
+<text x="675" y="146" text-anchor="end" class="mono" font-size="8" fill="#4a5360">ENUM</text>
+<text x="534" y="160" class="mono" font-size="9" fill="#1b1f24">spent_on</text>
+<text x="675" y="160" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATE</text>
+<rect x="501" y="164" width="178" height="14" fill="#f1f5f4"/>
+<text x="534" y="174" class="mono" font-size="9" fill="#1b1f24">created_at</text>
+<text x="675" y="174" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<rect x="500" y="222" width="180" height="65" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M500 240 V225 Q500 222 503 222 H677 Q680 222 680 225 V240 Z" fill="#0b6e5f"/>
+<text x="590.0" y="234.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">expense_shares</text>
+<text x="505" y="250" font-size="7.5" font-weight="700" fill="#0b6e5f">PK FK</text>
+<text x="534" y="250" class="mono" font-size="9" fill="#1b1f24">expense_id</text>
+<text x="675" y="250" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="501" y="254" width="178" height="14" fill="#f1f5f4"/>
+<text x="505" y="264" font-size="7.5" font-weight="700" fill="#0b6e5f">PK FK</text>
+<text x="534" y="264" class="mono" font-size="9" fill="#1b1f24">user_id</text>
+<text x="675" y="264" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="534" y="278" class="mono" font-size="9" fill="#1b1f24">share_centavos</text>
+<text x="675" y="278" text-anchor="end" class="mono" font-size="8" fill="#4a5360">INT</text>
+<rect x="500" y="320" width="180" height="135" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M500 338 V323 Q500 320 503 320 H677 Q680 320 680 323 V338 Z" fill="#0b6e5f"/>
+<text x="590.0" y="332.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">settlements</text>
+<text x="505" y="348" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
+<text x="534" y="348" class="mono" font-size="9" fill="#1b1f24">id</text>
+<text x="675" y="348" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="501" y="352" width="178" height="14" fill="#f1f5f4"/>
+<text x="505" y="362" font-size="7.5" fill="#4a5360">FK</text>
+<text x="534" y="362" class="mono" font-size="9" fill="#1b1f24">group_id</text>
+<text x="675" y="362" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="505" y="376" font-size="7.5" fill="#4a5360">FK</text>
+<text x="534" y="376" class="mono" font-size="9" fill="#1b1f24">from_user</text>
+<text x="675" y="376" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="501" y="380" width="178" height="14" fill="#f1f5f4"/>
+<text x="505" y="390" font-size="7.5" fill="#4a5360">FK</text>
+<text x="534" y="390" class="mono" font-size="9" fill="#1b1f24">to_user</text>
+<text x="675" y="390" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="505" y="404" font-size="7.5" fill="#4a5360">FK</text>
+<text x="534" y="404" class="mono" font-size="9" fill="#1b1f24">created_by</text>
+<text x="675" y="404" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="501" y="408" width="178" height="14" fill="#f1f5f4"/>
+<text x="534" y="418" class="mono" font-size="9" fill="#1b1f24">amount_centavos</text>
+<text x="675" y="418" text-anchor="end" class="mono" font-size="8" fill="#4a5360">INT</text>
+<text x="534" y="432" class="mono" font-size="9" fill="#1b1f24">settled_on</text>
+<text x="675" y="432" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATE</text>
+<rect x="501" y="436" width="178" height="14" fill="#f1f5f4"/>
+<text x="534" y="446" class="mono" font-size="9" fill="#1b1f24">created_at</text>
+<text x="675" y="446" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<rect x="500" y="490" width="180" height="107" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<path d="M500 508 V493 Q500 490 503 490 H677 Q680 490 680 493 V508 Z" fill="#0b6e5f"/>
+<text x="590.0" y="502.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">activity_log</text>
+<text x="505" y="518" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
+<text x="534" y="518" class="mono" font-size="9" fill="#1b1f24">id</text>
+<text x="675" y="518" text-anchor="end" class="mono" font-size="8" fill="#4a5360">BIGINT</text>
+<rect x="501" y="522" width="178" height="14" fill="#f1f5f4"/>
+<text x="505" y="532" font-size="7.5" fill="#4a5360">FK</text>
+<text x="534" y="532" class="mono" font-size="9" fill="#1b1f24">group_id</text>
+<text x="675" y="532" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<text x="505" y="546" font-size="7.5" fill="#4a5360">FK</text>
+<text x="534" y="546" class="mono" font-size="9" fill="#1b1f24">actor_id</text>
+<text x="675" y="546" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="501" y="550" width="178" height="14" fill="#f1f5f4"/>
+<text x="534" y="560" class="mono" font-size="9" fill="#1b1f24">action</text>
+<text x="675" y="560" text-anchor="end" class="mono" font-size="8" fill="#4a5360">ENUM</text>
+<text x="534" y="574" class="mono" font-size="9" fill="#1b1f24">summary</text>
+<text x="675" y="574" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(255)</text>
+<rect x="501" y="578" width="178" height="14" fill="#f1f5f4"/>
+<text x="534" y="588" class="mono" font-size="9" fill="#1b1f24">created_at</text>
+<text x="675" y="588" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<text x="10" y="530" font-size="9" font-style="italic" fill="#4a5360">No foreign keys</text>
+<rect x="500" y="640" width="180" height="76" rx="3" fill="#fff" stroke="#c9d0d8"/>
+<text x="508" y="655" font-size="9" font-weight="700" fill="#1b1f24">Legend</text>
+<path d="M508 672 L548 672" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M542 677 L542 667" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M538 677 L538 667" stroke="#4a5360" stroke-width="1.1"/>
+<text x="556" y="675.5" font-size="9" fill="#1b1f24">exactly one</text>
+<path d="M508 690 L548 690" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M537 690 L548 695" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M537 690 L548 690" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M537 690 L548 685" stroke="#4a5360" stroke-width="1.1"/>
+<circle cx="532.5" cy="690.0" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
+<text x="556" y="693.5" font-size="9" fill="#1b1f24">zero or many</text>
+<text x="508" y="708" font-size="8" fill="#4a5360">PK primary · FK foreign · UK unique key</text>
+</svg>
+    <figcaption>Each line joins a primary key to the foreign key that references it. Where a table references <code>users</code> more than once (<code>expenses.paid_by</code> and <code>created_by</code>; <code>settlements.from_user</code>, <code>to_user</code> and <code>created_by</code>), one line stands for all of them, and each column is marked FK. <code>group_events</code> and <code>rate_limits</code> have no foreign keys.</figcaption>
   </figure>
 
-  <h3>Non-technical specifications</h3>
-  <div class="keep">
-  <p><b>Target audience</b></p>
+  <h3>C.2 Non-Technical Specifications</h3>
+
+  <h4>C.2.1 Target Audience</h4>
   <ul>
     <li>College students sharing a boarding house, dormitory or apartment.</li>
     <li>Project, thesis and organization groups that buy materials together.</li>
     <li>Friend groups splitting trips, meals and events.</li>
   </ul>
-  </div>
-  <div class="keep">
-  <p><b>Core value proposition</b></p>
+
+  <h4>C.2.2 Core Value Proposition</h4>
   <p>One live, shared and accurate record of who owes whom, which every member sees update the moment an expense is added, and which shows the fewest payments needed to settle up.</p>
-  </div>
-  <div class="keep">
-  <p><b>UI/UX accessibility goals</b></p>
+
+  <h4>C.2.3 UI/UX Accessibility Goals</h4>
   <ul>
     <li>Text and controls meet WCAG 2.1 AA colour contrast.</li>
     <li>Every action can be done with the keyboard alone, with a visible focus indicator.</li>
@@ -242,7 +497,6 @@
     <li>Amounts owed and amounts due are shown with words and signs, never by colour alone.</li>
     <li>Adding an expense takes one short form, so the app is quicker than typing into a group chat.</li>
   </ul>
-  </div>
 </section>
 
 </body>
