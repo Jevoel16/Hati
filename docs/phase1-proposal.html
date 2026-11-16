@@ -77,7 +77,7 @@
       <tr>
         <td><span class="blank">[Member 4 Name]</span></td><td><span class="blank">[ID Number]</span></td>
         <td>Database &amp; QA Engineer</td>
-        <td>PostgreSQL schema and migrations, data validation and constraints, automated and manual testing, project documentation.</td>
+        <td>MySQL schema and migrations (MySQL 8 locally, TiDB Cloud when deployed), data validation and constraints, automated and manual testing, project documentation.</td>
       </tr>
     </tbody>
   </table>
@@ -99,7 +99,7 @@
 
   <h3>Core functionality</h3>
   <ul>
-    <li><b>Accounts.</b> Users sign up, verify their email and log in securely.</li>
+    <li><b>Accounts.</b> Users sign in with Google or GitHub, which confirms their email, then choose a username and password.</li>
     <li><b>Groups.</b> A user creates a group (for example a boarding house, a project team or a trip) and invites others with a code or link. Each group has an admin and members.</li>
     <li><b>Expenses.</b> Any member records an expense with the payer, amount, category, date and how it is split: equally, by exact amounts or by percentage.</li>
     <li><b>Balances.</b> The system computes each member's net balance and reduces the group's debts to the fewest payments needed to settle.</li>
@@ -130,9 +130,9 @@
     <thead><tr><th style="width:20%">Layer</th><th style="width:28%">Choice</th><th>Details</th></tr></thead>
     <tbody>
       <tr><td>Front-End</td><td>React (built with Vite)</td><td>Single-page application with React Router; plain CSS with shared design tokens; the browser's native WebSocket API for live updates.</td></tr>
-      <tr><td>Back-End</td><td>Node.js with Express</td><td>RESTful API; middleware for input validation, rate limiting and error handling; JWT authentication stored in httpOnly cookies; passwords hashed with bcrypt; a WebSocket server (<code>ws</code>) that broadcasts balance and activity events to each group.</td></tr>
-      <tr><td>Database</td><td>PostgreSQL (relational)</td><td>Normalized schema with foreign keys and check constraints; amounts stored as whole centavos to avoid rounding errors; parameterized queries only.</td></tr>
-      <tr><td>Deployment</td><td>Docker, GitHub Actions, cloud hosting</td><td>Separate containers for the web client, API and database, run together with Docker Compose in development; GitHub Actions runs lint, tests and build on every push; front end on Vercel, API on Render, managed PostgreSQL (Render or Neon); HTTPS on all services.</td></tr>
+      <tr><td>Back-End</td><td>Node.js with Express</td><td>RESTful API; middleware for input validation, rate limiting and error handling; Google and GitHub OAuth sign-in; a signed JWT in an httpOnly, SameSite cookie that names a session row in the database, so any sign-in can be revoked; passwords hashed with bcrypt; a WebSocket server (<code>ws</code>) that pushes balance and activity events to everyone viewing a group.</td></tr>
+      <tr><td>Database</td><td>MySQL 8 locally, TiDB Cloud when deployed (relational, MySQL-compatible)</td><td>Normalized schema with foreign keys, ENUM status columns and check constraints, with the same rules also enforced in code; amounts stored as whole centavos to avoid rounding errors; parameterized queries only, through <code>mysql2</code>.</td></tr>
+      <tr><td>Deployment</td><td>Docker, GitHub Actions, Vercel</td><td>Separate containers for the database, API and web client, run together with Docker Compose in development; GitHub Actions runs lint, type checks, tests (against a TiDB database) and the build on every push; in production, one Vercel project serves the React site and runs the REST API and WebSocket in a single function, deployed on every push to <code>main</code>; TiDB Cloud Serverless database; HTTPS throughout.</td></tr>
     </tbody>
   </table>
 
@@ -141,66 +141,80 @@
   <table>
     <thead><tr><th style="width:22%">Table</th><th>Purpose and key columns</th></tr></thead>
     <tbody>
-      <tr><td><code>users</code></td><td>Accounts: <code>id</code>, <code>name</code>, <code>email</code> (unique), <code>password_hash</code>, <code>email_verified_at</code>.</td></tr>
+      <tr><td><code>users</code></td><td>Accounts: <code>id</code>, <code>name</code>, <code>email</code> (unique), <code>username</code> (unique), <code>password_hash</code>, <code>status</code> (password_pending, username_pending or active), <code>google_sub</code>, <code>github_id</code>, <code>is_demo</code>.</td></tr>
+      <tr><td><code>sessions</code></td><td>Signed-in devices the cookie points to: <code>id</code>, <code>user_id</code>, <code>auth_method</code> (oauth or password), <code>last_seen_at</code>, <code>expires_at</code>.</td></tr>
+      <tr><td><code>payment_qrs</code></td><td>A member's payment QRs (GCash, Maya or a bank, up to five): <code>id</code>, <code>user_id</code>, <code>label</code>, <code>payload</code> (the QR text, not the image).</td></tr>
       <tr><td><code>groups</code></td><td>Expense groups: <code>id</code>, <code>name</code>, <code>invite_code</code> (unique), <code>created_by</code>.</td></tr>
-      <tr><td><code>group_members</code></td><td>Membership and role: <code>group_id</code>, <code>user_id</code>, <code>role</code> (admin or member), <code>joined_at</code>.</td></tr>
-      <tr><td><code>expenses</code></td><td>One shared cost: <code>id</code>, <code>group_id</code>, <code>paid_by</code>, <code>amount_centavos</code>, <code>category</code>, <code>description</code>, <code>split_type</code>, <code>spent_on</code>.</td></tr>
+      <tr><td><code>group_members</code></td><td>Membership and role: <code>group_id</code>, <code>user_id</code>, <code>role</code> (admin or member), <code>status</code> (active or left), <code>joined_at</code>.</td></tr>
+      <tr><td><code>expenses</code></td><td>One shared cost: <code>id</code>, <code>group_id</code>, <code>paid_by</code>, <code>created_by</code>, <code>amount_centavos</code>, <code>category</code>, <code>description</code>, <code>split_type</code>, <code>spent_on</code>.</td></tr>
       <tr><td><code>expense_shares</code></td><td>Each member's part of an expense: <code>expense_id</code>, <code>user_id</code>, <code>share_centavos</code>. Shares must add up to the expense amount.</td></tr>
-      <tr><td><code>settlements</code></td><td>Payments between members: <code>id</code>, <code>group_id</code>, <code>from_user</code>, <code>to_user</code>, <code>amount_centavos</code>, <code>settled_on</code>.</td></tr>
-      <tr><td><code>activity_log</code></td><td>Feed of group events: <code>id</code>, <code>group_id</code>, <code>actor_id</code>, <code>action</code>, <code>created_at</code>.</td></tr>
+      <tr><td><code>settlements</code></td><td>Payments between members: <code>id</code>, <code>group_id</code>, <code>from_user</code>, <code>to_user</code>, <code>created_by</code>, <code>amount_centavos</code>, <code>settled_on</code>.</td></tr>
+      <tr><td><code>activity_log</code></td><td>Feed of group events: <code>id</code>, <code>group_id</code>, <code>actor_id</code>, <code>action</code>, <code>summary</code>, <code>created_at</code>.</td></tr>
+      <tr><td><code>group_events</code></td><td>Short-lived outbox for live updates: <code>id</code>, <code>group_id</code>, <code>action</code>, <code>created_at</code>. Each write adds a row in the same transaction; the server checks it every second and pushes new rows to that group's WebSockets.</td></tr>
+      <tr><td><code>rate_limits</code></td><td>Request counters for rate limiting: <code>bucket</code>, <code>window_start</code>, <code>hits</code>.</td></tr>
     </tbody>
   </table>
   </div>
 
   <figure>
-    <svg viewBox="0 0 680 300" width="100%" role="img" aria-label="Entity relationship diagram of the seven tables">
+    <svg viewBox="0 0 680 300" width="100%" role="img" aria-label="Entity relationship diagram of the nine linked tables">
       <g fill="none" stroke="#4a5360" stroke-width="1.2">
-        <path d="M170 44 H275"/>
-        <path d="M405 44 H510"/>
-        <path d="M70 68 V136"/>
-        <path d="M130 68 V102 H310 V136"/>
-        <path d="M540 68 V102 H370 V136"/>
-        <path d="M600 68 V136"/>
-        <path d="M340 184 V232"/>
+        <path d="M145 44 H188"/>
+        <path d="M318 44 H361"/>
+        <path d="M491 44 H534"/>
+        <path d="M200 68 V112 H80 V136"/>
+        <path d="M218 68 V136"/>
+        <path d="M288 68 V102 H396 V136"/>
+        <path d="M569 68 V102 H456 V136"/>
+        <path d="M629 68 V136"/>
+        <path d="M426 184 V232"/>
       </g>
       <g font-size="10" fill="#4a5360">
-        <text x="176" y="39">1</text><text x="262" y="39">N</text>
-        <text x="411" y="39">N</text><text x="498" y="39">1</text>
-        <text x="75" y="80">1</text><text x="75" y="131">N</text>
-        <text x="135" y="80">1</text><text x="315" y="131">N</text>
-        <text x="528" y="80">1</text><text x="375" y="131">N</text>
-        <text x="605" y="80">1</text><text x="605" y="131">N</text>
-        <text x="345" y="196">1</text><text x="345" y="228">N</text>
+        <text x="150" y="39">N</text><text x="178" y="39">1</text>
+        <text x="323" y="39">1</text><text x="350" y="39">N</text>
+        <text x="496" y="39">N</text><text x="524" y="39">1</text>
+        <text x="190" y="80">1</text><text x="85" y="131">N</text>
+        <text x="223" y="80">1</text><text x="223" y="131">N</text>
+        <text x="293" y="80">1</text><text x="401" y="131">N</text>
+        <text x="558" y="80">1</text><text x="461" y="131">N</text>
+        <text x="634" y="80">1</text><text x="634" y="131">N</text>
+        <text x="431" y="196">1</text><text x="431" y="228">N</text>
       </g>
       <g fill="#f1f5f4" stroke="#0b6e5f" stroke-width="1.2">
-        <rect x="40" y="20" width="130" height="48" rx="4"/>
-        <rect x="275" y="20" width="130" height="48" rx="4"/>
-        <rect x="510" y="20" width="130" height="48" rx="4"/>
-        <rect x="40" y="136" width="130" height="48" rx="4"/>
-        <rect x="275" y="136" width="130" height="48" rx="4"/>
-        <rect x="510" y="136" width="130" height="48" rx="4"/>
-        <rect x="275" y="232" width="130" height="48" rx="4"/>
+        <rect x="15" y="20" width="130" height="48" rx="4"/>
+        <rect x="188" y="20" width="130" height="48" rx="4"/>
+        <rect x="361" y="20" width="130" height="48" rx="4"/>
+        <rect x="534" y="20" width="130" height="48" rx="4"/>
+        <rect x="15" y="136" width="130" height="48" rx="4"/>
+        <rect x="188" y="136" width="130" height="48" rx="4"/>
+        <rect x="361" y="136" width="130" height="48" rx="4"/>
+        <rect x="534" y="136" width="130" height="48" rx="4"/>
+        <rect x="361" y="232" width="130" height="48" rx="4"/>
       </g>
       <g font-size="12" font-weight="600" fill="#1b1f24" text-anchor="middle">
-        <text x="105" y="41">users</text>
-        <text x="340" y="41">group_members</text>
-        <text x="575" y="41">groups</text>
-        <text x="105" y="157">activity_log</text>
-        <text x="340" y="157">expenses</text>
-        <text x="575" y="157">settlements</text>
-        <text x="340" y="253">expense_shares</text>
+        <text x="80" y="41">sessions</text>
+        <text x="253" y="41">users</text>
+        <text x="426" y="41">group_members</text>
+        <text x="599" y="41">groups</text>
+        <text x="80" y="157">payment_qrs</text>
+        <text x="253" y="157">activity_log</text>
+        <text x="426" y="157">expenses</text>
+        <text x="599" y="157">settlements</text>
+        <text x="426" y="253">expense_shares</text>
       </g>
       <g font-size="9.5" fill="#4a5360" text-anchor="middle">
-        <text x="105" y="57">id, email</text>
-        <text x="340" y="57">group_id, user_id, role</text>
-        <text x="575" y="57">id, invite_code</text>
-        <text x="105" y="173">group_id, actor_id</text>
-        <text x="340" y="173">group_id, paid_by</text>
-        <text x="575" y="173">from_user, to_user</text>
-        <text x="340" y="269">expense_id, user_id</text>
+        <text x="80" y="57">user_id, auth_method</text>
+        <text x="253" y="57">id, email, username</text>
+        <text x="426" y="57">group_id, user_id, role</text>
+        <text x="599" y="57">id, invite_code</text>
+        <text x="80" y="173">user_id, label</text>
+        <text x="253" y="173">group_id, actor_id</text>
+        <text x="426" y="173">group_id, paid_by</text>
+        <text x="599" y="173">from_user, to_user</text>
+        <text x="426" y="269">expense_id, user_id</text>
       </g>
     </svg>
-    <figcaption>Main relationships (1 to many). Each of <code>expense_shares</code>, <code>settlements</code> and <code>activity_log</code> also references <code>users</code>.</figcaption>
+    <figcaption>Main relationships (1 to many). <code>expenses</code>, <code>expense_shares</code>, <code>settlements</code> and <code>activity_log</code> also reference <code>users</code>. <code>group_events</code> and <code>rate_limits</code> have no foreign keys and are not drawn.</figcaption>
   </figure>
 
   <h3>Non-technical specifications</h3>
