@@ -77,6 +77,10 @@ main {
 .row--between {
   justify-content: space-between;
 }
+/* Lines a button up with the input next to it, not with its label. */
+.row--end {
+  align-items: end;
+}
 
 /* Forms */
 .field {

@@ -1,8 +1,9 @@
 import { lazy, Suspense, useState, type ReactNode } from 'react';
+import { TextField } from '../../components/Field.tsx';
 import { EmptyState, RemoteView } from '../../components/States.tsx';
 import { api } from '../../lib/api.ts';
 import { usePagedList, useRemote, useSubmission } from '../../lib/hooks.ts';
-import { describeBalance, formatDay, formatMoney, formatMonth } from '../../lib/money.ts';
+import { describeBalance, formatDay, formatMoney, formatMonth, todayIso } from '../../lib/money.ts';
 import { useUser } from '../../lib/session.tsx';
 import type {
   ActivityEntry,
@@ -313,6 +314,42 @@ function Totals({
   );
 }
 
+// A plain link, so the browser downloads the file itself with the session cookie.
+function MonthReport({ groupId }: { groupId: string }) {
+  const thisMonth = todayIso().slice(0, 7);
+  const [month, setMonth] = useState(thisMonth);
+  const isMonth = /^\d{4}-\d{2}$/.test(month);
+
+  return (
+    <Section title="Download a month">
+      <p className="muted">
+        A CSV of the month’s expenses and payments, with each person’s share, for Excel or Google
+        Sheets.
+      </p>
+      <div className="row row--end">
+        <TextField
+          label="Month"
+          type="month"
+          value={month}
+          max={thisMonth}
+          onChange={(e) => setMonth(e.target.value)}
+        />
+        {isMonth ? (
+          <a
+            className="button button--quiet"
+            href={`/api/groups/${groupId}/report?month=${month}`}
+            download
+          >
+            Download {formatMonth(month)} CSV
+          </a>
+        ) : (
+          <p className="muted">Pick a month to download.</p>
+        )}
+      </div>
+    </Section>
+  );
+}
+
 export function SummaryTab() {
   const { group, refreshKey } = useGroup();
   const [summary, reload] = useRemote<Summary>(`/groups/${group.id}/summary`, refreshKey);
@@ -344,6 +381,7 @@ export function SummaryTab() {
                 }))}
               />
             </Section>
+            <MonthReport groupId={group.id} />
           </div>
         )
       }
