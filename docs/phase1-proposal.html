@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <title>Hati: Phase 1 Project Proposal</title>
 <style>
-  @page { size: A4; margin: 22mm 20mm; }
+  @page { size: A4; margin: 18mm 20mm; }
   :root { --ink: #1b1f24; --muted: #4a5360; --line: #c9d0d8; --accent: #0b6e5f; --fill: #f1f5f4; }
   * { box-sizing: border-box; }
-  body { font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.5; margin: 0; }
+  body { font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 10pt; line-height: 1.42; margin: 0; }
   h1, h2, h3, h4 { text-wrap: balance; line-height: 1.2; margin: 0; page-break-after: avoid; }
   p, li { text-wrap: pretty; }
   p { margin: 0 0 8pt; }
   ul { margin: 0 0 8pt; padding-left: 16pt; }
   li { margin-bottom: 3pt; }
-  .cover { height: 252mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+  .cover { height: 259mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
   .cover .course { font-size: 11pt; color: var(--muted); }
   .cover h1 { font-size: 40pt; color: var(--accent); margin-bottom: 6pt; }
   .cover .sub { font-size: 16pt; margin-bottom: 18pt; }
@@ -25,7 +25,7 @@
   section { page-break-before: always; }
   h2 { font-size: 17pt; color: var(--accent); padding-bottom: 5pt; border-bottom: 1.5pt solid var(--accent); margin-bottom: 12pt; }
   .cover h2 { font-size: 14pt; margin-bottom: 8pt; }
-  h3 { font-size: 13pt; color: var(--accent); margin: 16pt 0 6pt; }
+  h3 { font-size: 13pt; color: var(--accent); margin: 13pt 0 5pt; }
   h4 { font-size: 11pt; margin: 12pt 0 4pt; }
   h2 + h3 { margin-top: 0; }
   table { width: 100%; border-collapse: collapse; margin: 0 0 6pt; font-size: 10pt; page-break-inside: avoid; }
@@ -81,9 +81,11 @@
     <li><b>Expenses.</b> Any member records an expense with the payer, amount, category, date and how it is split: equally, by exact amounts or by percentage.</li>
     <li><b>Balances.</b> The system computes each member's net balance and reduces the group's debts to the fewest payments needed to settle.</li>
     <li><b>Settlements.</b> Members record a payment made to another member, and the balances adjust.</li>
-    <li><b>Payment QRs.</b> Members save up to five payment QRs (GCash, Maya or a bank), and whoever owes them scans one with the exact amount filled in.</li>
+    <li><b>Payment QRs.</b> Members save up to five payment QRs (GCash, Maya or a bank), and whoever owes them scans one with the exact amount filled in. Payment QRs work in peso groups.</li>
+    <li><b>Currency.</b> Each group picks its currency when it is created (Philippine peso by default), and every amount in the group uses it.</li>
     <li><b>Live monitoring.</b> Balances and an activity feed update in real time for everyone viewing the group, with no page refresh, through WebSockets.</li>
-    <li><b>Summaries.</b> Each group has a spending summary by category and by month.</li>
+    <li><b>Summaries.</b> Each group has a spending summary by category and by month, and any month can be downloaded as a CSV expense report.</li>
+    <li><b>Guided tour.</b> A short step-by-step tour shows first-time users how to create a group, add an expense and settle up. It can be skipped or replayed.</li>
   </ul>
   <p>Hati keeps records only. It does not process or hold real money.</p>
 
@@ -125,7 +127,7 @@
   <h4>C.1.3 Database Schema Choice</h4>
   <p>A relational database: MySQL 8 locally and TiDB Cloud (MySQL-compatible) when deployed. Hati's data is linked records (groups, members, expenses, shares and payments) whose totals must always agree, so foreign keys and transactions matter more than a flexible document format.</p>
   <ul>
-    <li>Amounts are stored as whole centavos (integers) to avoid rounding errors.</li>
+    <li>Amounts are stored as integers in the currency's smallest unit (centavos for pesos) to avoid rounding errors.</li>
     <li>Statuses are ENUM columns. Check constraints guard the data, and the same rules are enforced in code, since TiDB may not enforce CHECK.</li>
     <li>Parameterized queries only, through <code>mysql2</code>, with versioned migration files.</li>
     <li><code>sessions</code> holds one row per signed-in device; deleting the row signs that device out.</li>
@@ -217,9 +219,9 @@
 <path d="M300 239 L300 250" stroke="#4a5360" stroke-width="1.1"/>
 <path d="M300 239 L295 250" stroke="#4a5360" stroke-width="1.1"/>
 <circle cx="300.0" cy="234.5" r="3.3" fill="#fff" stroke="#4a5360" stroke-width="1.1"/>
-<path d="M390 343 L390 400" fill="none" stroke="#4a5360" stroke-width="1.1"/>
-<path d="M385 349 L395 349" stroke="#4a5360" stroke-width="1.1"/>
-<path d="M385 353 L395 353" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M390 357 L390 400" fill="none" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M385 363 L395 363" stroke="#4a5360" stroke-width="1.1"/>
+<path d="M385 367 L395 367" stroke="#4a5360" stroke-width="1.1"/>
 <path d="M390 389 L395 400" stroke="#4a5360" stroke-width="1.1"/>
 <path d="M390 389 L390 400" stroke="#4a5360" stroke-width="1.1"/>
 <path d="M390 389 L385 400" stroke="#4a5360" stroke-width="1.1"/>
@@ -266,7 +268,7 @@
 <text x="430" y="174" text-anchor="end" class="mono" font-size="8" fill="#4a5360">BOOLEAN</text>
 <text x="289" y="188" class="mono" font-size="9" fill="#1b1f24">created_at</text>
 <text x="430" y="188" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
-<rect x="255" y="250" width="180" height="93" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
+<rect x="255" y="250" width="180" height="107" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
 <path d="M255 268 V253 Q255 250 258 250 H432 Q435 250 435 253 V268 Z" fill="#0b6e5f"/>
 <text x="345.0" y="262.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">groups</text>
 <text x="260" y="278" font-size="7.5" font-weight="700" fill="#0b6e5f">PK</text>
@@ -279,11 +281,14 @@
 <text x="289" y="306" class="mono" font-size="9" fill="#1b1f24">invite_code</text>
 <text x="430" y="306" text-anchor="end" class="mono" font-size="8" fill="#4a5360">VARCHAR(16)</text>
 <rect x="256" y="310" width="178" height="14" fill="#f1f5f4"/>
-<text x="260" y="320" font-size="7.5" fill="#4a5360">FK</text>
-<text x="289" y="320" class="mono" font-size="9" fill="#1b1f24">created_by</text>
-<text x="430" y="320" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
-<text x="289" y="334" class="mono" font-size="9" fill="#1b1f24">created_at</text>
-<text x="430" y="334" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
+<text x="289" y="320" class="mono" font-size="9" fill="#1b1f24">currency</text>
+<text x="430" y="320" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(3)</text>
+<text x="260" y="334" font-size="7.5" fill="#4a5360">FK</text>
+<text x="289" y="334" class="mono" font-size="9" fill="#1b1f24">created_by</text>
+<text x="430" y="334" text-anchor="end" class="mono" font-size="8" fill="#4a5360">CHAR(36)</text>
+<rect x="256" y="338" width="178" height="14" fill="#f1f5f4"/>
+<text x="289" y="348" class="mono" font-size="9" fill="#1b1f24">created_at</text>
+<text x="430" y="348" text-anchor="end" class="mono" font-size="8" fill="#4a5360">DATETIME</text>
 <rect x="255" y="400" width="180" height="93" rx="3" fill="#fff" stroke="#0b6e5f" stroke-width="1.1"/>
 <path d="M255 418 V403 Q255 400 258 400 H432 Q435 400 435 403 V418 Z" fill="#0b6e5f"/>
 <text x="345.0" y="412.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">group_members</text>
@@ -495,6 +500,7 @@
     <li>Mobile-first layout that works down to a 360px-wide screen, since most users will be on phones.</li>
     <li>Light and dark modes, and reduced motion for users who request it.</li>
     <li>Amounts owed and amounts due are shown with words and signs, never by colour alone.</li>
+    <li>A skippable guided tour introduces each screen, and it works with the keyboard and screen readers.</li>
     <li>Adding an expense takes one short form, so the app is quicker than typing into a group chat.</li>
   </ul>
 </section>
