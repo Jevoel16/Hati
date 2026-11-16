@@ -8,6 +8,7 @@ import type { User } from '../data/users.js';
 import type { Queryable } from '../db.js';
 import { computeBalances, simplifyDebts } from '../domain/balances.js';
 import { transitionMember } from '../domain/machines.js';
+import type { Currency } from '../domain/money.js';
 import { conflict, forbidden, notFound } from '../errors.js';
 
 // No 0/O or 1/I/L, so a code read aloud or copied by hand is unambiguous.
@@ -46,10 +47,14 @@ async function requireSettled(q: Queryable, groupId: string, userId: string, who
   }
 }
 
-export async function createGroup(ctx: Ctx, user: User, name: string): Promise<string> {
+export async function createGroup(
+  ctx: Ctx,
+  user: User,
+  input: { name: string; currency: Currency },
+): Promise<string> {
   return ctx.db.transaction(async (tx) => {
     const groupId = await groups.insert(tx, {
-      name,
+      ...input,
       inviteCode: newInviteCode(),
       createdBy: user.id,
     });
@@ -68,15 +73,23 @@ export const listGroups = (ctx: Ctx, user: User) => groups.listForUser(ctx.db, u
 
 export async function getGroup(ctx: Ctx, user: User, groupId: string) {
   const membership = await requireMember(ctx.db, groupId, user.id);
-  const group = await groups.findById(ctx.db, groupId);
-  if (!group) throw notFound('Group');
+  const group = await requireGroup(ctx.db, groupId);
   return {
     id: group.id,
     name: group.name,
     inviteCode: group.inviteCode,
+    currency: group.currency,
+    currencyLocked: await ledger.hasEntries(ctx.db, groupId),
     role: membership.role,
     members: await groups.listMembers(ctx.db, groupId),
   };
+}
+
+// Used by every write that needs the group's currency (activity summaries, reports, QRs).
+export async function requireGroup(q: Queryable, groupId: string) {
+  const group = await groups.findById(q, groupId);
+  if (!group) throw notFound('Group');
+  return group;
 }
 
 export async function getBalances(ctx: Ctx, user: User, groupId: string) {
@@ -133,6 +146,25 @@ export async function renameGroup(ctx: Ctx, user: User, groupId: string, name: s
       actorId: user.id,
       action: 'group_renamed',
       summary: `renamed the group to "${name}"`,
+    });
+  });
+}
+
+// Amounts are never converted, so the currency is locked once anything has been recorded.
+export async function changeCurrency(ctx: Ctx, user: User, groupId: string, currency: Currency) {
+  await ctx.db.transaction(async (tx) => {
+    await requireAdmin(tx, groupId, user.id);
+    const group = await requireGroup(tx, groupId);
+    if (group.currency === currency) return;
+    if (await ledger.hasEntries(tx, groupId)) {
+      throw conflict('The currency is locked once the group has an expense or payment.');
+    }
+    await groups.setCurrency(tx, groupId, currency);
+    await activity.record(tx, {
+      groupId,
+      actorId: user.id,
+      action: 'currency_changed',
+      summary: `changed the currency to ${currency}`,
     });
   });
 }

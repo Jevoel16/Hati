@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CATEGORIES, MAX_AMOUNT_CENTAVOS } from '../domain/money.js';
+import { CATEGORIES, CURRENCIES, MAX_AMOUNT_CENTAVOS } from '../domain/money.js';
 import { MAX_QR_LENGTH } from '../domain/qrph.js';
 import { PASSWORD_MIN_LENGTH } from '../services/auth.js';
 import { INVITE_CODE_PATTERN } from '../services/groups.js';
@@ -37,7 +37,10 @@ export const password = z.object({
   currentPassword: z.string().max(200).optional(),
 });
 
+const currency = z.enum(CURRENCIES, `Pick one of ${CURRENCIES.join(', ')}.`);
 export const groupName = z.object({ name: z.string().trim().min(1).max(60) });
+export const newGroup = groupName.extend({ currency: currency.default('PHP') });
+export const groupCurrency = z.object({ currency });
 export const role = z.object({ role: z.enum(['admin', 'member']) });
 
 export const expense = z.object({

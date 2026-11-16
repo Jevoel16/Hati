@@ -16,8 +16,8 @@ export function groupRoutes(ctx: Ctx): Router {
   });
 
   router.post('/groups', async (req, res) => {
-    const { name } = schemas.groupName.parse(req.body);
-    res.status(201).json({ id: await groups.createGroup(ctx, currentUser(res), name) });
+    const input = schemas.newGroup.parse(req.body);
+    res.status(201).json({ id: await groups.createGroup(ctx, currentUser(res), input) });
   });
 
   router.get('/invites/:code', async (req, res) => {
@@ -35,8 +35,15 @@ export function groupRoutes(ctx: Ctx): Router {
   });
 
   router.patch('/groups/:id', async (req, res) => {
-    const { name } = schemas.groupName.parse(req.body);
-    await groups.renameGroup(ctx, currentUser(res), param(req.params.id), name);
+    const [user, groupId] = [currentUser(res), param(req.params.id)];
+    // One change per request: a currency if one is sent, otherwise a new name.
+    if (req.body?.currency !== undefined) {
+      const { currency } = schemas.groupCurrency.parse(req.body);
+      await groups.changeCurrency(ctx, user, groupId, currency);
+    } else {
+      const { name } = schemas.groupName.parse(req.body);
+      await groups.renameGroup(ctx, user, groupId, name);
+    }
     res.status(204).end();
   });
 

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { computeBalances, simplifyDebts, type Balance } from './balances.js';
 import { TransitionError, transitionAccount, transitionMember } from './machines.js';
+import { formatMoney, minorDigits, toMajorString } from './money.js';
 import { amountText, crc16, encode, parseQrPh, tlv, withAmount, type Field } from './qrph.js';
 import { SplitError, splitByPercent, splitEqually, splitExact } from './split.js';
 
@@ -95,6 +96,63 @@ describe('splitByPercent', () => {
 
   it('rejects percentages that do not total 100', () => {
     assert.throws(() => splitByPercent(100, [{ userId: 'a', basisPoints: 9999 }]), SplitError);
+  });
+});
+
+// Yen and won have no smaller unit, so 1 means ¥1 and the splitter must never need a fraction.
+describe('splitting a zero-decimal currency (JPY)', () => {
+  it('splits ¥1,000 three ways into whole yen', () => {
+    const shares = splitEqually(1000, ['a', 'b', 'c']);
+    assert.deepEqual(
+      shares.map((s) => s.shareCentavos),
+      [334, 333, 333],
+    );
+    assert.equal(formatMoney(334, 'JPY'), '¥334');
+  });
+
+  it('splits ¥10 by percentage with the leftover yen on the largest remainder', () => {
+    const shares = splitByPercent(10, [
+      { userId: 'a', basisPoints: 3333 },
+      { userId: 'b', basisPoints: 3333 },
+      { userId: 'c', basisPoints: 3334 },
+    ]);
+    assert.deepEqual(
+      shares.map((s) => s.shareCentavos),
+      [3, 3, 4],
+    );
+  });
+
+  it('accepts exact shares in whole yen', () => {
+    assert.equal(
+      total(
+        splitExact(1500, [
+          { userId: 'a', amountCentavos: 1000 },
+          { userId: 'b', amountCentavos: 500 },
+        ]),
+      ),
+      1500,
+    );
+  });
+});
+
+describe('money formatting', () => {
+  it('reads the number of decimals from the currency', () => {
+    assert.equal(minorDigits('PHP'), 2);
+    assert.equal(minorDigits('USD'), 2);
+    assert.equal(minorDigits('JPY'), 0);
+    assert.equal(minorDigits('KRW'), 0);
+  });
+
+  it('formats the smallest unit in the right currency', () => {
+    assert.equal(formatMoney(125_050, 'PHP'), '₱1,250.50');
+    assert.equal(formatMoney(1250, 'JPY'), '¥1,250');
+  });
+
+  it('writes plain digits for spreadsheets', () => {
+    assert.equal(toMajorString(125_050, 'PHP'), '1250.50');
+    assert.equal(toMajorString(7, 'PHP'), '0.07');
+    assert.equal(toMajorString(1250, 'JPY'), '1250');
+    assert.equal(toMajorString(-500, 'USD'), '-5.00');
   });
 });
 

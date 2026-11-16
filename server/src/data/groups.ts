@@ -1,9 +1,16 @@
 import { randomUUID } from 'node:crypto';
 import type { Queryable } from '../db.js';
 import type { MemberStatus } from '../domain/machines.js';
+import type { Currency } from '../domain/money.js';
 
 export type Role = 'admin' | 'member';
-export type Group = { id: string; name: string; inviteCode: string; createdByDemo: boolean };
+export type Group = {
+  id: string;
+  name: string;
+  inviteCode: string;
+  currency: Currency;
+  createdByDemo: boolean;
+};
 export type Membership = { role: Role; status: MemberStatus };
 export type Member = {
   userId: string;
@@ -17,13 +24,15 @@ export type GroupListItem = {
   id: string;
   name: string;
   role: Role;
+  currency: Currency;
   memberCount: number;
   netCentavos: number;
 };
 
 // GROUPS is a reserved word in TiDB, so the table name is always quoted.
 const GROUPS = '`groups`';
-const GROUP_SELECT = `SELECT g.id, g.name, g.invite_code AS inviteCode, u.is_demo AS createdByDemo
+const GROUP_SELECT = `SELECT g.id, g.name, g.invite_code AS inviteCode, g.currency,
+  u.is_demo AS createdByDemo
   FROM ${GROUPS} g JOIN users u ON u.id = g.created_by`;
 
 type GroupRow = Omit<Group, 'createdByDemo'> & { createdByDemo: number };
@@ -32,13 +41,13 @@ const toGroup = (row?: GroupRow): Group | undefined =>
 
 export async function insert(
   q: Queryable,
-  input: { name: string; inviteCode: string; createdBy: string },
+  input: { name: string; currency: Currency; inviteCode: string; createdBy: string },
 ): Promise<string> {
   const id = randomUUID();
   await q.query(
-    `INSERT INTO ${GROUPS} (id, name, invite_code, created_by, created_at)
-     VALUES (?, ?, ?, ?, UTC_TIMESTAMP(3))`,
-    [id, input.name, input.inviteCode, input.createdBy],
+    `INSERT INTO ${GROUPS} (id, name, currency, invite_code, created_by, created_at)
+     VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP(3))`,
+    [id, input.name, input.currency, input.inviteCode, input.createdBy],
   );
   return id;
 }
@@ -53,7 +62,7 @@ export async function findByInviteCode(q: Queryable, code: string): Promise<Grou
 
 export async function listForUser(q: Queryable, userId: string): Promise<GroupListItem[]> {
   return q.query<GroupListItem>(
-    `SELECT g.id, g.name, m.role,
+    `SELECT g.id, g.name, m.role, g.currency,
        (SELECT COUNT(*) FROM group_members x
          WHERE x.group_id = g.id AND x.status = 'active') AS memberCount,
        (
@@ -77,6 +86,10 @@ export async function listForUser(q: Queryable, userId: string): Promise<GroupLi
 
 export async function rename(q: Queryable, id: string, name: string): Promise<void> {
   await q.query(`UPDATE ${GROUPS} SET name = ? WHERE id = ?`, [name, id]);
+}
+
+export async function setCurrency(q: Queryable, id: string, currency: Currency): Promise<void> {
+  await q.query(`UPDATE ${GROUPS} SET currency = ? WHERE id = ?`, [currency, id]);
 }
 
 export async function setInviteCode(q: Queryable, id: string, code: string): Promise<void> {

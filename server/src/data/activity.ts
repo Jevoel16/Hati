@@ -11,7 +11,8 @@ export type Action =
   | 'expense_edited'
   | 'expense_deleted'
   | 'settlement_added'
-  | 'settlement_deleted';
+  | 'settlement_deleted'
+  | 'currency_changed';
 
 export type GroupEvent = { id: number; groupId: string; action: Action | 'group_deleted' };
 export type ActivityEntry = {

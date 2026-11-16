@@ -75,7 +75,7 @@ export async function resetDemo(ctx: Ctx): Promise<void> {
   }
 
   await groups.removeCreatedBy(ctx.db, demo.id);
-  const groupId = await createGroup(ctx, demo, 'Unit 3B Boarding House');
+  const groupId = await createGroup(ctx, demo, { name: 'Unit 3B Boarding House', currency: 'PHP' });
   const { inviteCode } = await getGroup(ctx, demo, groupId);
   for (const mate of mates) await joinGroup(ctx, mate, inviteCode);
 

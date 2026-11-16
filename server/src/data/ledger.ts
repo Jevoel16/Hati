@@ -186,6 +186,16 @@ export async function listSettlements(
   );
 }
 
+// Once money is recorded in a currency, changing the currency would change what it means.
+export async function hasEntries(q: Queryable, groupId: string): Promise<boolean> {
+  const rows = await q.query<{ found: number }>(
+    `SELECT EXISTS (SELECT 1 FROM expenses WHERE group_id = ?)
+         OR EXISTS (SELECT 1 FROM settlements WHERE group_id = ?) AS found`,
+    [groupId, groupId],
+  );
+  return Boolean(rows[0]?.found);
+}
+
 // Every movement of money in the group as a signed amount per person.
 export async function balanceDeltas(q: Queryable, groupId: string): Promise<Delta[]> {
   return q.query<Delta>(

@@ -4,7 +4,7 @@ export class SplitError extends Error {}
 
 function assertValidAmount(amountCentavos: number): void {
   if (!Number.isInteger(amountCentavos) || amountCentavos <= 0) {
-    throw new SplitError('The amount must be a whole number of centavos above zero.');
+    throw new SplitError('The amount must be a whole number above zero.');
   }
 }
 
@@ -15,7 +15,7 @@ function assertDistinctUsers(userIds: string[]): void {
   }
 }
 
-// Leftover centavos go to the first people in the list, one each, so shares always sum exactly.
+// Leftover units (centavos, yen) go to the first people, one each, so shares always sum exactly.
 export function splitEqually(amountCentavos: number, userIds: string[]): Share[] {
   assertValidAmount(amountCentavos);
   assertDistinctUsers(userIds);
@@ -34,7 +34,7 @@ export function splitExact(
   assertValidAmount(amountCentavos);
   assertDistinctUsers(parts.map((p) => p.userId));
   if (parts.some((p) => !Number.isInteger(p.amountCentavos) || p.amountCentavos < 0)) {
-    throw new SplitError('Each share must be a whole number of centavos, zero or more.');
+    throw new SplitError('Each share must be a whole number, zero or more.');
   }
   const total = parts.reduce((sum, p) => sum + p.amountCentavos, 0);
   if (total !== amountCentavos) {

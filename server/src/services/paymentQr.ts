@@ -4,7 +4,7 @@ import type { User } from '../data/users.js';
 import { simplifyDebts } from '../domain/balances.js';
 import { parseQrPh, withAmount } from '../domain/qrph.js';
 import { badRequest, forbidden, notFound, setupRequired } from '../errors.js';
-import { groupBalances, requireMember } from './groups.js';
+import { groupBalances, requireGroup, requireMember } from './groups.js';
 
 const NOT_QR_PH =
   'That is not a QR Ph payment code. Use the QR from GCash, Maya or your bank’s InstaPay.';
@@ -65,6 +65,8 @@ export async function getPaymentQr(
   toUser: string,
 ) {
   await requireMember(ctx.db, groupId, user.id);
+  // QR Ph (InstaPay) carries pesos only, so other currencies have no payment QR.
+  if ((await requireGroup(ctx.db, groupId)).currency !== 'PHP') throw notFound('Payment QR');
   const { balances } = await groupBalances(ctx.db, groupId);
   const payment = simplifyDebts(balances).find(
     (p) => p.fromUser === fromUser && p.toUser === toUser,

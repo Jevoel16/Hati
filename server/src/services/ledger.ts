@@ -6,7 +6,7 @@ import * as ledger from '../data/ledger.js';
 import type { SettlementInput } from '../data/ledger.js';
 import type { User } from '../data/users.js';
 import type { Category } from '../domain/money.js';
-import { formatPeso } from '../domain/money.js';
+import { formatMoney } from '../domain/money.js';
 import {
   SplitError,
   splitByPercent,
@@ -15,7 +15,7 @@ import {
   type Share,
 } from '../domain/split.js';
 import { badRequest, forbidden, notFound } from '../errors.js';
-import { requireMember } from './groups.js';
+import { requireGroup, requireMember } from './groups.js';
 
 export type SplitInput =
   | { type: 'equal'; participants: string[] }
@@ -81,6 +81,7 @@ async function saveExpense(
 
   return ctx.db.transaction(async (tx) => {
     const membership = await requireMember(tx, groupId, user.id);
+    const { currency } = await requireGroup(tx, groupId);
     const members = await groups.listMembers(tx, groupId);
     requireActiveMembers(members, [payload.paidBy], 'paidBy');
     requireActiveMembers(
@@ -106,7 +107,7 @@ async function saveExpense(
       groupId,
       actorId: user.id,
       action: expenseId ? 'expense_edited' : 'expense_added',
-      summary: `${expenseId ? 'edited' : 'added'} "${payload.description}" for ${formatPeso(payload.amountCentavos)}`,
+      summary: `${expenseId ? 'edited' : 'added'} "${payload.description}" for ${formatMoney(payload.amountCentavos, currency)}`,
     });
     return id;
   });
@@ -132,6 +133,7 @@ export const updateExpense = (
 export async function deleteExpense(ctx: Ctx, user: User, groupId: string, expenseId: string) {
   await ctx.db.transaction(async (tx) => {
     const membership = await requireMember(tx, groupId, user.id);
+    const { currency } = await requireGroup(tx, groupId);
     const expense = await ledger.findExpense(tx, groupId, expenseId);
     if (!expense) throw notFound('Expense');
     requireOwnerOrAdmin(membership, user, [expense.createdBy, expense.paidBy]);
@@ -140,7 +142,7 @@ export async function deleteExpense(ctx: Ctx, user: User, groupId: string, expen
       groupId,
       actorId: user.id,
       action: 'expense_deleted',
-      summary: `deleted "${expense.description}" (${formatPeso(expense.amountCentavos)})`,
+      summary: `deleted "${expense.description}" (${formatMoney(expense.amountCentavos, currency)})`,
     });
   });
 }
@@ -191,6 +193,7 @@ export async function createSettlement(
   return ctx.db.transaction(async (tx) => {
     const membership = await requireMember(tx, groupId, user.id);
     requireOwnerOrAdmin(membership, user, [input.fromUser, input.toUser]);
+    const { currency } = await requireGroup(tx, groupId);
     // People who left can still be paid back, so any past or present member is accepted.
     const members = await groups.listMembers(tx, groupId);
     const from = members.find((m) => m.userId === input.fromUser);
@@ -204,7 +207,7 @@ export async function createSettlement(
       groupId,
       actorId: user.id,
       action: 'settlement_added',
-      summary: `recorded a ${formatPeso(input.amountCentavos)} payment from ${from.name} to ${to.name}`,
+      summary: `recorded a ${formatMoney(input.amountCentavos, currency)} payment from ${from.name} to ${to.name}`,
     });
     return id;
   });
@@ -218,6 +221,7 @@ export async function deleteSettlement(
 ) {
   await ctx.db.transaction(async (tx) => {
     const membership = await requireMember(tx, groupId, user.id);
+    const { currency } = await requireGroup(tx, groupId);
     const settlement = await ledger.findSettlement(tx, groupId, settlementId);
     if (!settlement) throw notFound('Payment');
     requireOwnerOrAdmin(membership, user, [settlement.createdBy]);
@@ -226,7 +230,7 @@ export async function deleteSettlement(
       groupId,
       actorId: user.id,
       action: 'settlement_deleted',
-      summary: `deleted a ${formatPeso(settlement.amountCentavos)} payment`,
+      summary: `deleted a ${formatMoney(settlement.amountCentavos, currency)} payment`,
     });
   });
 }
