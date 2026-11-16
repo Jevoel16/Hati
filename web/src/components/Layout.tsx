@@ -6,6 +6,7 @@ import { Dialog } from './Dialog.tsx';
 import { SetupForm } from './SetupForm.tsx';
 import { ErrorState, Skeleton } from './States.tsx';
 import { ThemeToggle } from './ThemeToggle.tsx';
+import { TourProvider } from './Tour.tsx';
 import { Wordmark } from './Wordmark.tsx';
 
 // Wraps every signed-in page. Which screen shows depends on the session and account state:
@@ -69,33 +70,38 @@ export function Layout() {
   };
 
   return (
-    <div className="page">
-      <a className="skip-link" href="#main">
-        Skip to content
-      </a>
-      <header className="shell-header">
-        <Link to="/groups" className="wordmark" aria-label="Hati">
-          <Wordmark />
-        </Link>
-        <nav aria-label="Account">
-          <ThemeToggle />
-          <Link to="/account" className="button button--link">
-            {user.name}
+    <TourProvider user={user}>
+      <div className="page">
+        <a className="skip-link" href="#main">
+          Skip to content
+        </a>
+        <header className="shell-header">
+          <Link to="/groups" className="wordmark" aria-label="Hati">
+            <Wordmark />
           </Link>
-          <button type="button" className="button button--quiet" onClick={() => void signOut()}>
-            Sign out
-          </button>
-        </nav>
-      </header>
-      <main id="main">{renderPage(user)}</main>
-      {/* Plain links: these are static pages outside the app's router. */}
-      <footer className="site-footer">
-        <nav className="footer-nav" aria-label="About Hati">
-          <a href="/how-it-works">How it works</a>
-          <a href="/features">Features</a>
-          <a href="/faq">Questions</a>
-        </nav>
-      </footer>
-    </div>
+          <nav aria-label="Account">
+            <ThemeToggle />
+            <Link to="/account" className="button button--link">
+              {user.name}
+            </Link>
+            <button type="button" className="button button--quiet" onClick={() => void signOut()}>
+              Sign out
+            </button>
+          </nav>
+        </header>
+        {/* tabIndex lets the skip link and the closing tour move focus here. */}
+        <main id="main" tabIndex={-1}>
+          {renderPage(user)}
+        </main>
+        {/* Plain links: these are static pages outside the app's router. */}
+        <footer className="site-footer">
+          <nav className="footer-nav" aria-label="About Hati">
+            <a href="/how-it-works">How it works</a>
+            <a href="/features">Features</a>
+            <a href="/faq">Questions</a>
+          </nav>
+        </footer>
+      </div>
+    </TourProvider>
   );
 }

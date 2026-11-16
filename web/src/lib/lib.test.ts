@@ -11,6 +11,9 @@ import {
   type Remote,
   type Scan,
   type Submission,
+  tourReducer,
+  type Tour,
+  type TourEvent,
 } from './machines.ts';
 import {
   currencySymbol,
@@ -231,5 +234,45 @@ describe('scanReducer', () => {
     const found: Scan = { status: 'found', text: 'hi' };
     assert.equal(scanReducer(found, { type: 'decoded', text: 'other' }), found);
     assert.equal(scanReducer(found, { type: 'retry' }), found);
+  });
+});
+
+describe('tour machine', () => {
+  const idle: Tour = { status: 'idle' };
+  const first: Tour = { status: 'showing', step: 0 };
+  const second: Tour = { status: 'showing', step: 1 };
+  const last: Tour = { status: 'showing', step: 3 };
+  const done: Tour = { status: 'done' };
+  const skipped: Tour = { status: 'skipped' };
+  const step = (state: Tour, event: TourEvent) => tourReducer(state, event, 4);
+
+  it('idle -> showing the first step on start or replay', () => {
+    assert.deepEqual(step(idle, 'start'), first);
+    assert.deepEqual(step(idle, 'replay'), first);
+  });
+
+  it('moves forward and back between steps', () => {
+    assert.deepEqual(step(first, 'next'), second);
+    assert.deepEqual(step(second, 'back'), first);
+  });
+
+  it('next on the last step finishes; skip leaves from any step', () => {
+    assert.deepEqual(step(last, 'next'), done);
+    assert.deepEqual(step(second, 'skip'), skipped);
+  });
+
+  it('done or skipped -> the first step on replay', () => {
+    assert.deepEqual(step(done, 'replay'), first);
+    assert.deepEqual(step(skipped, 'replay'), first);
+  });
+
+  it('ignores events that do not apply', () => {
+    assert.equal(step(idle, 'next'), idle);
+    assert.equal(step(idle, 'skip'), idle);
+    assert.equal(step(first, 'back'), first);
+    assert.equal(step(first, 'start'), first);
+    assert.equal(step(first, 'replay'), first);
+    assert.equal(step(done, 'skip'), done);
+    assert.equal(step(skipped, 'start'), skipped);
   });
 });

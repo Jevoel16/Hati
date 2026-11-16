@@ -143,7 +143,7 @@ export default function Groups() {
         </RemoteView>
       </section>
 
-      <section className="stack" aria-labelledby="new-heading">
+      <section className="stack" aria-labelledby="new-heading" data-tour="new-group">
         <h2 id="new-heading">Start a group</h2>
         <NewGroupForm />
       </section>

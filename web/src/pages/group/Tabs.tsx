@@ -69,9 +69,18 @@ function DeleteButton({
   );
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({
+  title,
+  tour,
+  children,
+}: {
+  title: string;
+  // Lets the guided tour point at this section.
+  tour?: string;
+  children: ReactNode;
+}) {
   return (
-    <section className="stack stack--sm">
+    <section className="stack stack--sm" data-tour={tour}>
       <h2>{title}</h2>
       {children}
     </section>
@@ -98,7 +107,7 @@ export function BalancesTab() {
       <RemoteView state={balances} onRetry={refresh}>
         {(data) => (
           <>
-            <Section title="Everyone’s balance">
+            <Section title="Everyone’s balance" tour="balances">
               <ul className="list">
                 {data.balances.filter(isShown).map((b) => (
                   <li key={b.userId}>
@@ -113,7 +122,7 @@ export function BalancesTab() {
               </ul>
             </Section>
 
-            <Section title="Fewest payments to settle up">
+            <Section title="Fewest payments to settle up" tour="settle-up">
               {data.payments.length === 0 ? (
                 <EmptyState>
                   <p>Nobody owes anything right now.</p>

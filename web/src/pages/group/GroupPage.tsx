@@ -99,6 +99,7 @@ export default function GroupPage() {
                 <button
                   type="button"
                   className="button"
+                  data-tour="add-expense"
                   onClick={() => setDialog({ kind: 'expense' })}
                 >
                   Add expense

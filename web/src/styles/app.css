@@ -381,3 +381,51 @@ dialog::backdrop {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* Guided tour: a panel in the corner, not a modal, so the page stays usable behind it. */
+.tour {
+  position: fixed;
+  right: var(--s4);
+  bottom: var(--s4);
+  z-index: 5;
+  display: grid;
+  gap: var(--s2);
+  width: min(100% - 2 * var(--s4), 24rem);
+  padding: var(--s4);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  background: var(--bg);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+.tour h2 {
+  font-size: var(--t-lg);
+}
+.tour h2:focus {
+  outline: none;
+}
+.tour-count {
+  color: var(--muted);
+  font-size: var(--t-sm);
+  font-variant-numeric: tabular-nums;
+}
+.tour-target {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+  border-radius: var(--r1);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tour {
+    animation: tour-in 160ms ease-out;
+  }
+  @keyframes tour-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+}
+
+/* main takes focus only to move the reading position, so it shows no focus ring. */
+#main:focus {
+  outline: none;
+}

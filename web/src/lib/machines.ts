@@ -107,3 +107,32 @@ export function scanReducer(state: Scan, event: ScanEvent): Scan {
       return state;
   }
 }
+
+// --- The first-run guided tour --------------------------------------------------------------
+export type Tour =
+  | { status: 'idle' }
+  | { status: 'showing'; step: number }
+  | { status: 'done' }
+  | { status: 'skipped' };
+
+export type TourEvent = 'start' | 'next' | 'back' | 'skip' | 'replay';
+
+// `stepCount` comes from the step list, so "next" on the last step finishes the tour.
+export function tourReducer(state: Tour, event: TourEvent, stepCount: number): Tour {
+  switch (state.status) {
+    case 'idle':
+      return event === 'start' || event === 'replay' ? { status: 'showing', step: 0 } : state;
+    case 'showing':
+      if (event === 'next') {
+        return state.step + 1 < stepCount
+          ? { status: 'showing', step: state.step + 1 }
+          : { status: 'done' };
+      }
+      if (event === 'back' && state.step > 0) return { status: 'showing', step: state.step - 1 };
+      if (event === 'skip') return { status: 'skipped' };
+      return state;
+    case 'done':
+    case 'skipped':
+      return event === 'replay' ? { status: 'showing', step: 0 } : state;
+  }
+}

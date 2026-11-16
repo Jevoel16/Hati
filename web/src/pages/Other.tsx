@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { TextField } from '../components/Field.tsx';
 import { PasswordForm } from '../components/PasswordForm.tsx';
+import { useReplayTour } from '../components/Tour.tsx';
 import { fieldError, FormError, RemoteView, SubmitButton } from '../components/States.tsx';
 import { api } from '../lib/api.ts';
 import { useDocumentTitle, useRemote, useSubmission } from '../lib/hooks.ts';
@@ -174,6 +175,7 @@ export function Account() {
   const user = useUser();
   const { state } = useSession();
   const [saved, setSaved] = useState(false);
+  const replayTour = useReplayTour();
   // Someone who just came back from Google or GitHub may reset a forgotten password.
   const viaOAuth = state.status === 'success' && state.data?.authMethod === 'oauth';
 
@@ -202,6 +204,17 @@ export function Account() {
         )}
       </section>
       <PaymentQrSection />
+      <section className="stack stack--sm" aria-labelledby="tour-heading">
+        <h2 id="tour-heading">Guided tour</h2>
+        <p className="muted">
+          Four short steps: start a group, add an expense, read the balances and settle up.
+        </p>
+        <div>
+          <button type="button" className="button button--quiet" onClick={replayTour}>
+            Replay the tour
+          </button>
+        </div>
+      </section>
     </div>
   );
 }

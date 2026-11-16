@@ -8,6 +8,7 @@ export type User = {
   email: string;
   status: 'password_pending' | 'username_pending' | 'active';
   isDemo: boolean;
+  onboarded: boolean;
 };
 export type Session = { user: User; authMethod: 'oauth' | 'password' };
 export type Providers = {
