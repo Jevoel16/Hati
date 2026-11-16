@@ -63,7 +63,8 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
     "username": "ana",
     "email": "ana@example.com",
     "status": "active",
-    "isDemo": false
+    "isDemo": false,
+    "onboarded": true
   },
   "authMethod": "oauth"
 }
@@ -86,6 +87,8 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
 ```json
 { "password": "a-new-long-password", "currentPassword": "correct-horse-battery" }
 ```
+
+`POST /auth/onboarded` → `204`. Records that the signed-in user finished or skipped the guided tour, so `onboarded` above becomes `true`. Safe to repeat (the first time is kept); does nothing for the demo account; `403 setup_required` until the account is set up. No body.
 
 `POST /auth/sign-out` → `204`
 

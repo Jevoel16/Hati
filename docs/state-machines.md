@@ -89,6 +89,22 @@ A second `submit` while `submitting` is ignored, so a double click cannot save t
 
 `found` is final. The camera runs only in `requesting` and `scanning`; leaving them stops its tracks. A photo or screenshot can be decoded from every state except `found`, so a blocked camera never blocks scanning.
 
+## Guided tour (client)
+
+- **Owner:** `web/src/lib/machines.ts` (`tourReducer`), used by `web/src/components/Tour.tsx`
+- **Stored as:** only the outcome, `users.onboarded_at` (set the first time the tour is finished or skipped; see decision 18)
+
+| State                  | Event             | Next state             |
+| ---------------------- | ----------------- | ---------------------- |
+| `idle`                 | `start`, `replay` | `showing` (step 0)     |
+| `showing` (step n)     | `next`            | `showing` (step n + 1) |
+| `showing` (last step)  | `next`            | `done`                 |
+| `showing` (step n > 0) | `back`            | `showing` (step n − 1) |
+| `showing`              | `skip`            | `skipped`              |
+| `done`, `skipped`      | `replay`          | `showing` (step 0)     |
+
+`start` fires once, for an active account that has not seen the tour. Escape sends `skip`, unless a dialog is open. Leaving `showing` for `done` or `skipped` saves the outcome with `POST /auth/onboarded` and moves focus to the page. The demo account saves nothing, so every visitor gets the tour.
+
 ## Page shell (client)
 
 `web/src/components/Layout.tsx` picks one screen from the session and account state: loading, failed, signed out (redirect to sign-in), `password_pending` (username and password dialog), `username_pending` (username dialog) or the page, with an exhaustive `switch` on the account status.

@@ -56,6 +56,7 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 - Spending summary by category and by month, and any month downloaded as a CSV expense report
 - Sign-in with Google or GitHub, plus a public demo account
 - A username and password chosen on first sign-in
+- A short guided tour for first-time users (start a group, add an expense, read balances, settle up) that can be skipped or replayed from the account page
 - A layout that uses the full width on desktop and phones, a system, light or dark theme switch and full keyboard access
 - Landing page with How it works, Features and Questions pages linked from its footer
 

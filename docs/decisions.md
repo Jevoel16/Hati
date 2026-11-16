@@ -107,3 +107,12 @@ Short records of the choices that are not obvious from the code.
 - **Choice:** `GET /groups/:id/report?month=YYYY-MM` returns a CSV from `server/src/domain/csv.ts`, about ten lines of code and no dependency. The Summary tab links to it directly, so the browser downloads it with the session cookie.
 - **Safety:** a description such as `=HYPERLINK(...)` would run as a formula when the file is opened, so any cell starting with `=`, `+`, `-`, `@`, a tab or a carriage return gets a leading `'` (OWASP's advice for CSV injection), and fields with commas, quotes or line breaks are quoted.
 - **Trade-off:** amounts are written as plain numbers (`1250.50`) with the currency code in the header, not as `₱1,250.50`, so a spreadsheet can add them up. Each export is capped at 2,000 expenses and 2,000 payments, far above a real month.
+
+## 18. The tour is a client machine; the server stores one timestamp
+
+- **Problem:** first-time users did not know where to start, and the tour should not come back once they have seen it, on any device.
+- **Options:** a tour library; a new value in `users.status`; a nullable `users.onboarded_at`; the browser's `localStorage`.
+- **Choice:** a hand-written panel driven by `tourReducer` (no dependency), and `users.onboarded_at`, set by `POST /auth/onboarded` the first time the tour is finished or skipped.
+- **Why not `users.status`:** that column is the account-setup lifecycle, and `requireActive` blocks the API until it is `active`. Folding the tour into it would double its states (active with and without the tour) and let an unseen tour block every route. Whether the tour was seen is a single fact with no data that depends on it, so a timestamp is enough, and the steps themselves live in the client machine. `localStorage` would show the tour again on every new device.
+- **Accessibility:** the panel is not a modal: nothing behind it is made `inert` or `aria-hidden`, so a screen reader can still read the page. Focus moves to each step's heading, a polite live region says "Step 2 of 4", Escape skips it, and the fade runs only when the user allows motion.
+- **Trade-off:** the demo login is shared, so it never stores the flag and the tour starts again on every page load for demo visitors.
