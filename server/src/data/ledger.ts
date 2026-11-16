@@ -126,8 +126,12 @@ export async function listExpenses(
      ORDER BY spent_on DESC, created_at DESC, id LIMIT ? OFFSET ?`,
     [groupId, limit, offset],
   );
+  return withShares(q, expenses);
+}
+
+// One query for all the shares of these expenses, not one per expense.
+async function withShares(q: Queryable, expenses: Expense[]): Promise<ExpenseWithShares[]> {
   if (expenses.length === 0) return [];
-  // One query for all the shares on this page, not one per expense.
   const shares = await q.query<Share & { expenseId: string }>(
     `SELECT expense_id AS expenseId, user_id AS userId, share_centavos AS shareCentavos
      FROM expense_shares WHERE expense_id IN (?)`,
@@ -139,6 +143,36 @@ export async function listExpenses(
       .filter((s) => s.expenseId === expense.id)
       .map(({ userId, shareCentavos }) => ({ userId, shareCentavos })),
   }));
+}
+
+// A month of entries for the CSV report, oldest first. `month` is "YYYY-MM", already validated.
+export const MONTH_ROW_LIMIT = 2000;
+
+export async function expensesInMonth(
+  q: Queryable,
+  groupId: string,
+  month: string,
+): Promise<ExpenseWithShares[]> {
+  const expenses = await q.query<Expense>(
+    `SELECT ${EXPENSE_COLUMNS} FROM expenses
+     WHERE group_id = ? AND spent_on >= ? AND spent_on < DATE_ADD(?, INTERVAL 1 MONTH)
+     ORDER BY spent_on, created_at, id LIMIT ?`,
+    [groupId, `${month}-01`, `${month}-01`, MONTH_ROW_LIMIT],
+  );
+  return withShares(q, expenses);
+}
+
+export async function settlementsInMonth(
+  q: Queryable,
+  groupId: string,
+  month: string,
+): Promise<Settlement[]> {
+  return q.query<Settlement>(
+    `SELECT ${SETTLEMENT_COLUMNS} FROM settlements
+     WHERE group_id = ? AND settled_on >= ? AND settled_on < DATE_ADD(?, INTERVAL 1 MONTH)
+     ORDER BY settled_on, created_at, id LIMIT ?`,
+    [groupId, `${month}-01`, `${month}-01`, MONTH_ROW_LIMIT],
+  );
 }
 
 export async function insertSettlement(

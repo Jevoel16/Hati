@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { computeBalances, simplifyDebts, type Balance } from './balances.js';
+import { BOM, csvCell, toCsv } from './csv.js';
 import { TransitionError, transitionAccount, transitionMember } from './machines.js';
 import { formatMoney, minorDigits, toMajorString } from './money.js';
 import { amountText, crc16, encode, parseQrPh, tlv, withAmount, type Field } from './qrph.js';
@@ -153,6 +154,36 @@ describe('money formatting', () => {
     assert.equal(toMajorString(7, 'PHP'), '0.07');
     assert.equal(toMajorString(1250, 'JPY'), '1250');
     assert.equal(toMajorString(-500, 'USD'), '-5.00');
+  });
+});
+
+describe('CSV', () => {
+  it('leaves plain cells alone', () => {
+    assert.equal(csvCell('Groceries'), 'Groceries');
+    assert.equal(csvCell('1250.50'), '1250.50');
+  });
+
+  it('quotes commas, quotes and line breaks', () => {
+    assert.equal(csvCell('Rice, eggs'), '"Rice, eggs"');
+    assert.equal(csvCell('The "good" pizza'), '"The ""good"" pizza"');
+    assert.equal(csvCell('two\nlines'), '"two\nlines"');
+  });
+
+  it('stops spreadsheets from running a cell as a formula', () => {
+    for (const start of ['=', '+', '-', '@', '\t', '\r']) {
+      assert.ok(csvCell(`${start}1+1`).replace(/^"/, '').startsWith(`'${start}`), start);
+    }
+    assert.equal(csvCell('=HYPERLINK("x")'), `"'=HYPERLINK(""x"")"`);
+  });
+
+  it('writes CRLF rows after a byte-order mark', () => {
+    assert.equal(
+      toCsv([
+        ['a', 'b'],
+        ['c', 'd'],
+      ]),
+      `${BOM}a,b\r\nc,d\r\n`,
+    );
   });
 });
 

@@ -81,6 +81,10 @@ export const paymentQr = z.object({
 });
 export const paymentQrQuery = z.object({ from: id, to: id });
 
+export const reportQuery = z.object({
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Use a month like 2026-11.'),
+});
+
 // Every list endpoint is paginated, with a hard ceiling on the page size.
 export const page = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(20),

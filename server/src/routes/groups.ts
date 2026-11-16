@@ -4,6 +4,7 @@ import { currentUser } from '../middleware/session.js';
 import * as groups from '../services/groups.js';
 import * as ledger from '../services/ledger.js';
 import * as paymentQr from '../services/paymentQr.js';
+import * as report from '../services/report.js';
 import * as schemas from './schemas.js';
 
 // Handlers only parse the request, call one service function and shape the response.
@@ -81,6 +82,23 @@ export function groupRoutes(ctx: Ctx): Router {
 
   router.get('/groups/:id/summary', async (req, res) => {
     res.json(await ledger.getSummary(ctx, currentUser(res), param(req.params.id)));
+  });
+
+  router.get('/groups/:id/report', async (req, res) => {
+    const { month } = schemas.reportQuery.parse(req.query);
+    const { filename, csv } = await report.monthlyReport(
+      ctx,
+      currentUser(res),
+      param(req.params.id),
+      month,
+    );
+    res
+      .set({
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Cache-Control': 'no-store',
+      })
+      .send(csv);
   });
 
   router.get('/groups/:id/activity', async (req, res) => {
