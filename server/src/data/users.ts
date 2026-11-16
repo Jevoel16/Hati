@@ -9,16 +9,23 @@ export type User = {
   email: string;
   status: AccountStatus;
   isDemo: boolean;
+  // Finished or skipped the guided tour (users.onboarded_at is set).
+  onboarded: boolean;
 };
 export type UserWithHash = User & { passwordHash: string | null };
 export type ProviderColumn = 'google_sub' | 'github_id';
 
-type UserRow = Omit<UserWithHash, 'isDemo'> & { isDemo: number };
+type UserRow = Omit<UserWithHash, 'isDemo' | 'onboarded'> & { isDemo: number; onboarded: number };
 
-const COLUMNS = `id, name, username, email, status, is_demo AS isDemo, password_hash AS passwordHash`;
+const COLUMNS = `id, name, username, email, status, is_demo AS isDemo,
+  onboarded_at IS NOT NULL AS onboarded, password_hash AS passwordHash`;
 
 // TiDB returns BOOLEAN as 0 or 1.
-const toUser = (row: UserRow): UserWithHash => ({ ...row, isDemo: Boolean(row.isDemo) });
+const toUser = (row: UserRow): UserWithHash => ({
+  ...row,
+  isDemo: Boolean(row.isDemo),
+  onboarded: Boolean(row.onboarded),
+});
 
 async function findOne(q: Queryable, where: string, value: string) {
   const rows = await q.query<UserRow>(`SELECT ${COLUMNS} FROM users WHERE ${where} = ?`, [value]);
@@ -87,6 +94,14 @@ export async function setPassword(
     status,
     userId,
   ]);
+}
+
+// Keeps the first time, so finishing a replayed tour does not move it.
+export async function markOnboarded(q: Queryable, userId: string): Promise<void> {
+  await q.query(
+    'UPDATE users SET onboarded_at = COALESCE(onboarded_at, UTC_TIMESTAMP(3)) WHERE id = ?',
+    [userId],
+  );
 }
 
 export type PaymentQrRow = { id: string; label: string; payload: string };

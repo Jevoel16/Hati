@@ -147,6 +147,13 @@ export async function completeSetup(
   }
 }
 
+// The demo login is shared, so it never stores this and every visitor gets the tour.
+export async function markOnboarded(ctx: Ctx, user: users.User): Promise<void> {
+  if (user.status !== 'active') throw setupRequired();
+  if (user.isDemo) return;
+  await users.markOnboarded(ctx.db, user.id);
+}
+
 // Changes the password of a set-up account.
 export async function setPassword(
   ctx: Ctx,

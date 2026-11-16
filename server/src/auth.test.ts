@@ -197,6 +197,26 @@ describe('auth', { skip }, () => {
     assert.equal(change.status, 403);
   });
 
+  it('remembers that the guided tour was seen, once', async () => {
+    const { client } = await app.signUp('tour@example.com');
+    assert.equal((await client.get('/api/auth/me')).body.user.onboarded, false);
+    assert.equal((await client.post('/api/auth/onboarded')).status, 204);
+    assert.equal((await client.post('/api/auth/onboarded')).status, 204);
+    assert.equal((await client.get('/api/auth/me')).body.user.onboarded, true);
+  });
+
+  it('keeps the tour for every demo visitor and for accounts still in setup', async () => {
+    const demo = app.client();
+    await demo.post('/api/auth/sign-in', DEMO_ACCOUNT);
+    assert.equal((await demo.post('/api/auth/onboarded')).status, 204);
+    assert.equal((await demo.get('/api/auth/me')).body.user.onboarded, false);
+
+    const pending = app.client();
+    await app.oauthSignIn(pending, 'tour-pending@example.com');
+    assert.equal((await pending.post('/api/auth/onboarded')).status, 403);
+    assert.equal((await app.client().post('/api/auth/onboarded')).status, 401);
+  });
+
   // Parallel setups used to deadlock on the username and session index locks.
   it('finishes several sign-ups at the same moment', async () => {
     const emails = ['par1', 'par2', 'par3', 'par4', 'par5', 'par6'].map((n) => `${n}@example.com`);

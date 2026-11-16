@@ -31,10 +31,12 @@ export async function findAndTouch(
     email: string;
     status: User['status'];
     isDemo: number;
+    onboarded: number;
   }>(
     `SELECT s.auth_method AS authMethod,
             s.last_seen_at < UTC_TIMESTAMP(3) - INTERVAL 1 HOUR AS stale,
-            u.id, u.name, u.username, u.email, u.status, u.is_demo AS isDemo
+            u.id, u.name, u.username, u.email, u.status, u.is_demo AS isDemo,
+            u.onboarded_at IS NOT NULL AS onboarded
      FROM sessions s JOIN users u ON u.id = s.user_id
      WHERE s.id = ? AND s.expires_at > UTC_TIMESTAMP(3)`,
     [sessionId],
@@ -59,6 +61,7 @@ export async function findAndTouch(
       email: row.email,
       status: row.status,
       isDemo: Boolean(row.isDemo),
+      onboarded: Boolean(row.onboarded),
     },
   };
 }

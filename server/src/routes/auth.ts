@@ -65,6 +65,11 @@ export function authRoutes(ctx: Ctx): Router {
     res.status(204).end();
   });
 
+  router.post('/onboarded', async (_req, res) => {
+    await auth.markOnboarded(ctx, currentAuth(res).user);
+    res.status(204).end();
+  });
+
   router.get('/payment-qrs', async (_req, res) => {
     res.json({ methods: await paymentQr.listOwnQrs(ctx, currentAuth(res).user) });
   });
