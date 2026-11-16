@@ -4,7 +4,13 @@ import { SelectField, TextField } from '../../components/Field.tsx';
 import { fieldError, FormError, SubmitButton } from '../../components/States.tsx';
 import { api } from '../../lib/api.ts';
 import { useSubmission } from '../../lib/hooks.ts';
-import { parsePesos, todayIso, toPesoInput } from '../../lib/money.ts';
+import {
+  currencySymbol,
+  parseAmount,
+  sampleAmount,
+  todayIso,
+  toAmountInput,
+} from '../../lib/money.ts';
 import { useUser } from '../../lib/session.tsx';
 import type { Group, Payment } from '../../lib/types.ts';
 
@@ -20,18 +26,21 @@ export function PaymentForm({
   onSaved: () => void;
 }) {
   const me = useUser();
+  const { currency } = group;
   const [submission, run] = useSubmission();
   const others = group.members.filter((m) => m.userId !== me.id);
   const [fromUser, setFromUser] = useState(prefill?.fromUser ?? me.id);
   const [toUser, setToUser] = useState(prefill?.toUser ?? others[0]?.userId ?? '');
-  const [amount, setAmount] = useState(prefill ? toPesoInput(prefill.amountCentavos) : '');
+  const [amount, setAmount] = useState(
+    prefill ? toAmountInput(prefill.amountCentavos, currency) : '',
+  );
   const [settledOn, setSettledOn] = useState(todayIso());
   const [amountError, setAmountError] = useState<string>();
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
-    const amountCentavos = parsePesos(amount);
-    setAmountError(amountCentavos ? undefined : 'Enter an amount in pesos, like 500.');
+    const amountCentavos = parseAmount(amount, currency);
+    setAmountError(amountCentavos ? undefined : `Enter an amount, like ${sampleAmount(currency)}.`);
     if (!amountCentavos) return;
     void run(() =>
       api('POST', `/groups/${group.id}/settlements`, {
@@ -71,7 +80,7 @@ export function PaymentForm({
           {options}
         </SelectField>
         <TextField
-          label="Amount (₱)"
+          label={`Amount (${currencySymbol(currency)})`}
           inputMode="decimal"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}

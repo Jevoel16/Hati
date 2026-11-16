@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { TextField } from '../components/Field.tsx';
+import { CurrencyField, TextField } from '../components/Field.tsx';
 import {
   EmptyState,
   fieldError,
@@ -12,7 +12,7 @@ import { api } from '../lib/api.ts';
 import { useDocumentTitle, useRemote, useSubmission } from '../lib/hooks.ts';
 import { parseInviteCode } from '../lib/invite.ts';
 import { describeBalance } from '../lib/money.ts';
-import type { GroupListItem } from '../lib/types.ts';
+import type { Currency, GroupListItem } from '../lib/types.ts';
 
 // The scanner and its QR decoder load only when someone opens it.
 const QrScanner = lazy(() => import('../components/QrScanner.tsx'));
@@ -21,11 +21,12 @@ function NewGroupForm() {
   const navigate = useNavigate();
   const [submission, run] = useSubmission();
   const [name, setName] = useState('');
+  const [currency, setCurrency] = useState<Currency>('PHP');
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
     void run(async () => {
-      const { id } = await api<{ id: string }>('POST', '/groups', { name });
+      const { id } = await api<{ id: string }>('POST', '/groups', { name, currency });
       navigate(`/groups/${id}`);
     });
   };
@@ -39,6 +40,11 @@ function NewGroupForm() {
         value={name}
         onChange={(e) => setName(e.target.value)}
         error={fieldError(submission, 'name')}
+      />
+      <CurrencyField
+        value={currency}
+        onChange={setCurrency}
+        error={fieldError(submission, 'currency')}
       />
       <FormError state={submission} />
       <SubmitButton state={submission} busyLabel="Creating…">
@@ -127,7 +133,7 @@ export default function Groups() {
                     <span
                       className={`amount ${group.netCentavos > 0 ? 'owed' : group.netCentavos < 0 ? 'owes' : 'muted'}`}
                     >
-                      {describeBalance(group.netCentavos, 'you')}
+                      {describeBalance(group.netCentavos, 'you', group.currency)}
                     </span>
                   </li>
                 ))}

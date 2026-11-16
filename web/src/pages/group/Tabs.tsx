@@ -2,9 +2,16 @@ import { lazy, Suspense, useState, type ReactNode } from 'react';
 import { EmptyState, RemoteView } from '../../components/States.tsx';
 import { api } from '../../lib/api.ts';
 import { usePagedList, useRemote, useSubmission } from '../../lib/hooks.ts';
-import { describeBalance, formatDay, formatMonth, formatPeso } from '../../lib/money.ts';
+import { describeBalance, formatDay, formatMoney, formatMonth } from '../../lib/money.ts';
 import { useUser } from '../../lib/session.tsx';
-import type { ActivityEntry, Expense, Payment, Settlement, Summary } from '../../lib/types.ts';
+import type {
+  ActivityEntry,
+  Currency,
+  Expense,
+  Payment,
+  Settlement,
+  Summary,
+} from '../../lib/types.ts';
 import { useGroup } from './GroupPage.tsx';
 
 // The QR encoder loads only when someone opens a payment QR.
@@ -75,9 +82,11 @@ export function BalancesTab() {
   const me = useUser();
   const payments = usePagedList<Settlement>(`/groups/${group.id}/settlements`, refreshKey);
   const canRecord = (ids: string[]) => group.role === 'admin' || ids.includes(me.id);
+  // QR Ph (InstaPay) is pesos only, so other currencies never show a QR.
   const hasQr = (userId: string) =>
-    group.members.some((m) => m.userId === userId && m.hasPaymentQr);
+    group.currency === 'PHP' && group.members.some((m) => m.userId === userId && m.hasPaymentQr);
   const [showing, setShowing] = useState<Payment | null>(null);
+  const money = (minor: number) => formatMoney(minor, group.currency);
   // People who left stay listed only while they still owe or are owed something.
   const isShown = (b: { userId: string; netCentavos: number }) =>
     b.netCentavos !== 0 ||
@@ -95,8 +104,8 @@ export function BalancesTab() {
                     <span className="list-title">{nameOf(b.userId)}</span>
                     <span className={`amount ${balanceClass(b.netCentavos)}`}>
                       {b.userId === me.id
-                        ? describeBalance(b.netCentavos, 'you')
-                        : describeBalance(b.netCentavos, 'they')}
+                        ? describeBalance(b.netCentavos, 'you', group.currency)
+                        : describeBalance(b.netCentavos, 'they', group.currency)}
                     </span>
                   </li>
                 ))}
@@ -115,7 +124,7 @@ export function BalancesTab() {
                       <span className="list-main">
                         {nameOf(p.fromUser)} {p.fromUser === me.id ? 'pay' : 'pays'}{' '}
                         {nameOf(p.toUser, true)}{' '}
-                        <span className="amount">{formatPeso(p.amountCentavos)}</span>
+                        <span className="amount">{money(p.amountCentavos)}</span>
                       </span>
                       <span className="row">
                         {hasQr(p.toUser) && (
@@ -164,7 +173,7 @@ export function BalancesTab() {
                         </p>
                         <p className="muted">{formatDay(s.settledOn)}</p>
                       </div>
-                      <span className="amount">{formatPeso(s.amountCentavos)}</span>
+                      <span className="amount">{money(s.amountCentavos)}</span>
                       {canRecord([s.createdBy]) && (
                         <DeleteButton
                           label="Delete this payment"
@@ -195,6 +204,7 @@ export function ExpensesTab() {
   const { group, refreshKey, refresh, nameOf, editExpense } = useGroup();
   const me = useUser();
   const expenses = usePagedList<Expense>(`/groups/${group.id}/expenses`, refreshKey);
+  const money = (minor: number) => formatMoney(minor, group.currency);
   const canChange = (e: Expense) =>
     group.role === 'admin' || e.createdBy === me.id || e.paidBy === me.id;
 
@@ -216,10 +226,10 @@ export function ExpensesTab() {
                       <p className="list-title">{e.description}</p>
                       <p className="muted">
                         {formatDay(e.spentOn)} · {e.category} · {nameOf(e.paidBy)} paid · your share{' '}
-                        {formatPeso(myShare)}
+                        {money(myShare)}
                       </p>
                     </div>
-                    <span className="amount">{formatPeso(e.amountCentavos)}</span>
+                    <span className="amount">{money(e.amountCentavos)}</span>
                     {canChange(e) && (
                       <span className="row">
                         <button
@@ -277,14 +287,20 @@ export function ActivityTab() {
   );
 }
 
-function Totals({ rows }: { rows: { label: string; totalCentavos: number }[] }) {
+function Totals({
+  rows,
+  currency,
+}: {
+  rows: { label: string; totalCentavos: number }[];
+  currency: Currency;
+}) {
   const largest = Math.max(...rows.map((r) => r.totalCentavos), 1);
   return (
     <ul className="list">
       {rows.map((row) => (
         <li key={row.label}>
           <span className="list-title">{row.label}</span>
-          <span className="amount">{formatPeso(row.totalCentavos)}</span>
+          <span className="amount">{formatMoney(row.totalCentavos, currency)}</span>
           <span className="bar-track" aria-hidden="true">
             <span
               className="bar-fill"
@@ -312,6 +328,7 @@ export function SummaryTab() {
           <div className="stack stack--lg">
             <Section title="Spending by category">
               <Totals
+                currency={group.currency}
                 rows={data.byCategory.map((c) => ({
                   label: c.category[0]!.toUpperCase() + c.category.slice(1),
                   totalCentavos: c.totalCentavos,
@@ -320,6 +337,7 @@ export function SummaryTab() {
             </Section>
             <Section title="Spending by month">
               <Totals
+                currency={group.currency}
                 rows={data.byMonth.map((m) => ({
                   label: formatMonth(m.month),
                   totalCentavos: m.totalCentavos,

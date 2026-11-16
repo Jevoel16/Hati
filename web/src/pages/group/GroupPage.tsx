@@ -89,7 +89,7 @@ export default function GroupPage() {
                 <span className="skeleton skeleton--hero" />
               ) : (
                 <p className={`figure ${myNet > 0 ? 'owed' : myNet < 0 ? 'owes' : ''}`}>
-                  {describeBalance(myNet, 'you')}
+                  {describeBalance(myNet, 'you', data.currency)}
                 </p>
               )}
               <p className="live-status" role="status">

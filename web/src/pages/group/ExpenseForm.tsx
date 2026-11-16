@@ -4,11 +4,19 @@ import { SelectField, TextField } from '../../components/Field.tsx';
 import { fieldError, FormError, SubmitButton } from '../../components/States.tsx';
 import { api } from '../../lib/api.ts';
 import { useSubmission } from '../../lib/hooks.ts';
-import { formatPeso, parsePesos, todayIso, toPesoInput } from '../../lib/money.ts';
+import {
+  currencySymbol,
+  formatMoney,
+  parseAmount,
+  sampleAmount,
+  todayIso,
+  toAmountInput,
+} from '../../lib/money.ts';
 import { useUser } from '../../lib/session.tsx';
 import {
   CATEGORIES,
   type Category,
+  type Currency,
   type Expense,
   type ExpensePayload,
   type Group,
@@ -30,6 +38,7 @@ function buildSplit(
   amountCentavos: number,
   included: Set<string>,
   values: Record<string, string>,
+  currency: Currency,
 ): SplitInput | string {
   if (type === 'equal') {
     return included.size > 0
@@ -40,12 +49,15 @@ function buildSplit(
   if (filled.length === 0) return 'Enter a share for at least one person.';
 
   if (type === 'exact') {
-    const shares = filled.map(([userId, text]) => ({ userId, amountCentavos: parsePesos(text) }));
+    const shares = filled.map(([userId, text]) => ({
+      userId,
+      amountCentavos: parseAmount(text, currency),
+    }));
     if (shares.some((s) => s.amountCentavos === null)) return 'Each share must be an amount.';
     const total = shares.reduce((sum, s) => sum + s.amountCentavos!, 0);
     return total === amountCentavos
       ? { type, shares: shares as { userId: string; amountCentavos: number }[] }
-      : `The shares add up to ${formatPeso(total)}, but the expense is ${formatPeso(amountCentavos)}.`;
+      : `The shares add up to ${formatMoney(total, currency)}, but the expense is ${formatMoney(amountCentavos, currency)}.`;
   }
 
   const shares = filled.map(([userId, text]) => ({ userId, percent: Number(text) }));
@@ -71,12 +83,15 @@ export function ExpenseForm({
   onSaved: () => void;
 }) {
   const me = useUser();
+  const { currency } = group;
   const members = group.members.filter((m) => m.status === 'active');
   const [submission, run] = useSubmission();
   const [errors, setErrors] = useState<Errors>({});
 
   const [description, setDescription] = useState(expense?.description ?? '');
-  const [amount, setAmount] = useState(expense ? toPesoInput(expense.amountCentavos) : '');
+  const [amount, setAmount] = useState(
+    expense ? toAmountInput(expense.amountCentavos, currency) : '',
+  );
   const [paidBy, setPaidBy] = useState(expense?.paidBy ?? me.id);
   const [spentOn, setSpentOn] = useState(expense?.spentOn ?? todayIso());
   const [category, setCategory] = useState<Category>(expense?.category ?? 'food');
@@ -89,7 +104,9 @@ export function ExpenseForm({
   );
   const [values, setValues] = useState<Record<string, string>>(() =>
     expense && expense.splitType !== 'equal'
-      ? Object.fromEntries(expense.shares.map((s) => [s.userId, toPesoInput(s.shareCentavos)]))
+      ? Object.fromEntries(
+          expense.shares.map((s) => [s.userId, toAmountInput(s.shareCentavos, currency)]),
+        )
       : {},
   );
 
@@ -106,14 +123,14 @@ export function ExpenseForm({
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
-    const amountCentavos = parsePesos(amount);
+    const amountCentavos = parseAmount(amount, currency);
     const split =
       amountCentavos === null || amountCentavos === 0
         ? undefined
-        : buildSplit(splitType, amountCentavos, included, values);
+        : buildSplit(splitType, amountCentavos, included, values, currency);
     const found: Errors = {
       description: description.trim() ? undefined : 'Say what this was for.',
-      amount: amountCentavos ? undefined : 'Enter an amount in pesos, like 1250.50.',
+      amount: amountCentavos ? undefined : `Enter an amount, like ${sampleAmount(currency)}.`,
       split: typeof split === 'string' ? split : undefined,
     };
     setErrors(found);
@@ -147,7 +164,7 @@ export function ExpenseForm({
           error={errors.description ?? fieldError(submission, 'description')}
         />
         <TextField
-          label="Amount (₱)"
+          label={`Amount (${currencySymbol(currency)})`}
           inputMode="decimal"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
@@ -217,8 +234,8 @@ export function ExpenseForm({
                 <span>{m.name}</span>
                 <input
                   inputMode="decimal"
-                  aria-label={`${m.name}: ${splitType === 'exact' ? 'share in pesos' : 'percentage'}`}
-                  placeholder={splitType === 'exact' ? '0.00' : '0'}
+                  aria-label={`${m.name}: ${splitType === 'exact' ? `share in ${currency}` : 'percentage'}`}
+                  placeholder={splitType === 'exact' ? toAmountInput(0, currency) : '0'}
                   value={values[m.userId] ?? ''}
                   onChange={(e) => setValues({ ...values, [m.userId]: e.target.value })}
                 />

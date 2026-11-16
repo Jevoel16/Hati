@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TextField } from '../../components/Field.tsx';
+import { CurrencyField, TextField } from '../../components/Field.tsx';
 import { QrCode } from '../../components/QrCode.tsx';
 import { fieldError, FormError, SubmitButton } from '../../components/States.tsx';
 import { api } from '../../lib/api.ts';
 import { useSubmission } from '../../lib/hooks.ts';
 import { useUser } from '../../lib/session.tsx';
-import type { Member } from '../../lib/types.ts';
+import { CURRENCIES, type Currency, type Member } from '../../lib/types.ts';
 import { useGroup } from './GroupPage.tsx';
 
 function InviteSection() {
@@ -122,10 +122,18 @@ function AdminSettings() {
   const [rename, runRename] = useSubmission();
   const [removal, runRemoval] = useSubmission();
   const [name, setName] = useState(group.name);
+  const [currencyChange, runCurrencyChange] = useSubmission();
+  const [currency, setCurrency] = useState<Currency>(group.currency);
 
   const onRename = (event: FormEvent) => {
     event.preventDefault();
     void runRename(() => api('PATCH', `/groups/${group.id}`, { name })).then(
+      (ok) => ok && refresh(),
+    );
+  };
+  const onChangeCurrency = (event: FormEvent) => {
+    event.preventDefault();
+    void runCurrencyChange(() => api('PATCH', `/groups/${group.id}`, { currency })).then(
       (ok) => ok && refresh(),
     );
   };
@@ -155,6 +163,26 @@ function AdminSettings() {
           </SubmitButton>
         </div>
       </form>
+      {group.currencyLocked ? (
+        <p className="muted">
+          Amounts are in {CURRENCIES[group.currency]} ({group.currency}). The currency is fixed now
+          that the group has expenses or payments.
+        </p>
+      ) : (
+        <form className="stack" onSubmit={onChangeCurrency} noValidate>
+          <CurrencyField
+            value={currency}
+            onChange={setCurrency}
+            error={fieldError(currencyChange, 'currency')}
+          />
+          <FormError state={currencyChange} />
+          <div>
+            <SubmitButton state={currencyChange} className="button button--quiet">
+              Change currency
+            </SubmitButton>
+          </div>
+        </form>
+      )}
       <FormError state={removal} />
       <div>
         <button

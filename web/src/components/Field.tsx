@@ -1,4 +1,6 @@
 import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from 'react';
+import { currencySymbol } from '../lib/money.ts';
+import { CURRENCIES, type Currency } from '../lib/types.ts';
 
 type Common = { label: string; error?: string; hint?: string };
 
@@ -56,5 +58,32 @@ export function SelectField(
         {children}
       </select>
     </Wrapper>
+  );
+}
+
+// Used when a group is created and in its settings until the first expense.
+export function CurrencyField({
+  value,
+  onChange,
+  error,
+}: {
+  value: Currency;
+  onChange: (currency: Currency) => void;
+  error?: string;
+}) {
+  return (
+    <SelectField
+      label="Currency"
+      hint="Every amount in the group uses it. Payment QRs work in peso groups only."
+      value={value}
+      onChange={(e) => onChange(e.target.value as Currency)}
+      error={error}
+    >
+      {(Object.keys(CURRENCIES) as Currency[]).map((code) => (
+        <option key={code} value={code}>
+          {CURRENCIES[code]} ({currencySymbol(code)})
+        </option>
+      ))}
+    </SelectField>
   );
 }

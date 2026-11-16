@@ -1,4 +1,5 @@
-// Shapes of the API responses (see docs/api.md). Amounts are always integer centavos.
+// Shapes of the API responses (see docs/api.md). Amounts are integers in the group currency's
+// smallest unit (centavos for PHP, yen for JPY).
 
 export type User = {
   id: string;
@@ -16,6 +17,18 @@ export type Providers = {
 };
 
 export type Role = 'admin' | 'member';
+
+// The order is the order of the picker; pesos first.
+export const CURRENCIES = {
+  PHP: 'Philippine peso',
+  USD: 'US dollar',
+  EUR: 'Euro',
+  JPY: 'Japanese yen',
+  SGD: 'Singapore dollar',
+  KRW: 'South Korean won',
+  HKD: 'Hong Kong dollar',
+} as const;
+export type Currency = keyof typeof CURRENCIES;
 export type Member = {
   userId: string;
   name: string;
@@ -27,10 +40,20 @@ export type GroupListItem = {
   id: string;
   name: string;
   role: Role;
+  currency: Currency;
   memberCount: number;
   netCentavos: number;
 };
-export type Group = { id: string; name: string; inviteCode: string; role: Role; members: Member[] };
+export type Group = {
+  id: string;
+  name: string;
+  inviteCode: string;
+  currency: Currency;
+  // True once the group has an expense or payment; the currency can no longer change.
+  currencyLocked: boolean;
+  role: Role;
+  members: Member[];
+};
 export type InvitePreview = {
   groupId: string;
   name: string;

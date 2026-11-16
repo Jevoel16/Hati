@@ -3,7 +3,7 @@ import { Dialog } from '../../components/Dialog.tsx';
 import { QrCode } from '../../components/QrCode.tsx';
 import { RemoteView } from '../../components/States.tsx';
 import { useRemote } from '../../lib/hooks.ts';
-import { formatPeso } from '../../lib/money.ts';
+import { formatMoney } from '../../lib/money.ts';
 import type { Payment, PaymentQr } from '../../lib/types.ts';
 import { useGroup } from './GroupPage.tsx';
 
@@ -48,7 +48,8 @@ function PayWith({
 }) {
   const [chosenId, setChosenId] = useState(data.methods[0]!.id);
   const method = data.methods.find((m) => m.id === chosenId) ?? data.methods[0]!;
-  const amount = formatPeso(data.amountCentavos);
+  // QRs exist only in peso groups (QR Ph is pesos only).
+  const amount = formatMoney(data.amountCentavos, 'PHP');
 
   return (
     <div className="stack">

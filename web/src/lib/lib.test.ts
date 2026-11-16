@@ -12,25 +12,47 @@ import {
   type Scan,
   type Submission,
 } from './machines.ts';
-import { describeBalance, parsePesos, toPesoInput } from './money.ts';
+import {
+  currencySymbol,
+  describeBalance,
+  formatMoney,
+  parseAmount,
+  toAmountInput,
+} from './money.ts';
 import { parseTheme } from './theme.ts';
 
-describe('parsePesos', () => {
+describe('parseAmount', () => {
   it('turns typed pesos into centavos without float errors', () => {
-    assert.equal(parsePesos('1250.5'), 125_050);
-    assert.equal(parsePesos('0.07'), 7);
-    assert.equal(parsePesos('1,250'), 125_000);
-    assert.equal(parsePesos('19.99'), 1999);
+    assert.equal(parseAmount('1250.5', 'PHP'), 125_050);
+    assert.equal(parseAmount('0.07', 'PHP'), 7);
+    assert.equal(parseAmount('1,250', 'PHP'), 125_000);
+    assert.equal(parseAmount('19.99', 'PHP'), 1999);
+  });
+
+  it('takes whole yen and won, with no decimals', () => {
+    assert.equal(parseAmount('1250', 'JPY'), 1250);
+    assert.equal(parseAmount('1,000,000', 'KRW'), 1_000_000);
+    assert.equal(parseAmount('12.50', 'JPY'), null);
   });
 
   it('rejects anything that is not a plain amount', () => {
-    for (const bad of ['', 'abc', '-5', '1.234', '1e3', '12345678']) {
-      assert.equal(parsePesos(bad), null);
+    for (const bad of ['', 'abc', '-5', '1.234', '1e3', '1234567890']) {
+      assert.equal(parseAmount(bad, 'PHP'), null);
     }
   });
 
   it('round-trips through the input format', () => {
-    assert.equal(parsePesos(toPesoInput(125_050)), 125_050);
+    assert.equal(parseAmount(toAmountInput(125_050, 'PHP'), 'PHP'), 125_050);
+    assert.equal(parseAmount(toAmountInput(1250, 'JPY'), 'JPY'), 1250);
+  });
+});
+
+describe('formatMoney', () => {
+  it('shows each currency with its own decimals and symbol', () => {
+    assert.equal(formatMoney(125_050, 'PHP'), '₱1,250.50');
+    assert.equal(formatMoney(1250, 'JPY'), '¥1,250');
+    assert.equal(currencySymbol('PHP'), '₱');
+    assert.equal(currencySymbol('JPY'), '¥');
   });
 });
 
@@ -55,10 +77,10 @@ describe('redactUrl', () => {
 
 describe('describeBalance', () => {
   it('uses words for owed, owing and settled', () => {
-    assert.match(describeBalance(1000, 'you'), /^You are owed /);
-    assert.match(describeBalance(-1000, 'you'), /^You owe /);
-    assert.equal(describeBalance(0, 'you'), 'You are settled up');
-    assert.match(describeBalance(-50, 'they'), /^owes /);
+    assert.equal(describeBalance(1000, 'you', 'PHP'), 'You are owed ₱10.00');
+    assert.equal(describeBalance(-1000, 'you', 'JPY'), 'You owe ¥1,000');
+    assert.equal(describeBalance(0, 'you', 'PHP'), 'You are settled up');
+    assert.match(describeBalance(-50, 'they', 'PHP'), /^owes /);
   });
 });
 
