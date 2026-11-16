@@ -99,3 +99,11 @@ Short records of the choices that are not obvious from the code.
 - **Why:** converting needs a rate source (a third-party API and a dependency), a rate for each date, and rounding rules, and the balances would move whenever the rate moved. One currency per group keeps every sum exact and every balance stable. Locking it after the first entry stops a change from silently turning ₱1,000 into $1,000.
 - **How amounts work:** still integers in the smallest unit, so the split code did not change. The number of decimals comes from the built-in `Intl.NumberFormat` (`maximumFractionDigits`: 2 for PHP, 0 for JPY and KRW). The columns kept their `_centavos` names to avoid renaming every column and API field. The 100,000,000 cap is in the smallest unit, so it is ₱1,000,000 or ¥100,000,000.
 - **Trade-off:** payment QRs stay pesos-only, because QR Ph (InstaPay) carries pesos, so other groups never show a QR. A group that mixes currencies has to pick one or be split into two groups.
+
+## 17. Monthly report as a hand-written CSV
+
+- **Problem:** members wanted a month's spending in a spreadsheet, to check it or to hand to someone else.
+- **Options:** a PDF (a library and a layout to maintain); an Excel file (a library); a CSV built by hand.
+- **Choice:** `GET /groups/:id/report?month=YYYY-MM` returns a CSV from `server/src/domain/csv.ts`, about ten lines of code and no dependency. The Summary tab links to it directly, so the browser downloads it with the session cookie.
+- **Safety:** a description such as `=HYPERLINK(...)` would run as a formula when the file is opened, so any cell starting with `=`, `+`, `-`, `@`, a tab or a carriage return gets a leading `'` (OWASP's advice for CSV injection), and fields with commas, quotes or line breaks are quoted.
+- **Trade-off:** amounts are written as plain numbers (`1250.50`) with the currency code in the header, not as `₱1,250.50`, so a spreadsheet can add them up. Each export is capped at 2,000 expenses and 2,000 payments, far above a real month.

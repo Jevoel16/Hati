@@ -53,7 +53,7 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 - Balances and an activity feed that update live, with no refresh
 - Payment QRs in peso groups: save up to 5 InstaPay QRs (GCash, Maya, Landbank or any bank), and the people who owe you pick one and get it with the exact amount filled in
 - Recorded payments that adjust everyone's balance
-- Spending summary by category and by month
+- Spending summary by category and by month, and any month downloaded as a CSV expense report
 - Sign-in with Google or GitHub, plus a public demo account
 - A username and password chosen on first sign-in
 - A layout that uses the full width on desktop and phones, a system, light or dark theme switch and full keyboard access

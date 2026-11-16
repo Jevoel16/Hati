@@ -225,6 +225,14 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
 }
 ```
 
+`GET /groups/:id/report?month=2026-11` downloads that month's expenses and payments as a CSV file (`text/csv`, sent as an attachment named `hati-<group-name>-<month>.csv`). Members only (`404` otherwise); `400` with `fields.month` unless the month is `YYYY-MM`. Amounts are plain numbers in the group's currency, named in the header; each member gets a share column. Cells that start with `=`, `+`, `-`, `@`, a tab or a carriage return get a leading `'`, so a spreadsheet shows them as text instead of running them. A month with nothing in it returns the header only. The file starts with a UTF-8 byte-order mark and uses CRLF line endings.
+
+```csv
+Date,Type,Description,Category,Paid by,Amount (PHP),Ana share,Ben share
+2026-11-03,Expense,"Rice, eggs",Food,Ana,1250.50,625.25,625.25
+2026-11-05,Payment,Paid Ana,,Ben,625.25,,
+```
+
 ## Expenses
 
 Lists take `?limit=` (1 to 50, default 20) and `?offset=`; `nextOffset` is `null` on the last page.
