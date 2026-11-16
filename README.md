@@ -47,10 +47,11 @@ Hati (Filipino for "to split") is for housemates, project groups and friends who
 ## Features
 
 - Groups you join with an invite link, a code or by scanning its QR code, with admins and members
+- A currency for each group, picked when it is created (Philippine peso by default, or USD, EUR, JPY, SGD, KRW or HKD), with no conversion
 - Expenses split equally, by exact amounts or by percentage
 - Each member's balance, and the fewest payments that settle the whole group
 - Balances and an activity feed that update live, with no refresh
-- Payment QRs: save up to 5 InstaPay QRs (GCash, Maya, Landbank or any bank), and the people who owe you pick one and get it with the exact amount filled in
+- Payment QRs in peso groups: save up to 5 InstaPay QRs (GCash, Maya, Landbank or any bank), and the people who owe you pick one and get it with the exact amount filled in
 - Recorded payments that adjust everyone's balance
 - Spending summary by category and by month
 - Sign-in with Google or GitHub, plus a public demo account
@@ -84,7 +85,7 @@ flowchart LR
 - The site, API and WebSocket share one origin, so the session cookie is first-party and there is no CORS.
 - On the server, routes call services and services call the data layer; the money math is pure functions in `server/src/domain`.
 - Every write also adds a row to `group_events`; each instance polls it every second and tells its sockets "this group changed", and the browser refetches.
-- Amounts are whole centavos everywhere, so shares and balances always add up exactly.
+- Amounts are whole numbers in the group currency's smallest unit (centavos, yen) everywhere, so shares and balances always add up exactly.
 
 The full write-up, with the request path, live updates, auth, data model and front end: [docs/architecture.md](docs/architecture.md).
 

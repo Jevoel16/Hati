@@ -29,7 +29,7 @@ Short records of the choices that are not obvious from the code.
 
 ## 5. Money is integer centavos
 
-- **Choice:** amounts are stored and computed as whole centavos. Leftover centavos in an equal split go to the first people in the list; in a percentage split they go to the largest remainders.
+- **Choice:** amounts are stored and computed as whole centavos (since decision 16, the smallest unit of the group's currency). Leftover centavos in an equal split go to the first people in the list; in a percentage split they go to the largest remainders.
 - **Why:** floats cannot represent amounts like 0.10 exactly. With integers, the shares of an expense always sum to its amount and all balances always sum to zero (the code throws if they do not).
 
 ## 6. "Fewest payments" is a greedy algorithm
@@ -90,3 +90,12 @@ Short records of the choices that are not obvious from the code.
 - **Options:** TiDB everywhere (local TiDB through Docker); MySQL 8 locally and TiDB Cloud when deployed.
 - **Choice:** MySQL 8 locally, TiDB Cloud on Vercel, and a `pingcap/tidb` service in CI so every push is tested on the same engine as production.
 - **Trade-off:** the SQL has to run on both, so it sticks to what they share: no `CHECK` reliance (decision 2), `ENUM` statuses and a quoted `groups` table name.
+
+## 16. One currency per group, no conversion
+
+- **Problem:** a classmate who tried Hati asked for other currencies, for trips and for friends abroad.
+- **Options:** a currency per expense, converted into a group currency with exchange rates; a currency per user; one currency per group.
+- **Choice:** each group picks one currency when it is created (PHP by default), and every amount in it uses that currency. There is no conversion. An admin can change it until the first expense or payment is recorded; after that the server answers `409`.
+- **Why:** converting needs a rate source (a third-party API and a dependency), a rate for each date, and rounding rules, and the balances would move whenever the rate moved. One currency per group keeps every sum exact and every balance stable. Locking it after the first entry stops a change from silently turning ₱1,000 into $1,000.
+- **How amounts work:** still integers in the smallest unit, so the split code did not change. The number of decimals comes from the built-in `Intl.NumberFormat` (`maximumFractionDigits`: 2 for PHP, 0 for JPY and KRW). The columns kept their `_centavos` names to avoid renaming every column and API field. The 100,000,000 cap is in the smallest unit, so it is ₱1,000,000 or ¥100,000,000.
+- **Trade-off:** payment QRs stay pesos-only, because QR Ph (InstaPay) carries pesos, so other groups never show a QR. A group that mixes currencies has to pick one or be split into two groups.

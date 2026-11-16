@@ -1,6 +1,6 @@
 # API reference
 
-Base path `/api`. Requests and responses are JSON. The session travels in an `httpOnly` cookie, so there is no token to send. Amounts are integer centavos (`125050` is ₱1,250.50); dates are `YYYY-MM-DD`.
+Base path `/api`. Requests and responses are JSON. The session travels in an `httpOnly` cookie, so there is no token to send. Amounts are integers in the group currency's smallest unit: `125050` is ₱1,250.50 in a PHP group, and `1250` is ¥1,250 in a JPY group (yen and won have no decimals). The fields keep the name `…Centavos` whatever the currency. Dates are `YYYY-MM-DD`.
 
 Every error has the same shape:
 
@@ -110,15 +110,22 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
 ```json
 {
   "groups": [
-    { "id": "4c1e…", "name": "Unit 3B", "role": "admin", "memberCount": 4, "netCentavos": 731985 }
+    {
+      "id": "4c1e…",
+      "name": "Unit 3B",
+      "role": "admin",
+      "currency": "PHP",
+      "memberCount": 4,
+      "netCentavos": 731985
+    }
   ]
 }
 ```
 
-`POST /groups` → `201`
+`POST /groups` → `201`. `currency` is one of `PHP`, `USD`, `EUR`, `JPY`, `SGD`, `KRW`, `HKD` and defaults to `PHP`; `400` with `fields.currency` for any other code.
 
 ```json
-{ "name": "Unit 3B" }
+{ "name": "Tokyo trip", "currency": "JPY" }
 ```
 
 ```json
@@ -132,6 +139,8 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
   "id": "4c1e…",
   "name": "Unit 3B",
   "inviteCode": "K7M2XQ9P",
+  "currency": "PHP",
+  "currencyLocked": true,
   "role": "admin",
   "members": [
     { "userId": "9b2f…", "name": "Ana", "role": "admin", "status": "active", "hasPaymentQr": true }
@@ -139,10 +148,14 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
 }
 ```
 
-`PATCH /groups/:id` (admin) → `204`
+`PATCH /groups/:id` (admin) → `204`. Send either a new `name` or a new `currency`, not both. The currency can change only until the group's first expense or payment (`currencyLocked` above); after that it answers `409`, because amounts are never converted.
 
 ```json
 { "name": "Unit 3B Boarding House" }
+```
+
+```json
+{ "currency": "USD" }
 ```
 
 `DELETE /groups/:id` (admin) → `204`
@@ -187,7 +200,7 @@ Writes (anything but `GET`) must carry this site's `Origin` header, which browse
 }
 ```
 
-`GET /groups/:id/payment-qr?from=<userId>&to=<userId>` returns every QR the payee saved, each with the exact amount of that settle-up payment filled in, so the payer can pick one. The amount comes from the current `payments` above, never from the request. `404` when there is no such payment or the payee has no payment QR.
+`GET /groups/:id/payment-qr?from=<userId>&to=<userId>` returns every QR the payee saved, each with the exact amount of that settle-up payment filled in, so the payer can pick one. The amount comes from the current `payments` above, never from the request. `404` when there is no such payment, the payee has no payment QR, or the group is not in pesos (QR Ph carries pesos only).
 
 ```json
 {
