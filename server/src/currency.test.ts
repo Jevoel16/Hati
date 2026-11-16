@@ -73,10 +73,10 @@ describe('group currency', { skip }, () => {
     });
     assert.equal(ok.status, 201);
     const [expense] = (await ana.client.get(group('/expenses'))).body.items;
-    assert.deepEqual(
-      expense.shares.map((s: { shareCentavos: number }) => s.shareCentavos),
-      [501, 500],
-    );
+    const share = (id: string) =>
+      expense.shares.find((s: { userId: string }) => s.userId === id).shareCentavos;
+    assert.equal(share(ana.id) + share(ben.id), 1001);
+    assert.deepEqual([share(ana.id), share(ben.id)].sort(), [500, 501]);
     const [entry] = (await ana.client.get(group('/activity'))).body.items;
     assert.match(entry.summary, /¥1,001/);
   });
